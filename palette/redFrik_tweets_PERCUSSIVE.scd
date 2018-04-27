@@ -1,12 +1,12 @@
-// REDFRIK UNVOICED
+// REDFRIK UNVOICED OR RIFFING
 
 //--tweet0002 phased light drops
 r{99.do{x={Pan2.ar(BPF.ar(Impulse.ar(18.linrand+0.5),9999.linrand,0.3.linrand,5),1.0.rand2)}.play;3.wait;x.release(9)}}.play//#SuperCollider
 
-//--tweet0004 pulsing noise
+//--tweet0004 pulsing noise (insect like)
 r{loop{z=20.rand+6;x={y=LFTri.ar(z).abs/9/z;RLPF.ar(TDuty.ar(y,0,y),z*600,0.06,9)!2}.play(s,0,z);wait(26-z);x.release}}.play//#SuperCollider
 
-//--tweet0005 pulsing noises
+//--tweet0005 pulsing noises (wood perc like)
 r{loop{z=60.rand+1;x={y=LFTri.ar(z).abs/z;RLPF.ar(TDuty.ar(y,0,y),z*99+y,0.01,6+y)!2}.play(s,0,z);wait(z/3);x.release}}.play//#SuperCollider
 
 //--tweet0006 NOISE WINDS - crashes after some time if low memory.

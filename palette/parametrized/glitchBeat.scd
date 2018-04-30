@@ -14,6 +14,9 @@ SynthDef.new(\pulse,{
 
 x = Synth(\pulse);
 
+Server.default.record;
+Server.default.stopRecording
+
 // default
 (
 x.set(\f1, 8);

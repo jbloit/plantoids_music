@@ -38,7 +38,7 @@ play{b=LocalBuf(1e4,2).clear;i=Sweep.ar(BufRd.ar(2,b,Saw.ar(1,2e3,5e3)),5e5);Buf
 //--tweet0021 ANTBITS
 r{{|j|a=play{sin(Decay.ar(Duty.ar(1/50,0,Dseq(flat({|i|asBinaryDigits(j+1*i)}!8),4),2),j+1*0.008))/2!2};5.12.wait}!256}.play//#SuperCollider
 
-//--tweet0041  ***** IKEDA IN A METRO TUNNEL
+//--tweet0041  ***** IKEDA TUNNEL
 play{o=SinOsc.ar(1/RunningMax.ar(Sweep.ar(LocalIn.ar(6)),Impulse.ar([1,0.749,6,12,3,4])));LocalOut.ar(o);Splay.ar(o).tanh/2}//#SuperCollider
 
 //--tweet0050   **** HITTING THE TANK
@@ -48,14 +48,14 @@ play{a=Saw;b=(2..12);c=0.015;GVerb.ar(Splay.ar(Klank.ar(`[b*50+b,c,c],Hasher.ar(
 //--tweet0052  ***** SLOW SWIPE NOISE WITH CLICK
 {Splay.ar(BLowPass.ar(Impulse.ar("sunday".ascii),LFTri.ar(3/"live".ascii)*1800+1900,LFTri.ar(4/"coding".ascii)+1.01))}.play// #SuperCollider
 
-//--tweet0058 4 ON THE FLOUR
+//--tweet0058 4 ON FLOWER
 play{CombN.ar(SinOsc.ar(Saw.ar(3,64,99),Saw.ar([3,4],Saw.ar(1,32,128),Duty.ar(1,0,flop(Dseq([0,8,1,5])*[1,4,8]))))/9,1,1/6)}//#SuperCollider
 
 //--tweet0060  BEATS IN A PLATE
 a=LFSaw;play{FreeVerb.ar(CombN.ar(VarSaw.ar(a.ar([32,48],0,42*a.ar(1/[16,24]),8),0,a.ar([18,12],0,1/64,1/64)).sin/2,1,1,2))}//#SuperCollider
 
 
-//--tweet0084 SOFTLY BLOWING THE ROOF
+//--tweet0084 WIND UNDER THE ROOF
 play{a=Saw;Splay.ar(Formant.ar(a.ar((5,7..15)*19)*99+199,a.ar((1,3..13)*29)*199+299,a.ar((3,5..11)*a.ar(3,2,3))*299+399))/3}//#SuperCollider
 
 //--tweet0090 TAKING A LEAK
@@ -110,7 +110,7 @@ play{a=SinOsc;c=Decay2;CombN ar:a.ar(a.ar(b=(1..6)).sum*9+99,sum(c.ar(t=a.ar(10/
 //--tweet0264 CLIPPING PHASING HOPKINS
 play{a=Saw;GVerb.ar(a.ar(25*b=(8..2))).mean.lag2(c=LFSaw.ar(a.ar([33,99])+2)+1/99)+mean(a.ar(8/b,a.ar(b))|a.ar(c+2)).sin/3}// #SuperCollider
 
-//--tweet0271 IKEDA ON LINE 9
+//--tweet0271 RYOJI ON LINE 9
 play{a=SinOsc;b=(a.ar(c=0.015)/9<a.ar(5/(1..7))).varlag(c);Splay.ar(a.ar(2-b**ceil(a.ar(b)*5+6),b)+BrownNoise.ar(b%1)).sin}// #SuperCollider
 
 //--tweet0275 MONO BASS GROOVE
@@ -135,7 +135,7 @@ play{a=LFTri;Splay ar:CombC.ar(a.ar(2**a.ar(1/6**(1..6))*99)*Decay.ar(HPZ1.ar(a.
 //--tweet0341 GITCHES ON A PLATE
 play{a=LFTri;e=a.ar(2**a.ar(1/5)).round(a.ar(1/8)/3);GVerb.ar(HPF.ar(SinOsc.ar(e**[99,150],BPF.ar(e%1,500))/6,9),99,5,0.1)}// #SuperCollider
 
-//--tweet0347  ********* I DOG THOS ONE
+//--tweet0347  ********* TRIPPY
 play{a=LFSaw;Splay.ar({|i|VarSaw.ar(round(a.ar(c=i/48)*a.ar(b=c/72)*8+9,i%9+1)*25+c,c,a.ar(3,i)+1/3,a.ar(b,i/pi)%1)/2}!30)}// #SuperCollider
 
 

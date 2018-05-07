@@ -8,8 +8,8 @@ SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, g
 
 (
 ~toggle = {
-	|pat|
-	if(pat.isPlaying, {pat.stop}, {pat.play});
+	|pattern|
+	if(pattern.isPlaying, {pattern.stop}, {pattern.play});
 };
 )
 
@@ -23,6 +23,7 @@ SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, g
     \atk, 0.1,    //while this key belongs to the \avping SynthDef
     \rel, 0.1,
 	\sustain, 0.05,
+	\foo, Pfunc({~toggle.(~p2)}),
 )).play;
 )
 
@@ -34,6 +35,7 @@ SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, g
     \legato, 0.1,  //this key for example is for the PmonoArtic sequencer
     \atk, 1,    //while this key belongs to the \avping SynthDef
     \rel, 5,
+	\foo, Pfunc({~toggle.(~p3)}),
     \amp, 0.5,
 )).play;
 )
@@ -47,12 +49,16 @@ SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, g
     \atk, 1,    //while this key belongs to the \avping SynthDef
     \rel, 5,
     \amp, 0.5,
-)).play;
+	\foo, Pfunc({~toggle.(~p1)}),
+)).collect({ |event|
+    ~lastEvent = event;
+}).play(quant: Quant(quant: 1, timingOffset: 0.1));
 )
 
 ~toggle.(~p1);
 ~toggle.(~p2);
 ~toggle.(~p3);
+
 
 ~p1.play;
 ~p2.play;
@@ -62,6 +68,6 @@ SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, g
 ~p2.stop;
 ~p3.stop;
 
-
+Pbind
 
 

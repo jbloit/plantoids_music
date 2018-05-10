@@ -87,5 +87,31 @@ fork{
 		TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
 
+	// sensor -> toggle pattern
+	OSCdef(\toggleP1).free;
+	OSCdef(\toggleP1, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p1.play;}, {~p1.stop;});
+	}, '/plantoid/1/1/analog1', n);
 
+	// sensor -> toggle pattern
+	OSCdef(\toggleP2).free;
+	OSCdef(\toggleP2, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p2.play;}, {~p2.stop;});
+	}, '/plantoid/1/1/analog2', n);
+
+	// sensor -> toggle pattern
+	OSCdef(\toggleP3).free;
+	OSCdef(\toggleP3, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p3.play;}, {~p3.stop;});
+	}, '/plantoid/1/1/analog3', n);
+
+	// sensor -> toggle pattern
+	OSCdef(\toggleP4).free;
+	OSCdef(\toggleP4, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p4.play;}, {~p4.stop;});
+	}, '/plantoid/1/1/analog4', n);
 };

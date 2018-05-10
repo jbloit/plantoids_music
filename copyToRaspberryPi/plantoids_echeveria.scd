@@ -13,41 +13,65 @@ fork{
 	~toggle = {
 		|pattern|
 		if(pattern.isPlaying, {pattern.stop}, {pattern.play});
-		("TOGGLE " ++ pattern).postln;
+		// ("TOGGLE " ++ pattern).postln;
 	};
 
 	// Patterns
 	~p1 = Pdef(\pattern1, PmonoArtic(\avping,
-		\freq, Pseq([55], inf),  //change these
+		\freq, Pseq([110], inf),  //change these
 		\dur, 1,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.1,    //while this key belongs to the \avping SynthDef
-		\rel, 0.1,
-		\sustain, 0.15,
-		\foo, Pfunc({~toggle.(~p2)}),
+		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\rel, 0.01,
+		\sustain, 1/2,
+		\foo, Pfunc({~toggle.(~p3)}),
 	)).play;
 
 	~p2 = Pdef(\pattern2, PmonoArtic(\avping,
-		\freq, Pseq([110], inf),  //change these
-		\dur, 0.5,
+		\freq, Pseq([200], inf),  //change these
+		\dur, 1/2,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.1,    //while this key belongs to the \avping SynthDef
-		\rel, 0.1,
-		\sustain, 0.15,
+		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\rel, 0.01,
+		\sustain, 1/4,
 		\foo, Pfunc({~toggle.(~p3)}),
 	)).play;
 
 	~p3 = Pdef(\pattern3, PmonoArtic(\avping,
-		\freq, Pseq([220], inf),  //change these
-		\dur, 0.25,
+		\freq, Pseq([300], inf),  //change these
+		\dur, 1/3,
+		\amp, Pseq([1], inf),
+		\legato, 1,  //this key for example is for the PmonoArtic sequencer
+		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\rel, 0.001,
+		\sustain, 1/6,
+		\foo, Pfunc({~toggle.(~p4)}),
+	)).play;
+
+	~p4 = Pdef(\pattern4, PmonoArtic(\avping,
+		\freq, Pseq([500], inf),  //change these
+		\dur, 1/6,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.1,    //while this key belongs to the \avping SynthDef
-		\rel, 0.1,
-		\sustain, 0.15,
+		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\rel, 0.01,
+		\sustain, 1/12,
+		// \foo, Pfunc({~toggle.(~p2)}),
 	)).play;
+
+	~p1.play;
+	~p1.stop;
+
+	~p2.play;
+	~p2.stop;
+
+	~p3.play;
+	~p3.stop;
+
+	~p4.play;
+	~p4.stop;
 
 	//-------------------------------------------------
 	//                                       OSC  CTRLS
@@ -62,4 +86,6 @@ fork{
 		t = 120 - msg[1];
 		TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
+
+
 };

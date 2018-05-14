@@ -3,22 +3,31 @@ fork{
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
 	// Dev sound. go for as organic as possible.
-/*	SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, gate= 1, pan= 0, mod= 1|
-		var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= SinOsc.ar(freq, SinOsc.ar(freq*mod, env*pi, mod));
-		Out.ar(out, Pan2.ar(snd*env, pan, amp));
+	/*	SynthDef(\sweepKick, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, gate= 1, pan= 0, mod= 1|
+	var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+	var snd= SinOsc.ar(freq, SinOsc.ar(freq*mod, env*pi, mod));
+	Out.ar(out, Pan2.ar(snd*env, pan, amp));
 	}).add;*/
 
-	{ | dur = 0.15, atk = 0.015, amp = 0.8, pan = 0 |
-    Pan2.ar(
-        SinOsc.ar(
-            EnvGen.ar(Env(\freq_l.kr([2960, 70, 90]), \freq_d.kr([0.07, 0.15]), \freq_c.kr([-13, -1]))),
-            mul:EnvGen.ar(
-                Env.perc( atk, max(dur - atk, atk), curve: \amp_c.kr([-1, 5])),
-                doneAction: 2 ) ),
-        pan, amp )
-	}.asSynthDef.name_("avping").add.play;
+	{ | dur = 0.15, atk = 0.15, amp = 0.8, pan = 0 |
+		Pan2.ar(
+			SinOsc.ar(
+				EnvGen.ar(Env([2960, 70, 90], [0.07, 0.15], [-13, -1])),
+				mul:EnvGen.ar(
+					Env.perc( atk, max(dur - atk, atk), curve: [-1, 5]),
+					doneAction: 2 ) ),
+			pan, amp )
+	}.asSynthDef.name_("sweepKick").add.play;
 
+	SynthDef(\kick2, {
+		var snd;
+		snd = DC.ar(0);
+		snd = snd + (HPF.ar(Hasher.ar(Sweep.ar), 1320) * Env.perc(0.003, 0.03).ar * 0.5);
+		snd = snd + (SinOsc.ar(XLine.ar(750, 161, 0.02)) * Env.perc(0.0005, 0.02).ar);
+		snd = snd + (SinOsc.ar(XLine.ar(167, 52, 0.04)) * Env.perc(0.0005, 0.3).ar(2));
+		snd = snd.tanh;
+		Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+	}).add;
 
 	// Toggle function
 	~toggle = {
@@ -28,48 +37,96 @@ fork{
 	};
 
 	// Patterns
-	~p1 = Pdef(\pattern1, PmonoArtic(\avping,
+	~p1 = Pdef(\pattern1, PmonoArtic(\sweepKick,
 		\freq, Pseq([88], inf),  //change these
 		\dur, 1,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\atk, 0.1,    //while this key belongs to the \sweepKick SynthDef
 		\rel, 0.01,
 		\sustain, 1/2,
 		\pan, Pseq([-1, 0, 1]),
 		\foo, Pfunc({~toggle.(~p3)}),
 	));
 
-	~p2 = Pdef(\pattern2, PmonoArtic(\avping,
+	~p2 = Pdef(\pattern2, PmonoArtic(\sweepKick,
 		\freq, Pseq([200], inf),  //change these
 		\dur, 1/2,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
 		\rel, 0.01,
 		\sustain, 1/4,
 		\pan, Pseq([-1, 0, 1]),
 		\foo, Pfunc({~toggle.(~p3)}),
 	));
 
-	~p3 = Pdef(\pattern3, PmonoArtic(\avping,
+	~p3 = Pdef(\pattern3, PmonoArtic(\sweepKick,
 		\freq, Pseq([300], inf),  //change these
 		\dur, 1/3,
 		\amp, Pseq([1], inf),
 		\legato, 1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
 		\rel, 0.001,
 		\sustain, 1/6,
 		\pan, Pseq([-1, 0, 1]),
 		\foo, Pfunc({~toggle.(~p4)}),
-		));
+	));
 
-	~p4 = Pdef(\pattern4, PmonoArtic(\avping,
+	~p4 = Pdef(\pattern4, PmonoArtic(\sweepKick,
 		\freq, Pseq([500], inf),  //change these
 		\dur, 1/6,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \avping SynthDef
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
+		\rel, 0.01,
+		\sustain, 1/12,
+		\pan, Pseq([-1, 0, 1]),
+		\foo, Pfunc({~toggle.(~p5)}),
+	));
+
+	~p5 = Pdef(\pattern5, PmonoArtic(\kick2,
+		\freq, Pseq([500], inf),  //change these
+		\dur, 1/2,
+		\amp, Pseq([1], inf),
+		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
+		\rel, 0.01,
+		\sustain, 1/12,
+		\pan, Pseq([-1, 0, 1]),
+		\foo, Pfunc({~toggle.(~p6)}),
+	));
+
+	~p6 = Pdef(\pattern5, PmonoArtic(\kick2,
+		\freq, Pseq([500], inf),  //change these
+		\dur, 1/3,
+		\amp, Pseq([1], inf),
+		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
+		\rel, 0.01,
+		\sustain, 1/12,
+		\pan, Pseq([-1, 0, 1]),
+		\foo, Pfunc({~toggle.(~p7)}),
+	));
+
+	~p7 = Pdef(\pattern5, PmonoArtic(\kick2,
+		\freq, Pseq([500], inf),  //change these
+		\dur, 1/4,
+		\amp, Pseq([1], inf),
+		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
+		\rel, 0.01,
+		\sustain, 1/12,
+		\pan, Pseq([-1, 0, 1]),
+		\foo, Pfunc({~toggle.(~p8)}),
+	));
+
+	~p8 = Pdef(\pattern5, PmonoArtic(\kick2,
+		\freq, Pseq([500], inf),  //change these
+		\dur, 1/6,
+		\amp, Pseq([1], inf),
+		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
+		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
 		\rel, 0.01,
 		\sustain, 1/12,
 		\pan, Pseq([-1, 0, 1]),
@@ -117,4 +174,33 @@ fork{
 		| msg, time, addr, port |
 		if( (msg[1] < 512), {~p4.play;}, {~p4.stop;});
 	}, '/plantoid/1/1/analog4', n);
+
+	// sensor -> toggle pattern
+	OSCdef(\toggleP5).free;
+	OSCdef(\toggleP5, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p5.play;}, {~p5.stop;});
+	}, '/plantoid/1/1/analog5', n);
+
+	// sensor -> toggle pattern
+	OSCdef(\toggleP6).free;
+	OSCdef(\toggleP6, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p6.play;}, {~p6.stop;});
+	}, '/plantoid/1/1/analog6', n);
+
+	// sensor -> toggle pattern
+	OSCdef(\toggleP7).free;
+	OSCdef(\toggleP7, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p7.play;}, {~p7.stop;});
+	}, '/plantoid/1/1/analog7', n);
+
+	// sensor -> toggle pattern
+	OSCdef(\toggleP8).free;
+	OSCdef(\toggleP8, {
+		| msg, time, addr, port |
+		if( (msg[1] < 512), {~p8.play;}, {~p8.stop;});
+	}, '/plantoid/1/1/analog8', n);
+
 };

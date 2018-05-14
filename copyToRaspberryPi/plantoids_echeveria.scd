@@ -26,7 +26,7 @@ fork{
 		\rel, 0.01,
 		\sustain, 1/2,
 		\foo, Pfunc({~toggle.(~p3)}),
-	)).play;
+	));
 
 	~p2 = Pdef(\pattern2, PmonoArtic(\avping,
 		\freq, Pseq([200], inf),  //change these
@@ -37,7 +37,7 @@ fork{
 		\rel, 0.01,
 		\sustain, 1/4,
 		\foo, Pfunc({~toggle.(~p3)}),
-	)).play;
+	));
 
 	~p3 = Pdef(\pattern3, PmonoArtic(\avping,
 		\freq, Pseq([300], inf),  //change these
@@ -48,7 +48,7 @@ fork{
 		\rel, 0.001,
 		\sustain, 1/6,
 		\foo, Pfunc({~toggle.(~p4)}),
-	)).play;
+		));
 
 	~p4 = Pdef(\pattern4, PmonoArtic(\avping,
 		\freq, Pseq([500], inf),  //change these
@@ -59,19 +59,7 @@ fork{
 		\rel, 0.01,
 		\sustain, 1/12,
 		// \foo, Pfunc({~toggle.(~p2)}),
-	)).play;
-
-	~p1.play;
-	~p1.stop;
-
-	~p2.play;
-	~p2.stop;
-
-	~p3.play;
-	~p3.stop;
-
-	~p4.play;
-	~p4.stop;
+	));
 
 	//-------------------------------------------------
 	//                                       OSC  CTRLS
@@ -83,7 +71,7 @@ fork{
 	OSCdef(\bpm, {
 		| msg, time, addr, port |
 		var t;
-		t = 120 - msg[1];
+		t = 160 - msg[1];
 		TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
 

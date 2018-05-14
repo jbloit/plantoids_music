@@ -3,11 +3,22 @@ fork{
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
 	// Dev sound. go for as organic as possible.
-	SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, gate= 1, pan= 0, mod= 1|
+/*	SynthDef(\avping, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, gate= 1, pan= 0, mod= 1|
 		var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
 		var snd= SinOsc.ar(freq, SinOsc.ar(freq*mod, env*pi, mod));
 		Out.ar(out, Pan2.ar(snd*env, pan, amp));
-	}).add;
+	}).add;*/
+
+	{ | dur = 0.15, atk = 0.015, amp = 0.8, pan = 0 |
+    Pan2.ar(
+        SinOsc.ar(
+            EnvGen.ar(Env(\freq_l.kr([2960, 70, 90]), \freq_d.kr([0.07, 0.15]), \freq_c.kr([-13, -1]))),
+            mul:EnvGen.ar(
+                Env.perc( atk, max(dur - atk, atk), curve: \amp_c.kr([-1, 5])),
+                doneAction: 2 ) ),
+        pan, amp )
+	}.asSynthDef.name_("avping").add.play;
+
 
 	// Toggle function
 	~toggle = {
@@ -18,13 +29,14 @@ fork{
 
 	// Patterns
 	~p1 = Pdef(\pattern1, PmonoArtic(\avping,
-		\freq, Pseq([110], inf),  //change these
+		\freq, Pseq([88], inf),  //change these
 		\dur, 1,
 		\amp, Pseq([1], inf),
 		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
 		\atk, 0.01,    //while this key belongs to the \avping SynthDef
 		\rel, 0.01,
 		\sustain, 1/2,
+		\pan, Pseq([-1, 0, 1]),
 		\foo, Pfunc({~toggle.(~p3)}),
 	));
 
@@ -36,6 +48,7 @@ fork{
 		\atk, 0.01,    //while this key belongs to the \avping SynthDef
 		\rel, 0.01,
 		\sustain, 1/4,
+		\pan, Pseq([-1, 0, 1]),
 		\foo, Pfunc({~toggle.(~p3)}),
 	));
 
@@ -47,6 +60,7 @@ fork{
 		\atk, 0.01,    //while this key belongs to the \avping SynthDef
 		\rel, 0.001,
 		\sustain, 1/6,
+		\pan, Pseq([-1, 0, 1]),
 		\foo, Pfunc({~toggle.(~p4)}),
 		));
 
@@ -58,6 +72,7 @@ fork{
 		\atk, 0.01,    //while this key belongs to the \avping SynthDef
 		\rel, 0.01,
 		\sustain, 1/12,
+		\pan, Pseq([-1, 0, 1]),
 		// \foo, Pfunc({~toggle.(~p2)}),
 	));
 
@@ -71,7 +86,7 @@ fork{
 	OSCdef(\bpm, {
 		| msg, time, addr, port |
 		var t;
-		t = 160 - msg[1];
+		t = 120 - msg[1];
 		TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
 

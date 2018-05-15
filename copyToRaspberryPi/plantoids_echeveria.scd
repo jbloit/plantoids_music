@@ -2,6 +2,7 @@ fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
+	~sensorRange = 1024;
 	// Dev sound. go for as organic as possible.
 	/*	SynthDef(\sweepKick, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, gate= 1, pan= 0, mod= 1|
 	var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
@@ -36,6 +37,15 @@ fork{
 		// ("TOGGLE " ++ pattern).postln;
 	};
 
+	// Pick a pattern from a given array, based on selector value (in 0-1 range)
+	~selectPattern = {
+		|selector=0, patternsArray|
+		var index;
+		index = min((patternsArray.size * selector).floor, patternsArray.size -1);
+		patternsArray[index];
+	}
+
+
 	// Patterns
 	~p1 = Pdef(\pattern1, PmonoArtic(\sweepKick,
 		\freq, Pseq([200], inf),  //change these
@@ -46,11 +56,15 @@ fork{
 		\atk, Pseq([0.1, 0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
 		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
 		\pan, Pseq([-1, 0, 1], inf),
-		\foo, Pfunc({~toggle.(~p2)}),
+		\patternToggle, Pseq([0.1], inf),
+		\foo, Pfunc({~toggle.(~selectPattern.value(selector: 0.9, patternsArray:[ ~p1, ~p2, ~p3]))}),
 	));
 
 	~p1.play;
 	~p1.stop;
+
+
+	Select.kr(
 
 	~p2 = Pdef(\pattern2, PmonoArtic(\sweepKick,
 		\freq, Pseq([300], inf),  //change these
@@ -61,7 +75,7 @@ fork{
 		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
 		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
 		\pan, Pseq([-1, 0, 1], inf),
-		\foo, Pfunc({~toggle.(~p3)}),
+		// \foo, Pfunc({~toggle.(~p3)}),
 	));
 
 	~p2.play;
@@ -76,7 +90,7 @@ fork{
 		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
 		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
 		\pan, Pseq([-1, 0, 1], inf),
-		 \foo, Pfunc({~toggle.(~p4)}),
+		// \foo, Pfunc({~toggle.(~p4)}),
 	));
 
 	~p3.play;
@@ -163,7 +177,7 @@ fork{
 	OSCdef(\toggleP1).free;
 	OSCdef(\toggleP1, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p1.play;}, {~p1.stop;});
+
 	}, '/plantoid/1/1/analog1', n);
 
 	// sensor -> toggle pattern

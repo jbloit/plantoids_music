@@ -9,15 +9,15 @@ fork{
 	Out.ar(out, Pan2.ar(snd*env, pan, amp));
 	}).add;*/
 
-	{ | dur = 0.15, atk = 0.15, amp = 0.8, pan = 0 |
+	{ | dur = 0.15, atk = 0.15, rel = 0.1, amp = 0.8, pan = 0, gate = 1, freq = 110, sweepHi= 2960|
 		Pan2.ar(
 			SinOsc.ar(
-				EnvGen.ar(Env([2960, 70, 90], [0.07, 0.15], [-13, -1])),
+				EnvGen.ar(Env([sweepHi, freq, 110], [0.07, 0.15], [-13, -1])),
 				mul:EnvGen.ar(
-					Env.perc( atk, max(dur - atk, atk), curve: [-1, 5]),
+					Env.asr( atk, 0.5,  rel, -4), gate,
 					doneAction: 2 ) ),
 			pan, amp )
-	}.asSynthDef.name_("sweepKick").add.play;
+	}.asSynthDef.name_("sweepKick").add;
 
 	SynthDef(\kick2, {
 		var snd;
@@ -29,61 +29,73 @@ fork{
 		Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
 	}).add;
 
-	// Toggle function
+	// Toggle function triggered from patterns
 	~toggle = {
 		|pattern|
-		if(pattern.isPlaying, {pattern.stop}, {pattern.play});
+		if(pattern.isPlaying, {pattern.stop; ("TOGGLE STOP " ++ pattern).postln;}, {pattern.play; ("TOGGLE PLAY " ++ pattern).postln;});
 		// ("TOGGLE " ++ pattern).postln;
 	};
 
 	// Patterns
 	~p1 = Pdef(\pattern1, PmonoArtic(\sweepKick,
-		\freq, Pseq([88], inf),  //change these
+		\freq, Pseq([200], inf),  //change these
+		\sweepHi, Pseq([1000], inf),  //change these
 		\dur, 1,
 		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.1,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/2,
-		\pan, Pseq([-1, 0, 1]),
-		\foo, Pfunc({~toggle.(~p3)}),
+		\legato, 1/2 ,  //this key for example is for the PmonoArtic sequencer
+		\atk, Pseq([0.1, 0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
+		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
+		\pan, Pseq([-1, 0, 1], inf),
+		\foo, Pfunc({~toggle.(~p2)}),
 	));
+
+	~p1.play;
+	~p1.stop;
 
 	~p2 = Pdef(\pattern2, PmonoArtic(\sweepKick,
-		\freq, Pseq([200], inf),  //change these
+		\freq, Pseq([300], inf),  //change these
+		\sweepHi, Pseq([3000], inf),  //change these
 		\dur, 1/2,
 		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/4,
-		\pan, Pseq([-1, 0, 1]),
+		\legato, 1/2 ,  //this key for example is for the PmonoArtic sequencer
+		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
+		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
+		\pan, Pseq([-1, 0, 1], inf),
 		\foo, Pfunc({~toggle.(~p3)}),
 	));
 
+	~p2.play;
+	~p2.stop;
+
 	~p3 = Pdef(\pattern3, PmonoArtic(\sweepKick,
-		\freq, Pseq([300], inf),  //change these
+		\freq, Pseq([400], inf),  //change these
+		\sweepHi, Pseq([10000], inf),  //change these
 		\dur, 1/3,
 		\amp, Pseq([1], inf),
-		\legato, 1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.001,
-		\sustain, 1/6,
-		\pan, Pseq([-1, 0, 1]),
-		\foo, Pfunc({~toggle.(~p4)}),
+		\legato, 1/6 ,  //this key for example is for the PmonoArtic sequencer
+		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
+		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
+		\pan, Pseq([-1, 0, 1], inf),
+		 \foo, Pfunc({~toggle.(~p4)}),
 	));
 
+	~p3.play;
+	~p3.stop;
+
 	~p4 = Pdef(\pattern4, PmonoArtic(\sweepKick,
-		\freq, Pseq([500], inf),  //change these
-		\dur, 1/6,
+		\freq, Pseq([50000], inf),  //change these
+		\sweepHi, Pseq([10000], inf),  //change these
+		\dur, 1/8,
 		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/12,
-		\pan, Pseq([-1, 0, 1]),
-		\foo, Pfunc({~toggle.(~p5)}),
+		\legato, 1/8 ,  //this key for example is for the PmonoArtic sequencer
+		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
+		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
+		\pan, Pseq([-1, 0, 1], inf),
+		\foo, Pfunc({~toggle.(~p3)}),
 	));
+
+	~p4.play;
+	~p4.stop;
 
 	~p5 = Pdef(\pattern5, PmonoArtic(\kick2,
 		\freq, Pseq([500], inf),  //change these
@@ -144,7 +156,7 @@ fork{
 		| msg, time, addr, port |
 		var t;
 		t = 120 - msg[1];
-		TempoClock.tempo= t/60;
+		// TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
 
 	// sensor -> toggle pattern
@@ -202,5 +214,6 @@ fork{
 		| msg, time, addr, port |
 		if( (msg[1] < 512), {~p8.play;}, {~p8.stop;});
 	}, '/plantoid/1/1/analog8', n);
+
 
 };

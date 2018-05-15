@@ -3,12 +3,6 @@ fork{
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
 	~sensorRange = 1024;
-	// Dev sound. go for as organic as possible.
-	/*	SynthDef(\sweepKick, {|out= 0, freq= 400, atk= 0.01, rel= 0.1, cur= -4, amp= 0.1, gate= 1, pan= 0, mod= 1|
-	var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-	var snd= SinOsc.ar(freq, SinOsc.ar(freq*mod, env*pi, mod));
-	Out.ar(out, Pan2.ar(snd*env, pan, amp));
-	}).add;*/
 
 	{ | dur = 0.15, atk = 0.15, rel = 0.1, amp = 0.8, pan = 0, gate = 1, freq = 110, sweepHi= 2960|
 		Pan2.ar(
@@ -32,132 +26,54 @@ fork{
 
 	// Toggle function triggered from patterns
 	~toggle = {
-		|pattern|
-		if(pattern.isPlaying, {pattern.stop; ("TOGGLE STOP " ++ pattern).postln;}, {pattern.play; ("TOGGLE PLAY " ++ pattern).postln;});
-		// ("TOGGLE " ++ pattern).postln;
+		|patternIndex|
+		if(~patterns[patternIndex].isPlaying, {~patterns[patternIndex].stop;}, {~patterns[patternIndex].play;});
+		// ("TOGGLE " ++ patternIndex).postln;
 	};
 
-	// Pick a pattern from a given array, based on selector value (in 0-1 range)
-	~selectPattern = {
-		|selector=0, patternsArray|
-		var index;
-		index = min((patternsArray.size * selector).floor, patternsArray.size -1);
-		patternsArray[index];
-	}
+	~patterns = Array.newClear(8);
+	~patternToggles = Array.newClear(~patterns.size);
+	4.do{|i|  //do something 12 times
+
+		~patternToggles[i] = i + 1;
+		~patterns[i] = Pdef(("pat"++i).asSymbol, PmonoArtic(\sweepKick,
+			\freq, Pseq([(50 * i) + 50], inf),
+			\sweepHi, Pseq([(50*i ) + 5000], inf),
+			\dur, 1/(2.pow(i)),
+			\amp, Pseq([1], inf),
+			\legato, 1/2 ,
+			\atk, Pseq([0.1, 0.1, 0.3, 0.2], inf),
+			\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
+			\pan, Pseq([-1, 0, 1], inf),
+			\foo, Pfunc({~toggle.(~patternToggles[i])}),
+		));
+	};
+
+	//
+	// ~patternToggles[3] = 1;
+/*	~toggle.(0)
+	~toggle.(1)
+	~toggle.(2)
+	~toggle.(3)
+	~toggle.(4)*/
+
+	// ~toggle.(5)
+	// ~toggle.(4)
+	// ~toggle.(6)
+	// ~toggle.(7)
 
 
-	// Patterns
-	~p1 = Pdef(\pattern1, PmonoArtic(\sweepKick,
-		\freq, Pseq([200], inf),  //change these
-		\sweepHi, Pseq([1000], inf),  //change these
-		\dur, 1,
-		\amp, Pseq([1], inf),
-		\legato, 1/2 ,  //this key for example is for the PmonoArtic sequencer
-		\atk, Pseq([0.1, 0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
-		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
-		\pan, Pseq([-1, 0, 1], inf),
-		\patternToggle, Pseq([0.1], inf),
-		\foo, Pfunc({~toggle.(~selectPattern.value(selector: 0.9, patternsArray:[ ~p1, ~p2, ~p3]))}),
-	));
+	4.do{|i|  //do something 12 times
+		var j = i+4;
+		~patterns[j] = Pdef(("kick2_"++j).asSymbol, PmonoArtic(\kick2,
+			\sweepHi, Pseq([500*i], inf),
+			\dur, (1/(3.pow(i))),
+			\amp, Pseq([1], inf),
+			\pan, Pseq([-1, 0, 1], inf),
+			\foo, Pfunc({~toggle.(~patternToggles[j])}),
+		));
+	};
 
-	~p1.play;
-	~p1.stop;
-
-
-	Select.kr(
-
-	~p2 = Pdef(\pattern2, PmonoArtic(\sweepKick,
-		\freq, Pseq([300], inf),  //change these
-		\sweepHi, Pseq([3000], inf),  //change these
-		\dur, 1/2,
-		\amp, Pseq([1], inf),
-		\legato, 1/2 ,  //this key for example is for the PmonoArtic sequencer
-		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
-		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
-		\pan, Pseq([-1, 0, 1], inf),
-		// \foo, Pfunc({~toggle.(~p3)}),
-	));
-
-	~p2.play;
-	~p2.stop;
-
-	~p3 = Pdef(\pattern3, PmonoArtic(\sweepKick,
-		\freq, Pseq([400], inf),  //change these
-		\sweepHi, Pseq([10000], inf),  //change these
-		\dur, 1/3,
-		\amp, Pseq([1], inf),
-		\legato, 1/6 ,  //this key for example is for the PmonoArtic sequencer
-		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
-		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
-		\pan, Pseq([-1, 0, 1], inf),
-		// \foo, Pfunc({~toggle.(~p4)}),
-	));
-
-	~p3.play;
-	~p3.stop;
-
-	~p4 = Pdef(\pattern4, PmonoArtic(\sweepKick,
-		\freq, Pseq([50000], inf),  //change these
-		\sweepHi, Pseq([10000], inf),  //change these
-		\dur, 1/8,
-		\amp, Pseq([1], inf),
-		\legato, 1/8 ,  //this key for example is for the PmonoArtic sequencer
-		\atk, Pseq([0.1, 0.3, 0.2], inf),    //while this key belongs to the \sweepKick SynthDef
-		\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
-		\pan, Pseq([-1, 0, 1], inf),
-		\foo, Pfunc({~toggle.(~p3)}),
-	));
-
-	~p4.play;
-	~p4.stop;
-
-	~p5 = Pdef(\pattern5, PmonoArtic(\kick2,
-		\freq, Pseq([500], inf),  //change these
-		\dur, 1/2,
-		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/12,
-		\pan, Pseq([-1, 0, 1]),
-		\foo, Pfunc({~toggle.(~p6)}),
-	));
-
-	~p6 = Pdef(\pattern5, PmonoArtic(\kick2,
-		\freq, Pseq([500], inf),  //change these
-		\dur, 1/3,
-		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/12,
-		\pan, Pseq([-1, 0, 1]),
-		\foo, Pfunc({~toggle.(~p7)}),
-	));
-
-	~p7 = Pdef(\pattern5, PmonoArtic(\kick2,
-		\freq, Pseq([500], inf),  //change these
-		\dur, 1/4,
-		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/12,
-		\pan, Pseq([-1, 0, 1]),
-		\foo, Pfunc({~toggle.(~p8)}),
-	));
-
-	~p8 = Pdef(\pattern5, PmonoArtic(\kick2,
-		\freq, Pseq([500], inf),  //change these
-		\dur, 1/6,
-		\amp, Pseq([1], inf),
-		\legato, 0.1,  //this key for example is for the PmonoArtic sequencer
-		\atk, 0.01,    //while this key belongs to the \sweepKick SynthDef
-		\rel, 0.01,
-		\sustain, 1/12,
-		\pan, Pseq([-1, 0, 1]),
-		// \foo, Pfunc({~toggle.(~p2)}),
-	));
 
 	//-------------------------------------------------
 	//                                       OSC  CTRLS
@@ -177,56 +93,56 @@ fork{
 	OSCdef(\toggleP1).free;
 	OSCdef(\toggleP1, {
 		| msg, time, addr, port |
-
+		if( (msg[1] < 512), {~patterns[0].play; ~patternToggles[1]=4;}, {~patterns[0].stop; ~patternToggles[1]=2;});
 	}, '/plantoid/1/1/analog1', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP2).free;
 	OSCdef(\toggleP2, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p2.play;}, {~p2.stop;});
+		if( (msg[1] < 512), {~patternToggles[2]=1;}, {~patternToggles[1]=3;});
 	}, '/plantoid/1/1/analog2', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP3).free;
 	OSCdef(\toggleP3, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p3.play;}, {~p3.stop;});
+		if( (msg[1] < 512), {~patternToggles[3]=2;}, {~patternToggles[3]=4;});
 	}, '/plantoid/1/1/analog3', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP4).free;
 	OSCdef(\toggleP4, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p4.play;}, {~p4.stop;});
+		if( (msg[1] < 512), {~patternToggles[4]=3;}, {~patternToggles[4]=5;});
 	}, '/plantoid/1/1/analog4', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP5).free;
 	OSCdef(\toggleP5, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p5.play;}, {~p5.stop;});
+		if( (msg[1] < 512), {~patternToggles[5]=4;}, {~patternToggles[5]=6;});
 	}, '/plantoid/1/1/analog5', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP6).free;
 	OSCdef(\toggleP6, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p6.play;}, {~p6.stop;});
+		if( (msg[1] < 512), {~patternToggles[6]=5;}, {~patternToggles[6]=7;});
 	}, '/plantoid/1/1/analog6', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP7).free;
 	OSCdef(\toggleP7, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p7.play;}, {~p7.stop;});
+		if( (msg[1] < 512), {~patternToggles[7]=6;}, {~patternToggles[7]=7;});
 	}, '/plantoid/1/1/analog7', n);
 
 	// sensor -> toggle pattern
 	OSCdef(\toggleP8).free;
 	OSCdef(\toggleP8, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~p8.play;}, {~p8.stop;});
+		if( (msg[1] < 512), {~patterns[7].stop}, {~patterns[7].play;});
 	}, '/plantoid/1/1/analog8', n);
 
 

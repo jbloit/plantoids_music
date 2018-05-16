@@ -27,52 +27,41 @@ fork{
 	// Toggle function triggered from patterns
 	~toggle = {
 		|patternIndex|
-		if(~patterns[patternIndex].isPlaying, {~patterns[patternIndex].stop;}, {~patterns[patternIndex].play;});
-		// ("TOGGLE " ++ patternIndex).postln;
+		if(~patterns[patternIndex].isPlaying, {~patterns[patternIndex].stop; ("STOP " ++ patternIndex).postln;}, {~patterns[patternIndex].play;  ("PLAY " ++ patternIndex).postln;});
 	};
 
-	~patterns = Array.newClear(8);
-	~patternToggles = Array.newClear(~patterns.size);
-	4.do{|i|  //do something 12 times
-
-		~patternToggles[i] = i + 1;
+	Pdef.all.do{|x| x.clear};
+	~patterns = Array.newClear(4);
+	4.do{|i|  //do something N times
 		~patterns[i] = Pdef(("pat"++i).asSymbol, PmonoArtic(\sweepKick,
 			\freq, Pseq([(50 * i) + 50], inf),
-			\sweepHi, Pseq([(50*i ) + 5000], inf),
+			\sweepHi, Pseq([(50 ) + 5000], inf),
 			\dur, 1/(2.pow(i)),
-			\amp, Pseq([1], inf),
+			\amp, Pdefn(("amp"++i).asSymbol, Pseq([1], inf)),
 			\legato, 1/2 ,
-			\atk, Pseq([0.1, 0.1, 0.3, 0.2], inf),
+			\atk, Pseq([0.01 , 0.1, 0.3, 0.2], inf),
 			\rel, Pseq([0.1, 0.01, 0.3, 0.2], inf),
 			\pan, Pseq([-1, 0, 1], inf),
-			\foo, Pfunc({~toggle.(~patternToggles[i])}),
-		));
+			// \foo, Pfunc({~toggle.(~patternToggles[i])}),
+		)).play;
 	};
 
-	//
-	// ~patternToggles[3] = 1;
-/*	~toggle.(0)
-	~toggle.(1)
-	~toggle.(2)
-	~toggle.(3)
-	~toggle.(4)*/
 
-	// ~toggle.(5)
-	// ~toggle.(4)
-	// ~toggle.(6)
-	// ~toggle.(7)
+	// Pdefn(("amp"++3).asSymbol, Pseq([0], inf))
 
 
-	4.do{|i|  //do something 12 times
+
+
+/*	4.do{|i|  //do something 12 times
 		var j = i+4;
 		~patterns[j] = Pdef(("kick2_"++j).asSymbol, PmonoArtic(\kick2,
 			\sweepHi, Pseq([500*i], inf),
-			\dur, (1/(3.pow(i))),
+			\dur, 1/((i+1)*3),
 			\amp, Pseq([1], inf),
 			\pan, Pseq([-1, 0, 1], inf),
 			\foo, Pfunc({~toggle.(~patternToggles[j])}),
 		));
-	};
+	};*/
 
 
 	//-------------------------------------------------
@@ -89,61 +78,14 @@ fork{
 		// TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
 
-	// sensor -> toggle pattern
-	OSCdef(\toggleP1).free;
-	OSCdef(\toggleP1, {
+	// sensor -> pattern level
+	OSCdef(\sensorsToggleBeats).free;
+	OSCdef(\sensorsToggleBeats, {
 		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patterns[0].play; ~patternToggles[1]=4;}, {~patterns[0].stop; ~patternToggles[1]=2;});
-	}, '/plantoid/1/1/analog1', n);
+		var amp = msg[2] / ~sensorRange;
+		Pdefn(("amp"++msg[1]).asSymbol, Pseq([amp], inf));
 
-	// sensor -> toggle pattern
-	OSCdef(\toggleP2).free;
-	OSCdef(\toggleP2, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patternToggles[2]=1;}, {~patternToggles[1]=3;});
-	}, '/plantoid/1/1/analog2', n);
-
-	// sensor -> toggle pattern
-	OSCdef(\toggleP3).free;
-	OSCdef(\toggleP3, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patternToggles[3]=2;}, {~patternToggles[3]=4;});
-	}, '/plantoid/1/1/analog3', n);
-
-	// sensor -> toggle pattern
-	OSCdef(\toggleP4).free;
-	OSCdef(\toggleP4, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patternToggles[4]=3;}, {~patternToggles[4]=5;});
-	}, '/plantoid/1/1/analog4', n);
-
-	// sensor -> toggle pattern
-	OSCdef(\toggleP5).free;
-	OSCdef(\toggleP5, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patternToggles[5]=4;}, {~patternToggles[5]=6;});
-	}, '/plantoid/1/1/analog5', n);
-
-	// sensor -> toggle pattern
-	OSCdef(\toggleP6).free;
-	OSCdef(\toggleP6, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patternToggles[6]=5;}, {~patternToggles[6]=7;});
-	}, '/plantoid/1/1/analog6', n);
-
-	// sensor -> toggle pattern
-	OSCdef(\toggleP7).free;
-	OSCdef(\toggleP7, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patternToggles[7]=6;}, {~patternToggles[7]=7;});
-	}, '/plantoid/1/1/analog7', n);
-
-	// sensor -> toggle pattern
-	OSCdef(\toggleP8).free;
-	OSCdef(\toggleP8, {
-		| msg, time, addr, port |
-		if( (msg[1] < 512), {~patterns[7].stop}, {~patterns[7].play;});
-	}, '/plantoid/1/1/analog8', n);
+	}, '/plantoid/1/1/analog', n);
 
 
 };

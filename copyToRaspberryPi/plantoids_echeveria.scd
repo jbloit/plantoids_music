@@ -3,6 +3,7 @@ fork{
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
 	~sensorRange = 1024;
+	~temperatureRange = 50;
 
 	{ | dur = 0.15, atk = 0.15, rel = 0.1, amp = 0.8, pan = 0, gate = 1, freq = 110, sweepHi= 2960|
 		Pan2.ar(
@@ -75,7 +76,7 @@ fork{
 		| msg, time, addr, port |
 		var t;
 		t = 120 - msg[1];
-		// TempoClock.tempo= t/60;
+		TempoClock.tempo= t/60;
 	}, '/plantoid/1/1/temp', n);
 
 	// sensor -> pattern level

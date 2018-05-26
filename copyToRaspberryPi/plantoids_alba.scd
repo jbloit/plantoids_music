@@ -2,113 +2,139 @@ fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
-	//
-	SynthDef.new(\pulse,{
-		// hack from "https://sccode.org/1-Z"
-		// removing layers
-		|f1=8, f2=3, chaos=1, amp=0.0|
+	~sensorRange = 1024;
+	~temperatureRange = 50;
+	~sonarRange = 500;
 
-		var sig1, ampMap, chaosMap;
-		ampMap = ControlSpec(0.0, 1.0);
-		chaosMap = ControlSpec(0.1, 2.0); // restrict chaos range (see Crackle doc). Crashes above 2.
-		amp = ampMap.map(amp);
-		chaos = chaosMap.map(chaos);
-		sig1 = tanh(Impulse.kr(f1).lag*Crackle.ar(LFSaw.kr(f2).abs.lag*chaos))*5;
-		Out.ar(0, (sig1!2)*amp);
+	~p1src= Group.new;
+	~p1fx = Group.after(~p1src);
+	~p1bus = Bus.audio(s, 2);
+
+	// COMMON
+	// =================== /
+	SynthDef(\gain, {
+		|in=0, out=0, amp=1|
+		Out.ar(out, In.ar(in, 2) * amp);
 	}).add;
 
-	s.sync;
-	~oscValRange = 1023.0;
-	~xxx = Synth(\pulse);
-	~selectedSynthIndex = 1;
-	s.sync;
+	SynthDef(\reverb, {
+		|in=0, out = 0|
+		var sig;
+		sig = In.ar(in, 1);
+		sig = FreeVerb.ar(sig)!2;
+		Out.ar(out, sig);
+	}).add;
+
+	// P1 Synths
+	// ---------------------------------- /
+	SynthDef(\droneRoof, {
+		|amp=1, out=0|
+		var a, sig;
+		a=Saw;
+		sig = Splay.ar(Formant.ar(a.ar((5,7..15)*19)*99+199,a.ar((1,3..13)*29)*199+299,a.ar((3,5..11)*a.ar(3,2,3))*299+399))/3;
+		Out.ar(out, sig*amp);
+	}).add;
+
+	// ---------------------------------- /
+	SynthDef(\droneTables,{
+		|amp=1, out=0|
+		var a, sig;
+		a = SinOsc;
+		sig = a.ar(a.ar(1/[8,9])*4+[400,202],CombC.ar(InFeedback.ar([1,0]).lagud(a.ar(1/9)+1/88,a.ar(1/8)+1/99),1,0.08,9));
+		Out.ar(out, sig*amp);
+	}).add;
+	// ---------------------------------- /
+
+s.meter
+	Synth.new(\droneRoof, [\out, ~p1bus ], ~p1src)
+	Synth.new(\droneTables, [\out, ~p1bus], ~p1src)
+	Synth.new(\gain, [\in, ~p1bus], ~p1fx)
+
+	~p1fx.set(\amp, 0.7)
+
+
+
+
+
+
+	(
+
+		SynthDef(\arp2notes,{
+			var a, sig;
+			a=LFPar;
+			sig = BLowPass.ar(a.ar(Select.kr(a.kr(1/[3,4],0,64*a.kr(5)),(60..67).midicps)),a.kr(0.04)+5*500,a.kr(1/[5,6])+1.01);
+			Out.ar(0, sig);
+		}).add;
+	)
+	Synth.new(\arp2notes)
+
+	SynthDef(\beatIked,{
+		var a, sig,d,c;
+		a=SinOsc;
+		d=a.ar(12*a.ar(9))%1/4;
+		c=Amplitude.ar(InFeedback.ar(0),d,d)+a.ar(d*d+[32.01,32]);
+		sig = BBandPass.ar(a.ar(0,c*9,c));
+		Out.ar(0, sig);}).add;
+
+	Synth.new(\beatIked);
+
+	Pdefn(\deg, 0);
+
+	SynthDef(\drone,
+		{
+			var sig1, sig2;
+			//--tweet0009 ORCHESTRA TUNING DRONE
+			{|i|
+				Pbind(\dur,0.12
+					,\sustain,1,
+					\amp,0.01,
+					\x, Pdefn(\deg, 1) + 6.rand,
+					\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
+					\pan, Pkey(\degree)-Pkey(\x)*9,
+					\out, 1,
+			)}!6;
+	})
+
 
 	//-------------------------------------------------
 	//                                       OSC  CTRLS
 	//-------------------------------------------------
-	OSCdef(\startPattern).free;
-	OSCdef(\startPattern, {
-		| msg, time, addr, port |
-
-		switch(~selectedSynthIndex,
-			1, {~xxx.set(\amp, msg[1]);},
-			2, {"Synth 2: amp ".postln;});
-		("*Synth " ++ ~selectedSynthIndex ++ ": amp = " ++ msg[1]).postln;
-
-	}, '/start', n);
 
 	//-------------------------------------------------
-	OSCdef(\randomTimbreChange).free;
-	OSCdef(\randomTimbreChange, {
+	// Temperature -> bpm
+	OSCdef(\bpm).free;
+	OSCdef(\bpm, {
 		| msg, time, addr, port |
-		switch(~selectedSynthIndex,
-			1, {if(msg[1] > 0, {~xxx.set(\chaos, rrand(0.0, 1));
-				"TIMBRE CHANGE".postln;
-			}) },
-			2, {"dosdosdos".postln;});
-		("*Synth " ++ ~selectedSynthIndex ++ ": timbre change " ++ msg[1]).postln;
-	}, '/randTimbre', n);
+		var t;
+		t = 120 - msg[1];
+		TempoClock.tempo= t/60;
+	}, '/plantoid/1/1/temp', n);
 
-	//-------------------------------------------------
-	OSCdef(\randomAccents).free;
-	OSCdef(\randomAccents, {
+	// plant 1 sensors -> beat
+	OSCdef(\sensorsBeat).free;
+	OSCdef(\sensorsBeat, {
 		| msg, time, addr, port |
-		switch(~selectedSynthIndex,
-			1, {if(msg[1] > 0, {~xxx.set(\f2, rrand(3,24));
-				"ACCENTS CHANGE".postln;
-			}) },
-			2, {"dosdosdos".postln;});
-		("*Synth " ++ ~selectedSynthIndex ++ ": accents change " ++ msg[1]).postln;
-	}, '/randAccents', n);
+		var amp;
+
+		// sensor 1-4 -> kick pattern level
+		amp = msg[2] / ~sensorRange;
+		Pdefn(("amp"++msg[1]).asSymbol, Pseq([amp], inf));
+
+	}, '/plantoid/1/1/analog', n);
 
 
-	//-------------------------------------------------
-	OSCdef(\randomRate).free;
-	OSCdef(\randomRate, {
+	// plant 1 sonars -> change snare pattern
+	OSCdef(\sonarSnare).free;
+	OSCdef(\sonarSnare, {
 		| msg, time, addr, port |
-		switch(~selectedSynthIndex,
-			1, {if(msg[1] > 0, {r = [ 6, 8, 12];
-				~xxx.set(\f1, r.choose);
-				"RATE CHANGE".postln;
-			}) },
-			2, {"dosdosdos".postln;});
-		("*Synth " ++ ~selectedSynthIndex ++ ": rate change " ++ msg[1]).postln;
-	}, '/randRate', n);
+		var val, sonarIndex, mapped;
 
-	//-------------------------------------------------
-	OSCdef(\default).free;
-	OSCdef(\default, {
-		| msg, time, addr, port |
-		switch(~selectedSynthIndex,
-			1, {if(msg[1] > 0, {~xxx.set(\f1, 8);
-				~xxx.set(\f2, 3);
-				~xxx.set(\chaos, 1);
-				"DEFAULT".postln;
-			}) },
-			2, {"dosdosdos".postln;});
-		("*Synth " ++ ~selectedSynthIndex ++ ": default " ++ msg[1]).postln;
-	}, '/default', n);
+		sonarIndex = msg[1] - 1;
+		val = msg[2] / ~sonarRange;
+		mapped = (val * 10).ceil;
 
-	//-------------------------------------------------
-	OSCdef(\distance).free;
-	OSCdef(\distance, {
-		| msg, time, addr, port |
-		var d, ampMap, f1Map, f2Map;
-		d = msg[1] / ~oscValRange;
-		f1Map = ControlSpec(8, 24);
-		f2Map = ControlSpec(3.0, 0.12);
-		ampMap = ControlSpec(1.0, 0.0);
+		Pdefn(("ampSnare"++sonarIndex).asSymbol, Pseq([1, Pstutter(mapped, Pseq([0], 1))], inf));
 
-		switch(~selectedSynthIndex,
-			1, {if(msg[1] > 0,
-				{~xxx.set(\f1, f1Map.map(d));
-					~xxx.set(\f2, f2Map.map(d));
-					~xxx.set(\chaos, 1);
-					~xxx.set(\amp, (1 - d));
-					("AMP " ++ ampMap(d)).postln;
-			}) },
-			2, {"dosdosdos".postln;});
-		("*Synth " ++ ~selectedSynthIndex ++ ": distance " ++ msg[1]).postln;
-	}, '/distance', n);
+	}, '/plantoid/1/1/sonar', n);
 
 };

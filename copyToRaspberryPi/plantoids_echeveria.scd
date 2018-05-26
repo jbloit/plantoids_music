@@ -28,7 +28,7 @@ fork{
 
 	Pdef.all.do{|x| x.clear};
 
-	4.do{|i|
+	3.do{|i|
 		Pdef(("pat"++i).asSymbol, PmonoArtic(\sweepKick,
 			\freq, Pseq([(50 * i) + 50], inf),
 			\sweepHi, Pseq([(50 ) + 5000], inf),
@@ -50,19 +50,6 @@ fork{
 			\pan, Pseq([-1, 0, 1], inf),
 		)).play;
 	};
-
-
-	/*	4.do{|i|  //do something 12 times
-	var j = i+4;
-	~patterns[j] = Pdef(("kick2_"++j).asSymbol, PmonoArtic(\kick2,
-	\sweepHi, Pseq([500*i], inf),
-	\dur, 1/((i+1)*3),
-	\amp, Pseq([1], inf),
-	\pan, Pseq([-1, 0, 1], inf),
-	\foo, Pfunc({~toggle.(~patternToggles[j])}),
-	));
-	};*/
-
 
 	//-------------------------------------------------
 	//                                       OSC  CTRLS

@@ -52,13 +52,7 @@ s.meter
 
 	~p1fx.set(\amp, 0.7)
 
-
-
-
-
-
 	(
-
 		SynthDef(\arp2notes,{
 			var a, sig;
 			a=LFPar;
@@ -94,7 +88,6 @@ s.meter
 					\out, 1,
 			)}!6;
 	})
-
 
 	//-------------------------------------------------
 	//                                       OSC  CTRLS

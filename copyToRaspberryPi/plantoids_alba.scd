@@ -2,10 +2,6 @@ fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
-	~sensorRange = 1024;
-	~temperatureRange = 50;
-	~sonarRange = 500;
-
 	~p1src= Group.new;
 	~p1fx = Group.after(~p1src);
 	~p1bus = Bus.audio(s, 2);
@@ -45,22 +41,14 @@ fork{
 	}).add;
 	// ---------------------------------- /
 
-s.meter
-	Synth.new(\droneRoof, [\out, ~p1bus ], ~p1src)
-	Synth.new(\droneTables, [\out, ~p1bus], ~p1src)
-	Synth.new(\gain, [\in, ~p1bus], ~p1fx)
 
-	~p1fx.set(\amp, 0.7)
+	SynthDef(\arp2notes,{
+		var a, sig;
+		a=LFPar;
+		sig = BLowPass.ar(a.ar(Select.kr(a.kr(1/[3,4],0,64*a.kr(5)),(60..67).midicps)),a.kr(0.04)+5*500,a.kr(1/[5,6])+1.01);
+		Out.ar(0, sig);
+	}).add;
 
-	(
-		SynthDef(\arp2notes,{
-			var a, sig;
-			a=LFPar;
-			sig = BLowPass.ar(a.ar(Select.kr(a.kr(1/[3,4],0,64*a.kr(5)),(60..67).midicps)),a.kr(0.04)+5*500,a.kr(1/[5,6])+1.01);
-			Out.ar(0, sig);
-		}).add;
-	)
-	Synth.new(\arp2notes)
 
 	SynthDef(\beatIked,{
 		var a, sig,d,c;
@@ -70,9 +58,6 @@ s.meter
 		sig = BBandPass.ar(a.ar(0,c*9,c));
 		Out.ar(0, sig);}).add;
 
-	Synth.new(\beatIked);
-
-	Pdefn(\deg, 0);
 
 	SynthDef(\drone,
 		{
@@ -87,47 +72,34 @@ s.meter
 					\pan, Pkey(\degree)-Pkey(\x)*9,
 					\out, 1,
 			)}!6;
-	})
-
-	//-------------------------------------------------
-	//                                       OSC  CTRLS
-	//-------------------------------------------------
-
-	//-------------------------------------------------
-	// Temperature -> bpm
-	OSCdef(\bpm).free;
-	OSCdef(\bpm, {
-		| msg, time, addr, port |
-		var t;
-		t = 120 - msg[1];
-		TempoClock.tempo= t/60;
-	}, '/plantoid/1/1/temp', n);
-
-	// plant 1 sensors -> beat
-	OSCdef(\sensorsBeat).free;
-	OSCdef(\sensorsBeat, {
-		| msg, time, addr, port |
-		var amp;
-
-		// sensor 1-4 -> kick pattern level
-		amp = msg[2] / ~sensorRange;
-		Pdefn(("amp"++msg[1]).asSymbol, Pseq([amp], inf));
-
-	}, '/plantoid/1/1/analog', n);
+	});
 
 
-	// plant 1 sonars -> change snare pattern
-	OSCdef(\sonarSnare).free;
-	OSCdef(\sonarSnare, {
-		| msg, time, addr, port |
-		var val, sonarIndex, mapped;
+	/*
+	~p1_flower_ambientLight
+	~p1_flower_flexQuake
+	~p1_flower_temperature
+	~p1_flower_humidity
+	~p1_leafs_light
+	~p1_stem_light
+	~p1_stem_sonar
+	*/
 
-		sonarIndex = msg[1] - 1;
-		val = msg[2] / ~sonarRange;
-		mapped = (val * 10).ceil;
+	~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
-		Pdefn(("ampSnare"++sonarIndex).asSymbol, Pseq([1, Pstutter(mapped, Pseq([0], 1))], inf));
+	~p1_flower_flexQuake = {|i=0, v=0| postf("~p1_flower_flexQuake i:% v:% \n", i, v);};
 
-	}, '/plantoid/1/1/sonar', n);
+	~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
+
+	~p1_flower_humidity = {|i=0, v=0| postf("~p1_flower_humidity i:% v:% \n", i, v);};
+
+	~p1_leafs_light = {|i=0, v=0| postf("~p1_leafs_light i:% v:% \n", i, v);};
+
+	~p1_stem_light = {|i=0, v=0| postf("~p1_stem_light i:% v:% \n", i, v);};
+
+	~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
+
+	// manage the OSC parsing:
+	"plantoids_alba_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
 
 };

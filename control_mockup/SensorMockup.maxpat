@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 248.0, 133.0, 879.0, 531.0 ],
+		"rect" : [ 106.0, 103.0, 879.0, 531.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -1446,7 +1446,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 38.0, 79.0, 1235.0, 687.0 ],
+						"rect" : [ 182.0, 136.0, 1235.0, 687.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1473,17 +1473,17 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-41",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 1114.0, 1210.0, 149.0, 22.0 ],
+									"patching_rect" : [ 1114.0, 1210.0, 149.0, 35.0 ],
 									"style" : "",
-									"text" : "/plantoid/1/1/analog 2 539"
+									"text" : "/plantoid/1/1/sonar 1 251.953125"
 								}
 
 							}
@@ -1762,7 +1762,7 @@
 									"numoutlets" : 1,
 									"offset" : [ 1.0, 4.0 ],
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 890.0, 62.0, 336.0, 98.0 ],
+									"patching_rect" : [ 502.0, 57.0, 336.0, 98.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -1783,7 +1783,7 @@
 									"numoutlets" : 1,
 									"offset" : [ 1.0, 4.0 ],
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 894.0, 164.0, 336.0, 98.0 ],
+									"patching_rect" : [ 506.0, 159.0, 336.0, 98.0 ],
 									"viewvisibility" : 1
 								}
 
@@ -2777,6 +2777,26 @@
 					"disabled" : 0,
 					"hidden" : 0,
 					"source" : [ "obj-23", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-11", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"order" : 1,
+					"source" : [ "obj-24", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-6", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"order" : 0,
+					"source" : [ "obj-24", 0 ]
 				}
 
 			}

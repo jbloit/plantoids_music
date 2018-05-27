@@ -2,9 +2,13 @@ fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
 
+	currentEnvironment.clear;
+
 	~p1src= Group.new;
 	~p1fx = Group.after(~p1src);
 	~p1bus = Bus.audio(s, 2);
+
+	~p1StemLDRsCount=11;
 
 	// COMMON
 	// =================== /
@@ -74,32 +78,38 @@ fork{
 			)}!6;
 	});
 
+	//--tweet0009 ORCHESTRA TUNING DRONE
 
-	/*
-	~p1_flower_ambientLight
-	~p1_flower_flexQuake
-	~p1_flower_temperature
-	~p1_flower_humidity
-	~p1_leafs_light
-	~p1_stem_light
-	~p1_stem_sonar
-	*/
+	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
-	~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
+	// ~p1_flower_flexQuake = {|i=0, v=0| postf("~p1_flower_flexQuake i:% v:% \n", i, v);};
 
-	~p1_flower_flexQuake = {|i=0, v=0| postf("~p1_flower_flexQuake i:% v:% \n", i, v);};
+	// ~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
 
-	~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
+	// ~p1_flower_humidity = {|i=0, v=0| postf("~p1_flower_humidity i:% v:% \n", i, v);};
 
-	~p1_flower_humidity = {|i=0, v=0| postf("~p1_flower_humidity i:% v:% \n", i, v);};
+	// ~p1_leafs_light = {|i=0, v=0| postf("~p1_leafs_light i:% v:% \n", i, v);};
 
-	~p1_leafs_light = {|i=0, v=0| postf("~p1_leafs_light i:% v:% \n", i, v);};
+	~p1_stem_light = {|i=0, v=0|
+		// postf("~p1_stem_light i:% v:% \n", i, v);
+		Pdefn(("p1TonesDur"++i).asSymbol, v*1);
+		Pdefn(("p1TonesAmp"++i).asSymbol, v/10);
+	};
 
-	~p1_stem_light = {|i=0, v=0| postf("~p1_stem_light i:% v:% \n", i, v);};
+	// ~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
 
-	~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
-
-	// manage the OSC parsing:
+		// manage the OSC parsing:
 	"plantoids_alba_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
 
+	~p1_orchParts = Array.newClear(~p1StemLDRsCount);
+	 ~p1StemLDRsCount.do{|i|
+	 	Pbind(\dur, Pdefn(("p1TonesDur"++i).asSymbol, 0.12),
+	 		\sustain, 1,
+			\amp, Pdefn(("p1TonesAmp"++i).asSymbol, 0.01),
+	 		\x, Pdefn(\deg, 1) + 6.rand,
+	 		\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
+	 		\pan, Pkey(\degree)-Pkey(\x)*9,
+	 		\out, 0,
+	 	).play;
+	 }
 };

@@ -82,7 +82,10 @@ fork{
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
-	// ~p1_flower_flexQuake = {|i=0, v=0| postf("~p1_flower_flexQuake i:% v:% \n", i, v);};
+	~p1_flower_flexQuake = {|i=0, v=0|
+		// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
+		Pdefn(\deg, v*10);
+	};
 
 	// ~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
 
@@ -92,7 +95,7 @@ fork{
 
 	~p1_stem_light = {|i=0, v=0|
 		// postf("~p1_stem_light i:% v:% \n", i, v);
-		Pdefn(("p1TonesDur"++i).asSymbol, v*1);
+		Pdefn(("p1TonesDur"++i).asSymbol, (0.1 + v));
 		Pdefn(("p1TonesAmp"++i).asSymbol, v/10);
 	};
 

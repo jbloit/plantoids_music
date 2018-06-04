@@ -89,6 +89,35 @@ OSCdef(\p2_parseSonars, {
 }, '/plantoid/2/1/sonar', n);
 
 
+// ------------------------------------------  Plant 3
+OSCdef(\p3_parseAnalogSensors).free;
+OSCdef(\p3_parseAnalogSensors, {
+	| msg, time, addr, port |
+
+	var val, index, mapped;
+	index = msg[1]; // numbered form 1 in OSC...
+	val = msg[2] / ~ldr_max;
+
+	switch(index,
+		1, ~p3_flower_flexQuake.value(0, val),
+		8, ~p3_leaves_light.value(0, val),
+		9, ~p3_leaves_light.value(1, val)
+	);
+	if(
+		( (index > 1)  && (index < 8) ),
+		{~p3_flower_light.value( (index-2),  val)},
+		{}
+	);
+}, '/plantoid/3/1/analog', n);
+
+OSCdef(\p3_parseSonars).free;
+OSCdef(\p3_parseSonars, {
+	| msg, time, addr, port |
+	var val, index, mapped;
+	index = msg[1]; // numbered form 1 in OSC...
+	val = msg[2] / ~sonar_max;
+	~p3_stem_sonar.value(index-1, val);
+}, '/plantoid/3/1/sonar', n);
 
 
 

@@ -126,11 +126,14 @@ fork{
 	~p2_stem_sonar = {|i=0, v=0| postf("~p2_stem_sonar i:% v:% \n", i, v);};
 
 
+	/* =======================================
+	                         SENSOR CALLBACKS : Plant 3
+	=======================================*/
 
-
-
-
-
+	~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
+	~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};
+	~p3_flower_light = {|i=0, v=0| postf("~p3_flower_light i:% v:% \n", i, v);};
+	~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
 
 
 	// manage the OSC parsing:

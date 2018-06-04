@@ -7,7 +7,6 @@ fork{
 	~p1src= Group.new;
 	~p1fx = Group.after(~p1src);
 	~p1bus = Bus.audio(s, 2);
-
 	~p1StemLDRsCount=11;
 
 	// COMMON
@@ -53,7 +52,9 @@ fork{
 		Out.ar(0, sig);
 	}).add;
 
+	// Synth(\arp2notes)
 
+	// ---------------------------------- /
 	SynthDef(\beatIked,{
 		var a, sig,d,c;
 		a=SinOsc;
@@ -61,7 +62,7 @@ fork{
 		c=Amplitude.ar(InFeedback.ar(0),d,d)+a.ar(d*d+[32.01,32]);
 		sig = BBandPass.ar(a.ar(0,c*9,c));
 		Out.ar(0, sig);}).add;
-
+		// ---------------------------------- /
 
 	SynthDef(\drone,
 		{
@@ -78,7 +79,20 @@ fork{
 			)}!6;
 	});
 
-	//--tweet0009 ORCHESTRA TUNING DRONE
+	SynthDef(\beep,{
+		|out=0, freq=2000, gate=1|
+		var env, sig;
+		env = Env.perc(0.001, 0.1);
+		sig = Impulse.ar(freq);
+		sig = sig * EnvGen.kr(env, gate, doneAction:2);
+		Out.ar(out,sig!2);
+	}).add;
+
+
+
+	/* =======================================
+	                         SENSOR CALLBACKS : Plant 1
+	=======================================*/
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
@@ -91,7 +105,7 @@ fork{
 
 	// ~p1_flower_humidity = {|i=0, v=0| postf("~p1_flower_humidity i:% v:% \n", i, v);};
 
-	// ~p1_leafs_light = {|i=0, v=0| postf("~p1_leafs_light i:% v:% \n", i, v);};
+	// ~p1_leaves_light = {|i=0, v=0| postf("~p1_leaves_light i:% v:% \n", i, v);};
 
 	~p1_stem_light = {|i=0, v=0|
 		// postf("~p1_stem_light i:% v:% \n", i, v);
@@ -101,7 +115,25 @@ fork{
 
 	// ~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
 
-		// manage the OSC parsing:
+
+	/* =======================================
+	                         SENSOR CALLBACKS : Plant 2
+	=======================================*/
+
+	~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
+	~p2_leaves_light = {|i=0, v=0| postf("~p2_leaves_light i:% v:% \n", i, v);};
+	~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};
+	~p2_stem_sonar = {|i=0, v=0| postf("~p2_stem_sonar i:% v:% \n", i, v);};
+
+
+
+
+
+
+
+
+
+	// manage the OSC parsing:
 	"plantoids_alba_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
 
 	~p1_orchParts = Array.newClear(~p1StemLDRsCount);

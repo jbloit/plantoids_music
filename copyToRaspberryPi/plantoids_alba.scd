@@ -4,25 +4,41 @@ fork{
 
 	currentEnvironment.clear;
 
+	// GLOBAL VARS
+	~p1StemLDRsCount=11;
+
+	// AUDIO GRAPH
+	// =================== /
 	~p1src= Group.new;
 	~p1fx = Group.after(~p1src);
 	~p1bus = Bus.audio(s, 2);
-	~p1StemLDRsCount=11;
 
-	// COMMON
-	// =================== /
+	~p2src= Group.new;
+	~p2fx = Group.after(~p2src);
+	~p2bus = Bus.audio(s, 2);
+
+	~p3src= Group.new;
+	~p3fx = Group.after(~p3src);
+	~p3bus = Bus.audio(s, 2);
+
+
 	SynthDef(\gain, {
 		|in=0, out=0, amp=1|
 		Out.ar(out, In.ar(in, 2) * amp);
 	}).add;
 
 	SynthDef(\reverb, {
-		|in=0, out = 0|
+		|in=0, out = 0, mix=0.1|
 		var sig;
 		sig = In.ar(in, 1);
-		sig = FreeVerb.ar(sig)!2;
+		sig = FreeVerb.ar(sig, mix)!2;
 		Out.ar(out, sig);
 	}).add;
+
+
+	Synth.new(\reverb, [\in, ~p1bus], ~p1fx);
+	Synth.new(\reverb, [\in, ~p2bus], ~p2fx);
+
 
 	// P1 Synths
 	// ---------------------------------- /
@@ -61,8 +77,8 @@ fork{
 		d=a.ar(12*a.ar(9))%1/4;
 		c=Amplitude.ar(InFeedback.ar(0),d,d)+a.ar(d*d+[32.01,32]);
 		sig = BBandPass.ar(a.ar(0,c*9,c));
-		Out.ar(0, sig);}).add;
-		// ---------------------------------- /
+	Out.ar(0, sig);}).add;
+	// ---------------------------------- /
 
 	SynthDef(\drone,
 		{
@@ -80,18 +96,17 @@ fork{
 	});
 
 	SynthDef(\beep,{
-		|out=0, freq=2000, gate=1|
+		|out=0, freq=2000, gate=1, amp=1|
 		var env, sig;
 		env = Env.perc(0.001, 0.1);
-		sig = Impulse.ar(freq);
+		sig = Impulse.ar(freq)*amp;
 		sig = sig * EnvGen.kr(env, gate, doneAction:2);
 		Out.ar(out,sig!2);
 	}).add;
 
 
-
 	/* =======================================
-	                         SENSOR CALLBACKS : Plant 1
+	SENSOR CALLBACKS : Plant 1
 	=======================================*/
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
@@ -117,37 +132,62 @@ fork{
 
 
 	/* =======================================
-	                         SENSOR CALLBACKS : Plant 2
+	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
-	~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
-	~p2_leaves_light = {|i=0, v=0| postf("~p2_leaves_light i:% v:% \n", i, v);};
-	~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};
-	~p2_stem_sonar = {|i=0, v=0| postf("~p2_stem_sonar i:% v:% \n", i, v);};
+	Pdef(\p2beep,
+		Pbind(\instrument, \beep,
+		\dur, 2,
+		\freq, 4000,
+		\out, ~p2bus,
+		\group, ~p2src,
+	));
+	Pdef(\p2beep).play;
+
+
+	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
+
+	~p2_leaves_light = {|i=0, v=0|
+		Pdef(\p2beep,
+		Pbind(\instrument, \beep,
+		\dur, v/2,
+		\freq, 4000,
+		\out, ~p2bus,
+		\group, ~p2src,
+	));
+
+	};
+	// ~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};
+	// ~p2_stem_sonar = {|i=0, v=0| postf("~p2_stem_sonar i:% v:% \n", i, v);};
 
 
 	/* =======================================
-	                         SENSOR CALLBACKS : Plant 3
+	SENSOR CALLBACKS : Plant 3
 	=======================================*/
 
-	~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
-	~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};
-	~p3_flower_light = {|i=0, v=0| postf("~p3_flower_light i:% v:% \n", i, v);};
-	~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
+	// ~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
+	// ~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};
+	// ~p3_flower_light = {|i=0, v=0| postf("~p3_flower_light i:% v:% \n", i, v);};
+	// ~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
 
 
 	// manage the OSC parsing:
 	"plantoids_alba_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
 
 	~p1_orchParts = Array.newClear(~p1StemLDRsCount);
-	 ~p1StemLDRsCount.do{|i|
-	 	Pbind(\dur, Pdefn(("p1TonesDur"++i).asSymbol, 0.12),
-	 		\sustain, 1,
+	~p1StemLDRsCount.do{|i|
+		Pbind(\dur, Pdefn(("p1TonesDur"++i).asSymbol, 0.12),
+			\sustain, 1,
 			\amp, Pdefn(("p1TonesAmp"++i).asSymbol, 0.01),
-	 		\x, Pdefn(\deg, 1) + 6.rand,
-	 		\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
-	 		\pan, Pkey(\degree)-Pkey(\x)*9,
-	 		\out, 0,
-	 	).play;
-	 }
+			\x, Pdefn(\deg, 1) + 6.rand,
+			\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
+			\pan, Pkey(\degree)-Pkey(\x)*9,
+			\group, ~p1src,
+			\out, ~p1bus
+		).play;
+	}
+
+
+
+
 };

@@ -28,10 +28,10 @@ fork{
 	}).add;
 
 	SynthDef(\reverb, {
-		|in=0, out = 0, mix=0.1|
+		|in=0, out = 0, mix=0.8|
 		var sig;
 		sig = In.ar(in, 1);
-		sig = FreeVerb.ar(sig, mix)!2;
+		sig = FreeVerb.ar(sig, mix, 0.1)!2;
 		Out.ar(out, sig);
 	}).add;
 
@@ -77,7 +77,7 @@ fork{
 		d=a.ar(12*a.ar(9))%1/4;
 		c=Amplitude.ar(InFeedback.ar(0),d,d)+a.ar(d*d+[32.01,32]);
 		sig = BBandPass.ar(a.ar(0,c*9,c));
-	Out.ar(0, sig);}).add;
+		Out.ar(0, sig);}).add;
 	// ---------------------------------- /
 
 	SynthDef(\drone,
@@ -105,9 +105,31 @@ fork{
 	}).add;
 
 
+	SynthDef(\drone_harshOctaves,
+		{
+			|out=0, amp=0.05|
+			var sig, a, b;
+			a=GrayNoise.ar;
+			b=(1..9);
+			sig = CombL.ar(a,1,b/Duty.ar(3,0,Dseq([0.5,1,2,3]*99,99)).lag3(1)).mean/2+Ringz.ar(a/99,b*99).mean!2;
+			Out.ar(out, sig*amp);
+	}).add;
+
+	SynthDef(\drone_coming,{
+		|out=0, amp=0.1|
+		var a, sig;
+		a=LFNoise2.kr(1/(9..17));
+		sig = Splay.ar(Ringz.ar(BPF.ar(Dust2.ar(a.abs*1e4),a.exprange(99,1e4),1.1-a),(9..1)*99,a+1.1,a)/5);
+		Out.ar(out, sig*amp);
+	}).add;
+
+
 	/* =======================================
 	SENSOR CALLBACKS : Plant 1
 	=======================================*/
+
+	Synth(\drone_coming);
+	Synth(\drone_harshOctaves);
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
@@ -137,24 +159,32 @@ fork{
 
 	Pdef(\p2beep,
 		Pbind(\instrument, \beep,
-		\dur, 2,
-		\freq, 4000,
-		\out, ~p2bus,
-		\group, ~p2src,
+			\dur, 2,
+			\freq, 4000,
+			\out, 0,
+			\amp, 1,
+			\out, ~p2bus,
+			\group, ~p2src,
 	));
+
+	s.sync;
 	Pdef(\p2beep).play;
 
 
 	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
 
 	~p2_leaves_light = {|i=0, v=0|
+
+		// postf("~p2_leaves_light i:% v:% \n", i, v);
+
 		Pdef(\p2beep,
-		Pbind(\instrument, \beep,
-		\dur, v/2,
-		\freq, 4000,
-		\out, ~p2bus,
-		\group, ~p2src,
-	));
+			Pbind(\instrument, \beep,
+				\dur, v/2,
+				\freq, 4000,
+				\out, ~p2bus,
+				\group, ~p2src,
+				\amp, 1
+		));
 
 	};
 	// ~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};
@@ -174,18 +204,18 @@ fork{
 	// manage the OSC parsing:
 	"plantoids_alba_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
 
-	~p1_orchParts = Array.newClear(~p1StemLDRsCount);
-	~p1StemLDRsCount.do{|i|
-		Pbind(\dur, Pdefn(("p1TonesDur"++i).asSymbol, 0.12),
-			\sustain, 1,
-			\amp, Pdefn(("p1TonesAmp"++i).asSymbol, 0.01),
-			\x, Pdefn(\deg, 1) + 6.rand,
-			\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
-			\pan, Pkey(\degree)-Pkey(\x)*9,
-			\group, ~p1src,
-			\out, ~p1bus
-		).play;
-	}
+	// ~p1_orchParts = Array.newClear(~p1StemLDRsCount);
+	// ~p1StemLDRsCount.do{|i|
+	// 	Pbind(\dur, Pdefn(("p1TonesDur"++i).asSymbol, 0.12),
+	// 		\sustain, 1,
+	// 		\amp, Pdefn(("p1TonesAmp"++i).asSymbol, 0.01),
+	// 		\x, Pdefn(\deg, 1) + 6.rand,
+	// 		\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
+	// 		\pan, Pkey(\degree)-Pkey(\x)*9,
+	// 		\group, ~p1src,
+	// 		\out, ~p1bus
+	// 	).play;
+	// }
 
 
 

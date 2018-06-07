@@ -35,7 +35,7 @@ fork{
 		Out.ar(out, sig);
 	}).add;
 
-
+	s.sync;
 	Synth.new(\reverb, [\in, ~p1bus], ~p1fx);
 	Synth.new(\reverb, [\in, ~p2bus], ~p2fx);
 

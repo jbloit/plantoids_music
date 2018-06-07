@@ -38,6 +38,7 @@ fork{
 	s.sync;
 	Synth.new(\reverb, [\in, ~p1bus], ~p1fx);
 	Synth.new(\reverb, [\in, ~p2bus], ~p2fx);
+	Synth.new(\reverb, [\in, ~p3bus], ~p3fx);
 
 
 	// P1 Synths
@@ -98,9 +99,9 @@ fork{
 	// a SynthDef
 	SynthDef(\beep,
 		{ | out=0, freq = 4000, amp = 0.1, nharms = 10, pan = 0 |
-		    var audio = Blip.ar(freq, nharms, amp);
-		    var env = EnvGen.kr(Env.perc(0.01, 0.1), doneAction:2);
-		    Out.ar(out, Pan2.ar(audio, pan, env) );
+			var audio = Blip.ar(freq, nharms, amp);
+			var env = EnvGen.kr(Env.perc(0.01, 0.1), doneAction:2);
+			Out.ar(out, Pan2.ar(audio, pan, env) );
 	}).add;
 
 
@@ -121,6 +122,51 @@ fork{
 		sig = Splay.ar(Ringz.ar(BPF.ar(Dust2.ar(a.abs*1e4),a.exprange(99,1e4),1.1-a),(9..1)*99,a+1.1,a)/5);
 		Out.ar(out, sig*amp);
 	}).add;
+
+	SynthDef(\sawpulse, { |out, freq = 99, gate = 0.5, plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05, amp = 1, pan=0|
+		var sig, plfo, fcurve;
+		plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
+		freq = Lag.kr(freq, freqlag) * plfo;
+		fcurve = EnvGen.kr(Env.adsr(0, 0.3, 0.1, 20), gate);
+		fcurve = (fcurve - 1).madd(0.7, 1) * ffreq;
+		sig = Mix.ar([Pulse.ar(freq, 0.9), Saw.ar(freq*1.007)]);
+		sig = RLPF.ar(sig, fcurve, rq)
+		* EnvGen.kr(Env.adsr(0.04, 0.2, 0.6, 0.1), gate, doneAction: Done.freeSelf)
+		* amp;
+		Out.ar(out, sig ! 2)
+	}).add;
+
+	SynthDef(\kick1, {
+		var snd;
+		snd = DC.ar(0);
+		snd = snd + (SinOsc.ar(XLine.ar(800, 400, 0.01)) * Env.perc(0.0005, 0.01).ar);
+		snd = snd + (BPF.ar(Hasher.ar(Sweep.ar), XLine.ar(800, 100, 0.01), 0.6) * Env.perc(0.001, 0.02).delay(0.001).ar);
+		snd = snd + (SinOsc.ar(XLine.ar(172, 50, 0.01)) * Env.perc(0.0001, 0.3, 1, \lin).delay(0.005).ar(2));
+		snd = snd.tanh;
+		Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+	}).add;
+
+	SynthDef(\kick2, {
+		var snd;
+		snd = DC.ar(0);
+		snd = snd + (HPF.ar(Hasher.ar(Sweep.ar), 1320) * Env.perc(0.003, 0.03).ar * 0.5);
+		snd = snd + (SinOsc.ar(XLine.ar(750, 161, 0.02)) * Env.perc(0.0005, 0.02).ar);
+		snd = snd + (SinOsc.ar(XLine.ar(167, 52, 0.04)) * Env.perc(0.0005, 0.3).ar(2));
+		snd = snd.tanh;
+		Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+	}).add;
+
+	SynthDef(\kick3, {
+		var snd;
+		snd = DC.ar(0);
+		snd = snd + (SinOsc.ar(XLine.ar(1500, 800, 0.01)) * Env.perc(0.0005, 0.01, curve: \lin).ar);
+		snd = snd + (BPF.ar(Impulse.ar(0) * SampleRate.ir / 48000, 6100, 1.0) * 3.dbamp);
+		snd = snd + (BPF.ar(Hasher.ar(Sweep.ar), 300, 0.9) * Env.perc(0.001, 0.02).ar);
+		snd = snd + (SinOsc.ar(XLine.ar(472, 60, 0.045)) * Env.perc(0.0001, 0.3, curve: \lin).delay(0.005).ar(2));
+		snd = snd.tanh;
+		Out.ar(\out.kr(0), Pan2.ar(snd, \pan.kr(0), \amp.kr(0.1)));
+	}).add;
+
 
 
 	/* =======================================
@@ -157,7 +203,7 @@ fork{
 	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
-	~p2beep_dur = 4;
+	~p2beep_dur = 0.8;
 	Pdef(\p2beep,
 		Pbind(\instrument, \beep,
 			\dur, Pfunc({~p2beep_dur}),
@@ -185,6 +231,23 @@ fork{
 	/* =======================================
 	SENSOR CALLBACKS : Plant 3
 	=======================================*/
+
+	Pdef(\p3_arpsaw,
+		PmonoArtic(\sawpulse,
+			\dur, 0.2,
+			\freq, Prand([1,2],inf)*49.5,
+			\legato, 0.6,
+			\amp, Pwhite(0.0, 0.1, inf),
+			\out, 0,
+			\group, ~p3src
+	)).play;
+
+	Pdef(\p3_kick,
+		Pbind(
+			\instrument, Prand([\kick1, \kick2, \kick3],inf),
+			\dur, Prand([0.2, 0.4, 0.8, 1.2],inf),
+			\amp, 0.2,
+	)).play;
 
 	// ~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
 	// ~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};

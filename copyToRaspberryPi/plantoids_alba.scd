@@ -95,13 +95,12 @@ fork{
 			)}!6;
 	});
 
-	SynthDef(\beep,{
-		|out=0, freq=2000, gate=1, amp=1|
-		var env, sig;
-		env = Env.perc(0.001, 0.1);
-		sig = Impulse.ar(freq)*amp;
-		sig = sig * EnvGen.kr(env, gate, doneAction:2);
-		Out.ar(out,sig!2);
+	// a SynthDef
+	SynthDef(\beep,
+		{ | out=0, freq = 4000, amp = 0.1, nharms = 10, pan = 0 |
+		    var audio = Blip.ar(freq, nharms, amp);
+		    var env = EnvGen.kr(Env.perc(0.01, 0.1), doneAction:2);
+		    Out.ar(out, Pan2.ar(audio, pan, env) );
 	}).add;
 
 
@@ -128,6 +127,7 @@ fork{
 	SENSOR CALLBACKS : Plant 1
 	=======================================*/
 
+	s.sync;
 	Synth(\drone_coming);
 	Synth(\drone_harshOctaves);
 
@@ -157,18 +157,16 @@ fork{
 	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
+	~p2beep_dur = 4;
 	Pdef(\p2beep,
 		Pbind(\instrument, \beep,
-			\dur, 2,
+			\dur, Pfunc({~p2beep_dur}),
 			\freq, 4000,
 			\out, 0,
 			\amp, 1,
-			\out, ~p2bus,
 			\group, ~p2src,
-	));
-
-	s.sync;
-	Pdef(\p2beep).play;
+			\out, ~p2bus
+	)).play;
 
 
 	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
@@ -176,15 +174,8 @@ fork{
 	~p2_leaves_light = {|i=0, v=0|
 
 		// postf("~p2_leaves_light i:% v:% \n", i, v);
+		~p2beep_dur = v + 1;
 
-		Pdef(\p2beep,
-			Pbind(\instrument, \beep,
-				\dur, v/2,
-				\freq, 4000,
-				\out, ~p2bus,
-				\group, ~p2src,
-				\amp, 1
-		));
 
 	};
 	// ~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};

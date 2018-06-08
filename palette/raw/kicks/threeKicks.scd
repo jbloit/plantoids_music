@@ -10,7 +10,7 @@ SynthDef(\kick1, {
 }).add;
 )
 
-Synth(\kick1, [amp: 2.9]);
+Synth(\kick1, [amp: 0.9]);
 
 (
 SynthDef(\kick2, {
@@ -39,7 +39,7 @@ SynthDef(\kick3, {
 }).add;
 )
 
-Synth(\kick3, [amp: 1.9]);
+Synth(\kick3, [amp: 0.9]);
 
 
 /*

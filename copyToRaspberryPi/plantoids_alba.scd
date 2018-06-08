@@ -81,20 +81,6 @@ fork{
 		Out.ar(0, sig);}).add;
 	// ---------------------------------- /
 
-	SynthDef(\drone,
-		{
-			var sig1, sig2;
-			//--tweet0009 ORCHESTRA TUNING DRONE
-			{|i|
-				Pbind(\dur,0.12
-					,\sustain,1,
-					\amp,0.01,
-					\x, Pdefn(\deg, 1) + 6.rand,
-					\degree, Pgauss(Pkey(\x), sin(Pkey(\x)+Ptime()%6/6e3)*9),
-					\pan, Pkey(\degree)-Pkey(\x)*9,
-					\out, 1,
-			)}!6;
-	});
 
 	// a SynthDef
 	SynthDef(\beep,
@@ -113,14 +99,6 @@ fork{
 			b=(1..9);
 			sig = CombL.ar(a,1,b/Duty.ar(3,0,Dseq([0.5,1,2,3]*99,99)).lag3(1)).mean/2+Ringz.ar(a/99,b*99).mean!2;
 			Out.ar(out, sig*amp);
-	}).add;
-
-	SynthDef(\drone_coming,{
-		|out=0, amp=0.1|
-		var a, sig;
-		a=LFNoise2.kr(1/(9..17));
-		sig = Splay.ar(Ringz.ar(BPF.ar(Dust2.ar(a.abs*1e4),a.exprange(99,1e4),1.1-a),(9..1)*99,a+1.1,a)/5);
-		Out.ar(out, sig*amp);
 	}).add;
 
 	SynthDef(\sawpulse, { |out, freq = 99, gate = 0.5, plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05, amp = 1, pan=0|
@@ -174,7 +152,6 @@ fork{
 	=======================================*/
 
 	s.sync;
-	Synth(\drone_coming);
 	Synth(\drone_harshOctaves);
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};

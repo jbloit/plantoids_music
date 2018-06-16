@@ -22,11 +22,11 @@ curl https://blokas.io/pisound/install-pisound.sh | sh
 
 ## Plantoid patches installation
 
-The subfolders in the well named *copyToRaspberryPi* folder are to be copied to the raspberryPi, once the PiSound is installed. For moving files around between your computer and the pi, the easiest is probably through [FileZilla](https://www.raspberrypi.org/documentation/remote-access/ssh/sftp.md).
+The subfolders in the [copyToRaspberryPi](copyToRaspberryPi) folder are to be copied to the raspberryPi, once the PiSound is installed. For moving files around between your computer and the pi, the easiest is probably through [FileZilla](https://www.raspberrypi.org/documentation/remote-access/ssh/sftp.md).
 
 ### clicks.sh
 This is a custom script that will launch a patch called *1.scd* when user clicks the button once, *2.scd* when user clicks the button twice etc.
-Copy the script to ```/usr/local/pisound/scripts/pisound-btn/clicks.sh``` and be sure to add give it executable permissions
+Copy the script to ```/usr/local/pisound/scripts/pisound-btn/clicks.sh``` and be sure to grant executable permissions
 
 ```bash
 sudo chmod +x clicks.sh

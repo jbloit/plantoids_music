@@ -23,13 +23,13 @@ play{x=LFNoise1.ar(0.5!2);Formlet.ar(Crackle.ar(x.range(1.8,1.98)),TExpRand.ar(2
 
 
 //--tweet0084 SOFTLY BLOWING THE ROOF
-play{a=Saw;Splay.ar(Formant.ar(a.ar((5,7..15)*19)*99+199,a.ar((1,3..13)*29)*199+299,a.ar((3,5..11)*a.ar(3,2,3))*299+399))/3}//#SuperCollider
+play{a=Saw;Splay.ar(Formant.ar(a.ar((5,7..15)*19)*99+199, a.ar((1,3..13)*29)*199+299, a.ar((3,5..11)*a.ar(3,2,3))*299+399))/3}//#SuperCollider
 
 //--tweet0078 HARSH DRONE OCTAVES
 play{a=GrayNoise.ar;b=(1..9);CombL.ar(a,1,b/Duty.ar(3,0,Dseq([0.5,1,2,3]*99,99)).lag3(1)).mean/2+Ringz.ar(a/99,b*99).mean!2}//#SuperCollider
 
-//--tweet0086 THEY ARE COMING DRONE
-play{a=LFNoise2.kr(1/(9..17));Splay.ar(Ringz.ar(BPF.ar(Dust2.ar(a.abs*1e4),a.exprange(99,1e4),1.1-a),(9..1)*99,a+1.1,a)/5)}// #SuperCollider
+/*//--tweet0086 THEY ARE COMING DRONE >> BUGGY!!!! (loud chirp comes and goes after a while)
+play{a=LFNoise2.kr(1/(9..17));Splay.ar(Ringz.ar(BPF.ar(Dust2.ar(a.abs*1e4),a.exprange(99,1e4),1.1-a),(9..1)*99,a+1.1,a)/5)}// #SuperCollider*/
 
 
 //--tweet0098 HARSHY AND SCRATCHY

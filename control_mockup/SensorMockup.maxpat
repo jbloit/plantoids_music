@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 106.0, 103.0, 879.0, 531.0 ],
+		"rect" : [ 66.0, 79.0, 879.0, 531.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,18 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-1",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 71.5, 439.0, 167.0, 22.0 ],
+					"style" : "",
+					"text" : "udpsend 192.168.1.23 57120"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-30",
 					"maxclass" : "number",
@@ -1190,7 +1202,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "jit_matrix" ],
-									"patching_rect" : [ 295.0, 58.0, 955.333435, 1273.777954 ],
+									"patching_rect" : [ 295.0, 58.0, 1273.777954, 1273.777954 ],
 									"pic" : "/Users/julien/jbloit/repos/plantoids_music/control_mockup/plant2.jpg"
 								}
 
@@ -1482,7 +1494,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 1114.0, 1210.0, 149.0, 35.0 ],
 									"style" : "",
-									"text" : "/plantoid/1/1/sonar 1 356.933594"
+									"text" : "/plantoid/1/1/sonar 1 424.316406"
 								}
 
 							}
@@ -2034,7 +2046,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "jit_matrix" ],
-									"patching_rect" : [ 128.0, 121.333313, 1367.111206, 1822.814941 ],
+									"patching_rect" : [ 128.0, 121.333313, 1822.814941, 1822.814941 ],
 									"pic" : "/Users/julien/jbloit/repos/plantoids_music/control_mockup/plant1.jpg"
 								}
 
@@ -2650,10 +2662,20 @@
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"order" : 0,
+					"source" : [ "obj-11", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-10", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"order" : 1,
+					"order" : 2,
 					"source" : [ "obj-11", 0 ]
 				}
 
@@ -2663,7 +2685,7 @@
 					"destination" : [ "obj-12", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"order" : 0,
+					"order" : 1,
 					"source" : [ "obj-11", 0 ]
 				}
 

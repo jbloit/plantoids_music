@@ -54,22 +54,27 @@ OSCdef(\p1_parseAnalogSensors).free;
 OSCdef(\p1_parseAnalogSensors, {
 	| msg, time, addr, port |
 
-	var val, index, mapped;
+	var val, index, mapped, lightOnsetState;
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~ldr_max;
+
+	lightOnsetState =~lightOnset.value(plantIndex:1, sensorIndex:index, newValue:val);
 
 	switch(index,
 		1, ~p1_flower_ambientLight.value(0, val),
 		2, ~p1_flower_flexQuake.value(0, val),
 		3, ~p1_flower_flexWind.value(0, val),
-		4, ~p1_leaves_light.value(0, val),
-		5, ~p1_leaves_light.value(1, val)
+		4, ~p1_leaves_light.value(0, val, lightOnsetState),
+		5, ~p1_leaves_light.value(1, val, lightOnsetState)
 	);
 	if(
 		( index > 5 ),
-		{~p1_stem_light.value( (index-6),  val)},
+		{~p1_stem_light.value( (index-6),  val, lightOnsetState)},
 		{}
 	);
+
+	~analogSensorsPrev[0][index] = val;
+
 }, '/plantoid/1/1/analog', n);
 
 OSCdef(\p1_parseSonars).free;
@@ -138,19 +143,25 @@ OSCdef(\p3_parseAnalogSensors).free;
 OSCdef(\p3_parseAnalogSensors, {
 	| msg, time, addr, port |
 
-	var val, index, mapped;
+	var val, index, mapped, lightOnsetState;
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~ldr_max;
+
+	lightOnsetState =~lightOnset.value(plantIndex:2, sensorIndex:index, newValue:val);
+
 	switch(index,
 		1, ~p3_flower_flexQuake.value(0, val),
-		8, ~p3_leaves_light.value(0, val),
-		9, ~p3_leaves_light.value(1, val)
+		8, ~p3_leaves_light.value(0, val, lightOnsetState),
+		9, ~p3_leaves_light.value(1, val, lightOnsetState)
 	);
 	if(
 		( (index > 1)  && (index < 8) ),
-		{~p3_flower_light.value( (index-2),  val)},
+		{~p3_flower_light.value( (index-2),  val, lightOnsetState)},
 		{}
 	);
+
+	~analogSensorsPrev[2][index] = val;
+
 }, '/plantoid/3/1/analog', n);
 
 OSCdef(\p3_parseSonars).free;

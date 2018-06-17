@@ -21,7 +21,6 @@ fork{
 	~p3fx = Group.after(~p3src);
 	~p3bus = Bus.audio(s, 2);
 
-
 	SynthDef(\gain, {
 		|in=0, out=0, amp=1|
 		Out.ar(out, In.ar(in, 2) * amp);
@@ -39,7 +38,6 @@ fork{
 	Synth.new(\reverb, [\in, ~p1bus], ~p1fx);
 	Synth.new(\reverb, [\in, ~p2bus], ~p2fx);
 	Synth.new(\reverb, [\in, ~p3bus], ~p3fx);
-
 
 	// P1 Synths
 	// ---------------------------------- /
@@ -80,7 +78,6 @@ fork{
 		sig = BBandPass.ar(a.ar(0,c*9,c));
 		Out.ar(0, sig);}).add;
 	// ---------------------------------- /
-
 
 	// a SynthDef
 	SynthDef(\beep,
@@ -152,7 +149,7 @@ fork{
 	=======================================*/
 
 	s.sync;
-	// Synth(\drone_harshOctaves);
+	Synth(\drone_harshOctaves);
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
@@ -175,12 +172,11 @@ fork{
 
 	// ~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
 
-
 	/* =======================================
 	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
-	~p2beep_dur = 1;
+	~p2beep_dur = 0.8;
 	Pdef(\p2beep,
 		Pbind(\instrument, \beep,
 			\dur, Pfunc({~p2beep_dur}),
@@ -191,29 +187,26 @@ fork{
 			\out, ~p2bus
 	)).play;
 
+	Pdef(\p2beepHi).quant= 0.1;
 	Pdef(\p2beepHi,
 		Pbind(\instrument, \beep,
 			\dur, 0.1,
-			\freq, Pseq([5000], 30),
+			\freq, Pseq([5000], 3),
 			\out, 0,
 			\amp, 1,
-			\quant, 0.2,
 			\group, ~p2src,
 			\out, ~p2bus
 	));
 
-
 	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
-
 	~p2_leaves_light = {|i=0, v=0, state=0|
 
 		switch(state,
 			-1, {Pdef(\p2beepHi).stop},
 			0, {},
 			1, {},
-			2, {Pdef(\p2beepHi).play; Synth(\kick1);}
+			2, {Pdef(\p2beepHi).quant= 0.1; Pdef(\p2beepHi).play; Synth(\kick1);}
 		);
-
 
 	};
 	// ~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};
@@ -223,6 +216,12 @@ fork{
 	/* =======================================
 	SENSOR CALLBACKS : Plant 3
 	=======================================*/
+	~remote = NetAddr("127.0.0.1", 12345);
+	~light = {|val=0| ~remote.sendMsg("/music2light/global/tempo", val); "LIGHTOSC".postln};
+
+	~light.value(1);
+	~light.value(1);
+	~light.value(1);
 
 	Pdef(\p3_arpsaw,
 		PmonoArtic(\sawpulse,
@@ -232,21 +231,30 @@ fork{
 			\amp, Pwhite(0.0, 0.1, inf),
 			\out, 0,
 			\group, ~p3src
-	)).stop;
+	)).play;
 
 	Pdef(\p3_kick,
 		Pbind(
 			\instrument, Prand([\kick1, \kick2, \kick3],inf),
 			\dur, Prand([0.2, 0.4, 0.8, 1.2],inf),
 			\amp, 0.2,
-	)).stop;
+			\dummy, Pfunc({~remote.sendMsg("/music2light/3/perc", 1);})
+	)).play;
 
 	// ~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
 	// ~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};
-/*	~p3_flower_light = {
-		|i=0, v=0|
+	~p3_flower_light = {
+		|i=0, v=0, state=0|
 		postf("~p3_flower_light i:% v:% \n", i, v);
-	};*/
+
+		switch(state,
+			-1, {Pdef(\p2beepHi).stop},
+			0, {},
+			1, {},
+			2, {Pdef(\p2beepHi).quant= 0.1; Pdef(\p2beepHi).play; Synth(\kick1);}
+		);
+
+	};
 	// ~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
 
 

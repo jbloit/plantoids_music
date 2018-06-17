@@ -152,7 +152,7 @@ fork{
 	=======================================*/
 
 	s.sync;
-	Synth(\drone_harshOctaves);
+	// Synth(\drone_harshOctaves);
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
@@ -180,24 +180,39 @@ fork{
 	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
-	~p2beep_dur = 0.8;
+	~p2beep_dur = 1;
 	Pdef(\p2beep,
 		Pbind(\instrument, \beep,
 			\dur, Pfunc({~p2beep_dur}),
-			\freq, 4000,
+			\freq, Pseq([4000], inf),
 			\out, 0,
 			\amp, 1,
 			\group, ~p2src,
 			\out, ~p2bus
 	)).play;
 
+	Pdef(\p2beepHi,
+		Pbind(\instrument, \beep,
+			\dur, 0.1,
+			\freq, Pseq([5000], 30),
+			\out, 0,
+			\amp, 1,
+			\quant, 0.2,
+			\group, ~p2src,
+			\out, ~p2bus
+	));
+
 
 	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
 
-	~p2_leaves_light = {|i=0, v=0|
+	~p2_leaves_light = {|i=0, v=0, state=0|
 
-		// postf("~p2_leaves_light i:% v:% \n", i, v);
-		~p2beep_dur = v + 1;
+		switch(state,
+			-1, {Pdef(\p2beepHi).stop},
+			0, {},
+			1, {},
+			2, {Pdef(\p2beepHi).play; Synth(\kick1);}
+		);
 
 
 	};
@@ -217,18 +232,21 @@ fork{
 			\amp, Pwhite(0.0, 0.1, inf),
 			\out, 0,
 			\group, ~p3src
-	)).play;
+	)).stop;
 
 	Pdef(\p3_kick,
 		Pbind(
 			\instrument, Prand([\kick1, \kick2, \kick3],inf),
 			\dur, Prand([0.2, 0.4, 0.8, 1.2],inf),
 			\amp, 0.2,
-	)).play;
+	)).stop;
 
 	// ~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
 	// ~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};
-	// ~p3_flower_light = {|i=0, v=0| postf("~p3_flower_light i:% v:% \n", i, v);};
+/*	~p3_flower_light = {
+		|i=0, v=0|
+		postf("~p3_flower_light i:% v:% \n", i, v);
+	};*/
 	// ~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
 
 

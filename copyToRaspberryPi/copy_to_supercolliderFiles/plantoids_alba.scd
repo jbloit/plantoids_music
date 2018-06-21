@@ -154,7 +154,7 @@ fork{
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
 	~p1_flower_flexQuake = {|i=0, v=0|
-		// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
+		postf("~p1_flower_flexQuake i:% v:% \n", i, v);
 		Pdefn(\deg, v*10);
 	};
 
@@ -187,7 +187,6 @@ fork{
 			\out, ~p2bus
 	)).play;
 
-	Pdef(\p2beepHi).quant= 0.1;
 	Pdef(\p2beepHi,
 		Pbind(\instrument, \beep,
 			\dur, 0.1,
@@ -200,16 +199,18 @@ fork{
 
 	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
 	~p2_leaves_light = {|i=0, v=0, state=0|
+	};
 
+	~p2_stem_light = {|i=0, v=0, state=0|
+		postf("~p2_stem_light i:% v:% \n", i, v);
 		switch(state,
 			-1, {Pdef(\p2beepHi).stop},
 			0, {},
 			1, {},
-			2, {Pdef(\p2beepHi).quant= 0.1; Pdef(\p2beepHi).play; Synth(\kick1);}
+			2, {Pdef(\p2beepHi).play;}
 		);
 
 	};
-	// ~p2_stem_light = {|i=0, v=0| postf("~p2_stem_light i:% v:% \n", i, v);};
 	// ~p2_stem_sonar = {|i=0, v=0| postf("~p2_stem_sonar i:% v:% \n", i, v);};
 
 
@@ -242,17 +243,13 @@ fork{
 	)).play;
 
 	// ~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
-	// ~p3_leaves_light = {|i=0, v=0| postf("~p3_leaves_light i:% v:% \n", i, v);};
+	~p3_leaves_light = {|i=0, v=0|
+		postf("~p3_leaves_light i:% v:% \n", i, v);
+	};
+
 	~p3_flower_light = {
 		|i=0, v=0, state=0|
 		postf("~p3_flower_light i:% v:% \n", i, v);
-
-		switch(state,
-			-1, {Pdef(\p2beepHi).stop},
-			0, {},
-			1, {},
-			2, {Pdef(\p2beepHi).quant= 0.1; Pdef(\p2beepHi).play; Synth(\kick1);}
-		);
 
 	};
 	// ~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};

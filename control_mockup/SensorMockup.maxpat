@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 66.0, 79.0, 879.0, 531.0 ],
+		"rect" : [ 66.0, 79.0, 781.0, 525.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,71 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-38",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 343.0, 400.0, 216.5, 22.0 ],
+					"presentation_rect" : [ 342.0, 400.0, 0.0, 0.0 ],
+					"style" : "",
+					"text" : "/plantoid/1/1/analog 3 183"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-37",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 745.0, 454.0, 34.0, 22.0 ],
+					"style" : "",
+					"text" : "print"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-34",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 404.0, 449.0, 216.5, 22.0 ],
+					"style" : "",
+					"text" : "/plantoid/1/1/sonar 4 22"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-32",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 526.0, 410.0, 106.0, 22.0 ],
+					"style" : "",
+					"text" : "udpreceive 12345"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-27",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 204.0, 329.0, 186.0, 22.0 ],
+					"style" : "",
+					"text" : "/plantoid/1/1/sonar 1 273.925781"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-1",
 					"maxclass" : "newobj",
@@ -1457,7 +1522,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 38.0, 79.0, 1235.0, 687.0 ],
+						"rect" : [ 596.0, 271.0, 1235.0, 687.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1494,7 +1559,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 1114.0, 1210.0, 149.0, 35.0 ],
 									"style" : "",
-									"text" : "/plantoid/1/1/sonar 1 424.316406"
+									"text" : "/plantoid/1/1/sonar 1 273.925781"
 								}
 
 							}
@@ -2046,7 +2111,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "jit_matrix" ],
-									"patching_rect" : [ 128.0, 121.333313, 1822.814941, 1822.814941 ],
+									"patching_rect" : [ 128.0, 121.333313, 1822.814941, 2430.419922 ],
 									"pic" : "/Users/julien/jbloit/repos/plantoids_music/control_mockup/plant1.jpg"
 								}
 
@@ -2794,7 +2859,17 @@
 					"destination" : [ "obj-11", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"order" : 1,
+					"order" : 2,
+					"source" : [ "obj-24", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-27", 1 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"order" : 0,
 					"source" : [ "obj-24", 0 ]
 				}
 
@@ -2804,7 +2879,7 @@
 					"destination" : [ "obj-6", 0 ],
 					"disabled" : 0,
 					"hidden" : 0,
-					"order" : 0,
+					"order" : 1,
 					"source" : [ "obj-24", 0 ]
 				}
 
@@ -2880,6 +2955,26 @@
 					"disabled" : 0,
 					"hidden" : 0,
 					"source" : [ "obj-31", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-34", 1 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"order" : 1,
+					"source" : [ "obj-32", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-37", 0 ],
+					"disabled" : 0,
+					"hidden" : 0,
+					"order" : 0,
+					"source" : [ "obj-32", 0 ]
 				}
 
 			}

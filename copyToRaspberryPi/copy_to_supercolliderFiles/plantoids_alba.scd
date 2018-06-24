@@ -143,6 +143,7 @@ fork{
 	}).add;
 
 
+	TempoClock.tempo = 1.45;
 
 	/* =======================================
 	SENSOR CALLBACKS : Plant 1
@@ -176,7 +177,7 @@ fork{
 	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
-	~p2beep_dur = 0.8;
+	~p2beep_dur = 1;
 	Pdef(\p2beep,
 		Pbind(\instrument, \beep,
 			\dur, Pfunc({~p2beep_dur}),
@@ -226,7 +227,7 @@ fork{
 
 	Pdef(\p3_arpsaw,
 		PmonoArtic(\sawpulse,
-			\dur, 0.2,
+			\dur, 1/4,
 			\freq, Prand([1,2],inf)*49.5,
 			\legato, 0.6,
 			\amp, Pwhite(0.0, 0.1, inf),
@@ -237,7 +238,7 @@ fork{
 	Pdef(\p3_kick,
 		Pbind(
 			\instrument, Prand([\kick1, \kick2, \kick3],inf),
-			\dur, Prand([0.2, 0.4, 0.8, 1.2],inf),
+			\dur, Prand([1/4, 2/4, 4/4, 5/4],inf),
 			\amp, 0.2,
 			\dummy, Pfunc({~remote.sendMsg("/music2light/3/perc", 1);})
 	)).play;

@@ -23,19 +23,23 @@
 
 ~isNightMode = false;
 
-
 /*
 Returns a state index based on previous and current values of light sensors:
 isNoteOn: 2
 isNoteOff: -1
 isOn: 1
 isOff: 0
+
+isLight: boolean flag, to process light sensors differently in night mode.
 */
-~lightOnset = { |plantIndex=0, sensorIndex=0, newValue=0, thresh=0.5|
+~analogOnset = { |plantIndex=0, sensorIndex=0, newValue=0, thresh=0.5, isLight=true|
 	var prevVal, isNoteOn, isNoteOff, isOn, isOff, returnState;
 
 	prevVal = ~analogSensorsPrev[plantIndex][sensorIndex];
-	if (~isNightMode, {newValue = 1-newValue; prevVal = 1-prevVal;});
+	// debug:
+	// postf("prev val: %, val: % \n", prevVal, newValue);
+
+	if ((~isNightMode && isLight), {newValue = 1-newValue; prevVal = 1-prevVal;});
 
 	isNoteOn = (prevVal <= thresh) && (newValue >= thresh);
 	isNoteOff = (prevVal >= thresh) && (newValue <= thresh);
@@ -49,27 +53,36 @@ isOff: 0
 	returnState;
 };
 
+
 // ------------------------------------------  Plant 1
 OSCdef(\p1_parseAnalogSensors).free;
 OSCdef(\p1_parseAnalogSensors, {
 	| msg, time, addr, port |
 
-	var val, index, mapped, lightOnsetState;
+	var val, index, mapped, onsetState;
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~ldr_max;
 
-	lightOnsetState =~lightOnset.value(plantIndex:1, sensorIndex:index, newValue:val);
-
 	switch(index,
-		1, ~p1_flower_ambientLight.value(0, val),
-		2, ~p1_flower_flexQuake.value(0, val),
-		3, ~p1_flower_flexWind.value(0, val),
-		4, ~p1_leaves_light.value(0, val, lightOnsetState),
-		5, ~p1_leaves_light.value(1, val, lightOnsetState)
+		1, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+			~p1_flower_ambientLight.value(0, val, onsetState);},
+		2, {
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
+			~p1_flower_flexQuake.value(0, val, onsetState);},
+
+		3, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
+			~p1_flower_flexWind.value(0, val, onsetState);},
+
+		4, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+			~p1_leaves_light.value(0, val, onsetState)},
+
+		5, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+			~p1_leaves_light.value(1, val, onsetState)}
 	);
 	if(
 		( index > 5 ),
-		{~p1_stem_light.value( (index-6),  val, lightOnsetState)},
+		{onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+			~p1_stem_light.value( (index-6),  val, onsetState)},
 		{}
 	);
 
@@ -111,7 +124,7 @@ OSCdef(\p2_parseAnalogSensors, {
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~ldr_max;
 
-	lightOnsetState =~lightOnset.value(plantIndex:1, sensorIndex:index, newValue:val);
+	lightOnsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val);
 
 	switch(index,
 		1, ~p2_flower_flexQuake.value(0, val),
@@ -147,7 +160,7 @@ OSCdef(\p3_parseAnalogSensors, {
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~ldr_max;
 
-	lightOnsetState =~lightOnset.value(plantIndex:2, sensorIndex:index, newValue:val);
+	lightOnsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val);
 
 	switch(index,
 		1, ~p3_flower_flexQuake.value(0, val),

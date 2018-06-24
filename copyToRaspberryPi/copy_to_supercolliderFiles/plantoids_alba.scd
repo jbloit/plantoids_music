@@ -21,6 +21,8 @@ fork{
 	~p3fx = Group.after(~p3src);
 	~p3bus = Bus.audio(s, 2);
 
+	~rootFreq = 99;
+
 	SynthDef(\gain, {
 		|in=0, out=0, amp=1|
 		Out.ar(out, In.ar(in, 2) * amp);
@@ -90,11 +92,11 @@ fork{
 
 	SynthDef(\drone_harshOctaves,
 		{
-			|out=0, amp=0.05|
+			|out=0, amp=0.05, rootFreq=99|
 			var sig, a, b;
 			a=GrayNoise.ar;
 			b=(1..9);
-			sig = CombL.ar(a,1,b/Duty.ar(3,0,Dseq([0.5,1,2,3]*99,99)).lag3(1)).mean/2+Ringz.ar(a/99,b*99).mean!2;
+			sig = CombL.ar(a,1,b/Duty.ar(3,0,Dseq([0.5,1,2,3]*rootFreq,rootFreq)).lag3(1)).mean/2+Ringz.ar(a/rootFreq,b*rootFreq).mean!2;
 			Out.ar(out, sig*amp);
 	}).add;
 
@@ -150,13 +152,22 @@ fork{
 	=======================================*/
 
 	s.sync;
-	Synth(\drone_harshOctaves);
+	~p1_drone = Synth(\drone_harshOctaves);
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
-	~p1_flower_flexQuake = {|i=0, v=0|
-		postf("~p1_flower_flexQuake i:% v:% \n", i, v);
-		Pdefn(\deg, v*10);
+	~p1_flower_flexQuake = {|i=0, v=0, state=0|
+		// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
+
+		switch(state,
+			-1, {},
+			0, {},
+			1, {},
+			2, {"----->ONSET FLEX".postln;
+				~rootFreq = ~rootFreq + 10;
+				~p1_drone.set(\rootFreq, ~rootFreq);
+			},
+		);
 	};
 
 	// ~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
@@ -165,11 +176,11 @@ fork{
 
 	// ~p1_leaves_light = {|i=0, v=0| postf("~p1_leaves_light i:% v:% \n", i, v);};
 
-	~p1_stem_light = {|i=0, v=0|
+/*	~p1_stem_light = {|i=0, v=0|
 		// postf("~p1_stem_light i:% v:% \n", i, v);
 		Pdefn(("p1TonesDur"++i).asSymbol, (0.1 + v));
 		Pdefn(("p1TonesAmp"++i).asSymbol, v/10);
-	};
+	};*/
 
 	// ~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
 
@@ -228,7 +239,7 @@ fork{
 	Pdef(\p3_arpsaw,
 		PmonoArtic(\sawpulse,
 			\dur, 1/4,
-			\freq, Prand([1,2],inf)*49.5,
+			\freq, Prand([0.5,1],inf) * Pfunc({~rootFreq}),
 			\legato, 0.6,
 			\amp, Pwhite(0.0, 0.1, inf),
 			\out, 0,

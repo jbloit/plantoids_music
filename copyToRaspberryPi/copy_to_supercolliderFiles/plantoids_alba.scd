@@ -254,7 +254,18 @@ fork{
 			\dummy, Pfunc({~remote.sendMsg("/music2light/3/perc", 1);})
 	)).play;
 
-	// ~p3_flower_flexQuake = {|i=0, v=0| postf("~p3_flower_flexQuake i:% v:% \n", i, v);};
+	~p3_flower_flexQuake = {|i=0, v=0, state=0|
+
+		// postf("~p3_flower_flexQuake i:% v:% \n", i, v);
+		switch(state,
+			-1, {},
+			0, {},
+			1, {},
+			2, {"----> P3 FLEX ONSET".postln}
+		);
+
+	};
+
 	~p3_leaves_light = {|i=0, v=0|
 		postf("~p3_leaves_light i:% v:% \n", i, v);
 	};

@@ -5,6 +5,7 @@
 // this maps analog index to worker functions
 
 ~ldr_max = 1024;
+~flex_max = 1024;
 ~sonar_max = 500;
 ~temperature_max = 50;
 ~humidity_max = 10;
@@ -41,11 +42,16 @@ isLight: boolean flag, to process light sensors differently in night mode.
 
 	if ((~isNightMode && isLight), {newValue = 1-newValue; prevVal = 1-prevVal;});
 
+	// state detection
 	isNoteOn = (prevVal <= thresh) && (newValue >= thresh);
 	isNoteOff = (prevVal >= thresh) && (newValue <= thresh);
 	isOn = (prevVal >= thresh) && (newValue >= thresh);
 	isOff = (prevVal < thresh) && (newValue < thresh);
 
+	// store value
+	~analogSensorsPrev[plantIndex][sensorIndex] = newValue;
+
+	// return state value
 	if (isNoteOn,  {returnState=2});
 	if (isNoteOff,  {returnState=1});
 	if (isOn,  {returnState=1});
@@ -61,32 +67,35 @@ OSCdef(\p1_parseAnalogSensors, {
 
 	var val, index, mapped, onsetState;
 	index = msg[1]; // numbered from 1 in OSC...
-	val = msg[2] / ~ldr_max;
 
 	switch(index,
-		1, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+		1, {
+			val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
 			~p1_flower_ambientLight.value(0, val, onsetState);},
-		2, {
+		2, {val = msg[2] / ~flex_max;
 			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
 			~p1_flower_flexQuake.value(0, val, onsetState);},
 
-		3, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
+		3, {val = msg[2] / ~flex_max;
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
 			~p1_flower_flexWind.value(0, val, onsetState);},
 
-		4, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+		4, {val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
 			~p1_leaves_light.value(0, val, onsetState)},
 
-		5, {onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+		5, {val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
 			~p1_leaves_light.value(1, val, onsetState)}
 	);
 	if(
 		( index > 5 ),
-		{onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
+		{val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
 			~p1_stem_light.value( (index-6),  val, onsetState)},
 		{}
 	);
-
-	~analogSensorsPrev[0][index] = val;
 
 }, '/plantoid/1/1/analog', n);
 
@@ -156,24 +165,33 @@ OSCdef(\p3_parseAnalogSensors).free;
 OSCdef(\p3_parseAnalogSensors, {
 	| msg, time, addr, port |
 
-	var val, index, mapped, lightOnsetState;
+	var val, index, mapped, onsetState;
 	index = msg[1]; // numbered from 1 in OSC...
-	val = msg[2] / ~ldr_max;
-
-	lightOnsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val);
 
 	switch(index,
-		1, ~p3_flower_flexQuake.value(0, val),
-		8, ~p3_leaves_light.value(0, val, lightOnsetState),
-		9, ~p3_leaves_light.value(1, val, lightOnsetState)
+		1, {val = msg[2] / ~flex_max;
+			onsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val, isLight:false);
+			~p3_flower_flexQuake.value(0, val, onsetState);
+		},
+		8, {
+			val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val, isLight:true);
+			~p3_leaves_light.value(0, val, onsetState);
+		},
+		9,
+		{ val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val, isLight:true);
+			~p3_leaves_light.value(1, val, onsetState);
+		}
 	);
 	if(
 		( (index > 1)  && (index < 8) ),
-		{~p3_flower_light.value( (index-2),  val, lightOnsetState)},
+		{val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val, isLight:true);
+			~p3_flower_light.value( (index-2),  val, onsetState);
+		},
 		{}
 	);
-
-	~analogSensorsPrev[2][index] = val;
 
 }, '/plantoid/3/1/analog', n);
 

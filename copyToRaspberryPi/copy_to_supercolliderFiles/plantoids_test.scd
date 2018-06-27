@@ -6,6 +6,7 @@ fork{
 
 	// GLOBAL VARS
 	~p1StemLDRsCount=11;
+	~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 
 	// AUDIO GRAPH
 	// =================== /
@@ -42,6 +43,7 @@ fork{
 	// P1 Synths
 	// ---------------------------------- /
 
+	~rootFreq = 99;
 	SynthDef(\wind, {|amp=0.2, out=0, modFreq=0.1, fFreq = 1348, fRq = 0.5|
 		var src, mod;
 		mod = {LFNoise2.ar(modFreq).range(0, 1)}!6;
@@ -50,8 +52,19 @@ fork{
 		Out.ar(out, Splay.ar(src*amp););
 	}).add;
 
+	SynthDef(\droneee, { arg freq = 440, amp = 0.3, out = 0, phase = 0;
+		var sig, env;
+		env = EnvGen.kr(Env.sine(10),doneAction: 2);
+		sig = LFPulse.ar(freq , 0.15);
+		sig = RLPF.ar(sig,SinOsc.kr(0.3, 0, 200, 1500), 0.1);
+		sig = FreeVerb.ar(sig, 0.5, 0.5, 0.5) * env;
+		sig = Pan2.ar(sig, SinOsc.kr(1/10, phase),amp);
 
-	// var samplePath = thisProcess.nowExecutingPath.dirname +/+ "Samples/HiHats1.hihat2.wav";
+		Out.ar(out, sig);
+	}).add;
+
+	~tic = Buffer.read(s, ~samplesDir +/+ "tic.aif");
+	~tac = Buffer.read(s, ~samplesDir +/+ "tac.aif");
 
 	TempoClock.tempo = 1.45;
 
@@ -61,6 +74,7 @@ fork{
 
 	s.sync;
 	~p1_wind;
+	~p1_sonars= Array.newClear(4);
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
@@ -70,7 +84,7 @@ fork{
 
 		switch(state,
 			-1, {
-				"----->OFFSET FLEX".postln;
+				// "----->OFFSET FLEX".postln;
 				~p1_wind.free;},
 			0, {
 				//"----->OFF FLEX".postln;
@@ -81,7 +95,7 @@ fork{
 				~p1_wind.set(\amp, v/5);
 			},
 			2, {
-				"----->ONSET FLEX".postln;
+				// "----->ONSET FLEX".postln;
 				~p1_wind.free;
 				~p1_wind = Synth(\wind);
 			},
@@ -92,15 +106,64 @@ fork{
 
 	// ~p1_flower_humidity = {|i=0, v=0| postf("~p1_flower_humidity i:% v:% \n", i, v);};
 
-	// ~p1_leaves_light = {|i=0, v=0| postf("~p1_leaves_light i:% v:% \n", i, v);};
+	~p1_leaves_light = {|i=0, v=0, state=0|
+		// postf("~p1_leaves_light i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+				~tac.play;
+			},
+		);
+	};
 
-/*	~p1_stem_light = {|i=0, v=0|
-		// postf("~p1_stem_light i:% v:% \n", i, v);
-		Pdefn(("p1TonesDur"++i).asSymbol, (0.1 + v));
-		Pdefn(("p1TonesAmp"++i).asSymbol, v/10);
-	};*/
+	~p1_stem_light = {|i=0, v=0, state=0|
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+				~tic.play;
+			},
+		);
+	};
 
-	// ~p1_stem_sonar = {|i=0, v=0| postf("~p1_stem_sonar i:% v:% \n", i, v);};
+	~p1_stem_sonar = {|i=0, v=0, state=0|
+		// postf("~p1_stem_sonar i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET SONAR".postln;
+				~p1_sonars[i].free;
+			},
+			0, {
+				//"----->OFF SONAR".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+				 ~p1_sonars[i].set(\amp, v);
+			},
+			2, {
+				// "----->ONSET SONAR".postln;
+				~p1_sonars[i].free;
+				~p1_sonars[i]=Synth(\droneee, [freq: ~rootFreq*(i+1)]);
+			},
+		);
+	};
 
 	/* =======================================
 	SENSOR CALLBACKS : Plant 2
@@ -157,6 +220,7 @@ fork{
 		postf("~p3_flower_light i:% v:% \n", i, v);
 
 	};
+
 	// ~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
 
 

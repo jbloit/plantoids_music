@@ -53,9 +53,10 @@ isLight: boolean flag, to process light sensors differently in night mode.
 
 	// return state value
 	if (isNoteOn,  {returnState=2});
-	if (isNoteOff,  {returnState=1});
+	if (isNoteOff,  {returnState= -1});
 	if (isOn,  {returnState=1});
 	if (isOff,  {returnState=0});
+
 	returnState;
 };
 
@@ -78,7 +79,7 @@ OSCdef(\p1_parseAnalogSensors, {
 			~p1_flower_flexQuake.value(0, val, onsetState);},
 
 		3, {val = msg[2] / ~flex_max;
-			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false, thresh:0.1);
 			~p1_flower_flexWind.value(0, val, onsetState);},
 
 		4, {val = msg[2] / ~ldr_max;
@@ -129,24 +130,31 @@ OSCdef(\p2_parseAnalogSensors).free;
 OSCdef(\p2_parseAnalogSensors, {
 	| msg, time, addr, port |
 
-	var val, index, mapped, lightOnsetState;
+	var val, index, mapped, onsetState;
 	index = msg[1]; // numbered from 1 in OSC...
-	val = msg[2] / ~ldr_max;
-
-	lightOnsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val);
 
 	switch(index,
-		1, ~p2_flower_flexQuake.value(0, val),
-		2, ~p2_leaves_light.value(0, val, lightOnsetState);,
-		3, ~p2_leaves_light.value(1, val, lightOnsetState)
+		1, {val = msg[2] / ~flex_max;
+			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:false);
+			~p2_flower_flexQuake.value(0, val, onsetState);
+		},
+		2, {val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:true);
+			~p2_leaves_light.value(0, val, onsetState);
+		},
+		3, {val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:true);
+			~p2_leaves_light.value(1, val, onsetState);
+		}
 	);
 	if(
 		( index > 3 ),
-		{~p2_stem_light.value( (index-4),  val, lightOnsetState)},
+		{val = msg[2] / ~ldr_max;
+			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:true);
+			~p2_stem_light.value( (index-4),  val, onsetState);
+		},
 		{}
 	);
-
-	~analogSensorsPrev[1][index] = val;
 
 }, '/plantoid/2/1/analog', n);
 

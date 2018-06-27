@@ -279,7 +279,7 @@ fork{
 
 
 	// manage the OSC parsing:
-	"plantoids_alba_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
+	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
 
 	// ~p1_orchParts = Array.newClear(~p1StemLDRsCount);
 	// ~p1StemLDRsCount.do{|i|

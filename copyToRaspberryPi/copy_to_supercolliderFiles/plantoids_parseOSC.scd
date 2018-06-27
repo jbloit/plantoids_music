@@ -75,7 +75,7 @@ OSCdef(\p1_parseAnalogSensors, {
 			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:true);
 			~p1_flower_ambientLight.value(0, val, onsetState);},
 		2, {val = msg[2] / ~flex_max;
-			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false);
+			onsetState =~analogOnset.value(plantIndex:0, sensorIndex:index, newValue:val, isLight:false, thresh:0.3);
 			~p1_flower_flexQuake.value(0, val, onsetState);},
 
 		3, {val = msg[2] / ~flex_max;

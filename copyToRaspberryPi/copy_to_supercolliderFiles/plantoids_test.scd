@@ -66,6 +66,20 @@ fork{
 	~tic = Buffer.read(s, ~samplesDir +/+ "tic.aif");
 	~tac = Buffer.read(s, ~samplesDir +/+ "tac.aif");
 
+	SynthDef(\thump,
+	{
+		|out=0, amp=0.6, filter=0.5|
+		var nse, env, kic;
+		env = Env.perc(0.05, 1, 1, -4);
+		nse = BrownNoise.ar(2) + PinkNoise.ar(0.5)  * EnvGen.kr(env, doneAction: 2);
+
+		nse = Mix.ar(BPF.ar(nse,[100,1200,80,40,20],MouseX.kr(0,1),[1,0.2,1,1,1]));
+		nse = LPF.ar(nse, (filter*900 + 100))! 2;
+		Out.ar(out, nse*amp);
+
+	};
+).add;
+
 	TempoClock.tempo = 1.45;
 
 	/* =======================================
@@ -75,9 +89,31 @@ fork{
 	s.sync;
 	~p1_wind;
 	~p1_sonars= Array.newClear(4);
+	~p1_quake;
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
+
+	~p1_flower_flexQuake = {|i=0, v=0, state=0|
+	// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
+
+		switch(state,
+			-1, {
+				// "----->OFFSET FLEX".postln;
+				},
+			0, {
+				//"----->OFF FLEX".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+
+			},
+			2, {
+				// "----->ONSET FLEX".postln;
+				Synth(\thump, [\filter, v, \amp, v/2]);
+			},
+		);
+	};
 
 	~p1_flower_flexWind = {|i=0, v=0, state=0|
 		// postf("~p1_flower_flexWind i:% v:% \n", i, v);

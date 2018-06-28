@@ -44,12 +44,13 @@ fork{
 	// ---------------------------------- /
 
 	~rootFreq = 99;
-	SynthDef(\wind, {|amp=0.2, out=0, modFreq=0.1, fFreq = 1348, fRq = 0.5|
-		var src, mod;
-		mod = {LFNoise2.ar(modFreq).range(0, 1)}!6;
-		src = WhiteNoise.ar(mod.lagud(1, 4));
-		src = RLPF.ar(src, fFreq.lag(1), fRq);
-		Out.ar(out, Splay.ar(src*amp););
+
+	SynthDef(\windBasic, {
+		|out=0, freqNorm=0.5, amp=0.1|
+		var sig;
+		sig = PinkNoise.ar();
+		sig = LPF.ar(sig, ((freqNorm*2000) + 100)) * amp;
+		Out.ar(out, sig!2);
 	}).add;
 
 	SynthDef(\droneee, { arg freq = 440, amp = 0.3, out = 0, phase = 0;
@@ -127,13 +128,13 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p1_wind.set(\fRq, v);
-				~p1_wind.set(\amp, v/5);
+				 ~p1_wind.set(\freqNorm, v);
+				 ~p1_wind.set(\amp, v/5);
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
 				~p1_wind.free;
-				~p1_wind = Synth(\wind);
+				~p1_wind = Synth(\windBasic);
 			},
 		);
 	};

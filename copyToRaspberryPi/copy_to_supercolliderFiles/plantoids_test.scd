@@ -109,9 +109,8 @@ fork{
 		OffsetOut.ar(out, Pan2.ar(src*env, pan+SinOsc.kr(0.1, 0, 0.3)));
 	}).add;
 
-
-
-	TempoClock.tempo = 1.45;
+	~tempoFactor = 1; // factor of 60bpm
+	TempoClock.tempo = ~tempoFactor;
 
 	/* =======================================
 	SENSOR CALLBACKS : Plant 1
@@ -213,7 +212,12 @@ fork{
 		);
 	};
 
-	// ~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
+	~p1_flower_temperature = {
+		|i=0, v=0|
+		// postf("~p1_flower_temperature i:% v:% \n", i, v);
+		~tempoFactor = v + 0.8;
+		TempoClock.tempo = ~tempoFactor;
+	};
 
 	~p1_flower_humidity = {
 		|i=0, v=0|

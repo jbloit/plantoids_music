@@ -212,10 +212,13 @@ OSCdef(\p3_parseAnalogSensors, {
 OSCdef(\p3_parseSonars).free;
 OSCdef(\p3_parseSonars, {
 	| msg, time, addr, port |
-	var val, index, mapped;
+	var val, index, mapped, onsetState;
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~sonar_max;
-	~p3_stem_sonar.value(index-1, val);
+
+	onsetState =~analogOnset.value(plantIndex:2, sensorIndex:index, newValue:val, isLight:false, thresh:0.1);
+	~p3_stem_sonar.value(index-1, val, onsetState);
+
 }, '/plantoid/3/1/sonar', n);
 
 

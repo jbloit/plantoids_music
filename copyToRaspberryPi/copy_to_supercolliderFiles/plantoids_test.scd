@@ -221,7 +221,6 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
@@ -242,7 +241,7 @@ fork{
 				//"----->CHANGE VALUE".postln;
 			},
 			2, {
-				"----->ONSET LIGHT".postln;
+				// "----->ONSET LIGHT".postln;
 				~tac.play;
 			},
 		);
@@ -261,13 +260,13 @@ fork{
 				//"----->CHANGE VALUE".postln;
 			},
 			2, {
-				"----->ONSET LIGHT".postln;
+				// "----->ONSET LIGHT".postln;
 				~tic.play;
 			},
 		);
 	};
 	~p2_stem_sonar = {|i=0, v=0, state=0|
-		 postf("~p2_stem_sonar i:% v:% state: %\n", i, v, state);
+		// postf("~p2_stem_sonar i:% v:% state: %\n", i, v, state);
 
 		switch(state,
 			-1, {
@@ -296,34 +295,93 @@ fork{
 	~remote = NetAddr("127.0.0.1", 12345);
 	~light = {|val=0| ~remote.sendMsg("/music2light/global/tempo", val); "LIGHTOSC".postln};
 
-	~light.value(1);
-	~light.value(1);
-	~light.value(1);
+	// ~light.value(1);
+	// ~light.value(1);
+	// ~light.value(1);
 
+	~p3_sonars= Array.newClear(4);
 
 	~p3_flower_flexQuake = {|i=0, v=0, state=0|
-
 		// postf("~p3_flower_flexQuake i:% v:% \n", i, v);
 		switch(state,
-			-1, {},
-			0, {},
-			1, {},
-			2, {"----> P3 FLEX ONSET".postln}
+			-1, {
+				// "----->OFFSET FLEX".postln;
+				},
+			0, {
+				//"----->OFF FLEX".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+
+			},
+			2, {
+				// "----->ONSET FLEX".postln;
+				Synth(\thump, [\filter, v, \amp, v/2]);
+			},
 		);
 
 	};
 
-	~p3_leaves_light = {|i=0, v=0|
-		postf("~p3_leaves_light i:% v:% \n", i, v);
+	~p3_leaves_light = {|i=0, v=0, state=0|
+		// postf("~p3_leaves_light i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+				~tac.play;
+			},
+		)
 	};
 
 	~p3_flower_light = {
 		|i=0, v=0, state=0|
-		postf("~p3_flower_light i:% v:% \n", i, v);
-
+		// postf("~p3_flower_light i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+				~tic.play;
+			},
+		)
 	};
 
-	// ~p3_stem_sonar = {|i=0, v=0| postf("~p3_stem_sonar i:% v:% \n", i, v);};
+	~p3_stem_sonar = {|i=0, v=0, state=0|
+		// postf("~p3_stem_sonar i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET SONAR".postln;
+				~p3_sonars[i].free;
+			},
+			0, {
+				//"----->OFF SONAR".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+				 ~p3_sonars[i].set(\amp, v);
+			},
+			2, {
+				// "----->ONSET SONAR".postln;
+				~p3_sonars[i].free;
+				~p3_sonars[i]=Synth(\droneee, [freq: ~rootFreq*3/5*(i+1)]);
+			},
+		);
+	};
 
 
 	// manage the OSC parsing:

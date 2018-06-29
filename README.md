@@ -39,3 +39,6 @@ or just replace the [pisound.conf](copyToRaspberryPi/copy_to_etc/pisound.conf) f
 
 ### Copy the actual Supercollider patches
 Copy all the files from [copy_to_supercolliderFiles](copyToRaspberryPi/copy_to_supercolliderFiles) to the */home/pi/prynth/server/public/supercolliderfiles/* folder on the pi.
+The contents of the *soundfiles* folder should be copied in */home/pi/prynth/server/public/soundfiles/* on the pi.
+
+ 

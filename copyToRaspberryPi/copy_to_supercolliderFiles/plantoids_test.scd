@@ -81,6 +81,36 @@ fork{
 	};
 ).add;
 
+
+	// from RedFrik "techno" course
+	SynthDef(\avbd, {|out= 0, amp= 0.1, freq= 60, pan= 0, atk= 0.001, rel= 0.1, mod= 0, cur= 0, gate= 1|
+		var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var src= SinOsc.ar(freq*(2-env.lag3), 0.5pi, mod+1).tanh*amp;
+		OffsetOut.ar(out, Pan2.ar(src*env, pan));
+	}).add;
+	SynthDef(\avhh, {|out= 0, amp= 0.1, pan= 0, atk= 0.001, rel= 0.1, cur= -5, mod= 0, gate= 1|
+		var env= EnvGen.ar(Env.adsr(atk, atk, 0.5, rel, 1, cur), gate, doneAction:2);
+		var src= RHPF.ar(ClipNoise.ar(amp), 1000, (10-mod).max(0.1))*LFTri.ar(1000);
+		OffsetOut.ar(out, Pan2.ar(src*env, pan));
+	}).add;
+	SynthDef(\avbass, {|out= 0, amp= 0.1, freq= 100, pan= 0, atk= 0.01, rel= 0.2, cur= -4, mod= 0, gate= 1|
+		var env= EnvGen.ar(Env.adsr(atk, atk, 0.75, rel, 1, cur), gate, doneAction:2);
+		var src= BLowPass4.ar(Saw.ar(freq, amp), freq+(mod+1*100).min(900), 1-env+0.1);
+		OffsetOut.ar(out, Pan2.ar(src*env, pan));
+	}).add;
+	SynthDef(\avlead, {|out= 0, amp= 0.1, freq= 500, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var src= Pulse.ar(freq, 1-env.lag(1)*0.5, amp);
+		OffsetOut.ar(out, Pan2.ar(src*env, pan));
+	}).add;
+	SynthDef(\avswop, {|out= 0, amp= 0.1, start= 5000, end= 500, mod= 0, pan= 0, atk= 0.01, rel= 4, cur= -4, gate= 1|
+		var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var src= BPF.ar(WhiteNoise.ar(amp+SinOsc.ar(mod, 0.5pi, amp*0.25)), XLine.kr(start, end, 20), 2-env);
+		OffsetOut.ar(out, Pan2.ar(src*env, pan+SinOsc.kr(0.1, 0, 0.3)));
+	}).add;
+
+
+
 	TempoClock.tempo = 1.45;
 
 	/* =======================================
@@ -91,7 +121,52 @@ fork{
 	~p1_wind;
 	~p1_sonars= Array.newClear(4);
 	~p1_quake;
+	~bassModulation = 1;
 
+
+	Pdef(\arp1).quant= 4;
+	Pdef(\arp2).quant= 4;
+	Pdef(\arp3).quant= 4;
+	Pdef(\arp1, PmonoArtic(\avlead,
+		\freq, Pseq([100, 120, 400, 300], inf),
+		\dur, 0.25,
+		\legato, 0.2,
+		\amp, Pseq([1, 1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 48),
+		\pan, -0.3,
+	)).play;
+	Pdef(\arp2, PmonoArtic(\avlead,
+		\freq, Pseq([100, 120, 300, 50, 120, 300], inf)*2,
+		\dur, 0.25,  //0.25= 1/4
+		\legato, 0.2,
+		\amp, Pseq([1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 44),
+		\pan, 0.3,
+	)).play;
+	Pdef(\arp3, PmonoArtic(\avlead,
+		\freq, Pseq([100, 120, 300, 400, 120, 120, 120], inf)*2,
+		\dur, 0.125,  //0.125= 1/8
+		\legato, 0.2,
+		\amp, Pseq([1, 0], inf)*0.1,
+	)).play;
+
+	Pdef(\bass).quant= 4;
+	Pdef(\bass, PmonoArtic(\avbass,
+		\freq, Pseq([100, 50, 50, 120], inf)*Pseq([Pseq([1], 64), Pseq([1.25], 64)], inf),  //transpose each 64*0.25/4= 4 bar
+		\dur, 0.25,
+		\mod, Pfunc({~bassModulation}),
+		\rel, 0.3,
+		\legato, 0.5,
+		\amp, Pseq([0.5, 0.5, 0.5, 0.25], inf),
+	)).play;
+
+
+	/*Pdef(\bd).quant= 4;
+	Pdef(\bd, PmonoArtic(\avbd,
+		\freq, 50,
+		\dur, Pseq([1, 1, 2/3, 1/3, 1, 1, 1, 2/3, 1/3, 1/3, 1/3, 1/3], inf),
+		\legato, 0.1,
+		\amp, Pseq([1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 0.25, 0.5, 0.75], inf)*0.5,
+	)).play;
+*/
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
 	~p1_flower_flexQuake = {|i=0, v=0, state=0|
@@ -140,7 +215,11 @@ fork{
 
 	// ~p1_flower_temperature = {|i=0, v=0| postf("~p1_flower_temperature i:% v:% \n", i, v);};
 
-	// ~p1_flower_humidity = {|i=0, v=0| postf("~p1_flower_humidity i:% v:% \n", i, v);};
+	~p1_flower_humidity = {
+		|i=0, v=0|
+		// postf("~p1_flower_humidity i:% v:% \n", i, v);
+		~bassModulation = v*10;
+	};
 
 	~p1_leaves_light = {|i=0, v=0, state=0|
 		// postf("~p1_leaves_light i:% v:% \n", i, v);

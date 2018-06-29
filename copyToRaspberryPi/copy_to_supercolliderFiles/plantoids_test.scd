@@ -121,7 +121,9 @@ fork{
 	~p1_sonars= Array.newClear(4);
 	~p1_quake;
 	~bassModulation = 1;
-
+	~percLevel = 0.5;
+	~arpLevel = 0.5;
+	~bassLevel = 0.5;
 
 	Pdef(\arp1).quant= 4;
 	Pdef(\arp2).quant= 4;
@@ -130,21 +132,21 @@ fork{
 		\freq, Pseq([100, 120, 400, 300], inf),
 		\dur, 0.25,
 		\legato, 0.2,
-		\amp, Pseq([1, 1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 48),
+		\amp, Pfunc({~arpLevel})*Pseq([1, 1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 48),
 		\pan, -0.3,
 	)).play;
 	Pdef(\arp2, PmonoArtic(\avlead,
 		\freq, Pseq([100, 120, 300, 50, 120, 300], inf)*2,
 		\dur, 0.25,  //0.25= 1/4
 		\legato, 0.2,
-		\amp, Pseq([1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 44),
+		\amp, Pfunc({~arpLevel})*Pseq([1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 44),
 		\pan, 0.3,
 	)).play;
 	Pdef(\arp3, PmonoArtic(\avlead,
 		\freq, Pseq([100, 120, 300, 400, 120, 120, 120], inf)*2,
 		\dur, 0.125,  //0.125= 1/8
 		\legato, 0.2,
-		\amp, Pseq([1, 0], inf)*0.1,
+		\amp, Pfunc({~arpLevel})*Pseq([1, 0], inf)*0.1,
 	)).play;
 
 	Pdef(\bass).quant= 4;
@@ -154,19 +156,32 @@ fork{
 		\mod, Pfunc({~bassModulation}),
 		\rel, 0.3,
 		\legato, 0.5,
-		\amp, Pseq([0.5, 0.5, 0.5, 0.25], inf),
+		\amp, Pfunc({~bassLevel})*Pseq([0.5, 0.5, 0.5, 0.25], inf),
 	)).play;
 
-
-	/*Pdef(\bd).quant= 4;
+	Pdef(\bd).quant= 4;
 	Pdef(\bd, PmonoArtic(\avbd,
 		\freq, 50,
-		\dur, Pseq([1, 1, 2/3, 1/3, 1, 1, 1, 2/3, 1/3, 1/3, 1/3, 1/3], inf),
+		\dur, Pseq([1, 1, 1, 1, 1, 1, 2], inf),  //duration pattern - should add up to 8
 		\legato, 0.1,
-		\amp, Pseq([1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 0.25, 0.5, 0.75], inf)*0.5,
+		\amp, Pfunc({~percLevel}),
 	)).play;
-*/
-	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
+
+	Pdef(\hh).quant= 4;
+	Pdef(\hh, PmonoArtic(\avhh,
+		\dur, Pseq([0.25, 0.25, 0.5], inf),
+		\legato, 0.1,
+		\amp, Pseq([0.25, 1], inf)*Pfunc({~percLevel}),
+		\pan, Pseq([0.3, 0, -0.3], inf),
+	)).play;
+
+	~p1_flower_ambientLight = {
+		|i=0, v=0|
+		// postf("~p1_flower_ambientLight i:% v:% \n", i, v);
+		~arpLevel = v;
+		~bassLevel = v;
+		~percLevel = 1 - v;
+	};
 
 	~p1_flower_flexQuake = {|i=0, v=0, state=0|
 	// postf("~p1_flower_flexQuake i:% v:% \n", i, v);

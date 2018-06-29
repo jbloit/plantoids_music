@@ -94,7 +94,6 @@ fork{
 
 	// ~p1_flower_ambientLight = {|i=0, v=0| postf("~p1_flower_ambientLight i:% v:% \n", i, v);};
 
-
 	~p1_flower_flexQuake = {|i=0, v=0, state=0|
 	// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
 
@@ -206,23 +205,89 @@ fork{
 	SENSOR CALLBACKS : Plant 2
 	=======================================*/
 
+	~p2_wind;
+	~p2_sonars= Array.newClear(4);
+	~p2_quake;
 
+	~p2_flower_flexQuake = {
+		|i=0, v=0, state=0|
+		// postf("~p2_flower_flexQuake i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET FLEX".postln;
+				},
+			0, {
+				//"----->OFF FLEX".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
 
-	// ~p2_flower_flexQuake = {|i=0, v=0| postf("~p2_flower_flexQuake i:% v:% \n", i, v);};
+			},
+			2, {
+				// "----->ONSET FLEX".postln;
+				Synth(\thump, [\filter, v, \amp, v/2]);
+			},
+		);
+	};
 	~p2_leaves_light = {|i=0, v=0, state=0|
+		// postf("p2 leaves state=%\n", state);
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				"----->ONSET LIGHT".postln;
+				~tac.play;
+			},
+		);
 	};
 
 	~p2_stem_light = {|i=0, v=0, state=0|
 		postf("~p2_stem_light i:% v:% \n", i, v);
 		switch(state,
-			-1, {Pdef(\p2beepHi).stop},
-			0, {},
-			1, {},
-			2, {Pdef(\p2beepHi).play;}
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				"----->ONSET LIGHT".postln;
+				~tic.play;
+			},
 		);
-
 	};
-	// ~p2_stem_sonar = {|i=0, v=0| postf("~p2_stem_sonar i:% v:% \n", i, v);};
+	~p2_stem_sonar = {|i=0, v=0, state=0|
+		 postf("~p2_stem_sonar i:% v:% state: %\n", i, v, state);
+
+		switch(state,
+			-1, {
+				// "----->OFFSET SONAR".postln;
+				~p2_sonars[i].free;
+			},
+			0, {
+				//"----->OFF SONAR".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+				 ~p2_sonars[i].set(\amp, v);
+			},
+			2, {
+				// "----->ONSET SONAR".postln;
+				~p2_sonars[i].free;
+				~p2_sonars[i]=Synth(\droneee, [freq: ~rootFreq*1.5*(i+1)]);
+			},
+		);
+};
 
 
 	/* =======================================

@@ -164,10 +164,13 @@ OSCdef(\p2_parseAnalogSensors, {
 OSCdef(\p2_parseSonars).free;
 OSCdef(\p2_parseSonars, {
 	| msg, time, addr, port |
-	var val, index, mapped;
+	var val, index, mapped, onsetState;
 	index = msg[1]; // numbered from 1 in OSC...
 	val = msg[2] / ~sonar_max;
-	~p2_stem_sonar.value(index-1, val);
+
+	onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:false, thresh:0.1);
+	~p2_stem_sonar.value(index-1, val, onsetState);
+
 }, '/plantoid/2/1/sonar', n);
 
 

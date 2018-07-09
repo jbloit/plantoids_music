@@ -7,9 +7,33 @@ fork{
 	// GLOBAL VARS
 	~p1StemLDRsCount=11;
 	~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
+	~postOSC  = True;
 
-	// AUDIO GRAPH
-	// =================== /
+
+	// ==========================================================
+	//                                                        MUSIC TO LIGHT
+	// ==========================================================
+	~lightRemote = NetAddr("127.0.0.1", 12345);
+
+	// call this when LDRs are triggered
+	~ldrOnset = {|plantIndex=0, sensorIndex=0, velocity=0|
+		~lightRemote.sendMsg("/music2light/ldrNote", plantIndex, sensorIndex, velocity);
+	};
+
+	// call this when notes are triggered from flex quake sensors
+
+	// tempo change
+
+	// root note change
+
+	// background pattern events
+	~patternEvent = {|plantIndex=0|
+		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, velocity)
+	};
+
+    // ==========================================================
+	//                                                       AUDIO GRAPH
+	// ==========================================================
 	~p1src= Group.new;
 	~p1fx = Group.after(~p1src);
 	~p1bus = Bus.audio(s, 2);
@@ -68,18 +92,18 @@ fork{
 	~tac = Buffer.read(s, ~samplesDir +/+ "tac.aif");
 
 	SynthDef(\thump,
-	{
-		|out=0, amp=0.6, filter=0.5|
-		var nse, env, kic;
-		env = Env.perc(0.05, 1, 1, -4);
-		nse = BrownNoise.ar(2) + PinkNoise.ar(0.5)  * EnvGen.kr(env, doneAction: 2);
+		{
+			|out=0, amp=0.6, filter=0.5|
+			var nse, env, kic;
+			env = Env.perc(0.05, 1, 1, -4);
+			nse = BrownNoise.ar(2) + PinkNoise.ar(0.5)  * EnvGen.kr(env, doneAction: 2);
 
-		nse = Mix.ar(BPF.ar(nse,[100,1200,80,40,20], mul:[1,0.2,1,1,1]));
-		nse = LPF.ar(nse, (filter*900 + 100))! 2;
-		Out.ar(out, nse*amp);
+			nse = Mix.ar(BPF.ar(nse,[100,1200,80,40,20], mul:[1,0.2,1,1,1]));
+			nse = LPF.ar(nse, (filter*900 + 100))! 2;
+			Out.ar(out, nse*amp);
 
-	};
-).add;
+		};
+	).add;
 
 
 	// from RedFrik "techno" course
@@ -184,12 +208,12 @@ fork{
 	};
 
 	~p1_flower_flexQuake = {|i=0, v=0, state=0|
-	// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
+		// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
 
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
-				},
+			},
 			0, {
 				//"----->OFF FLEX".postln;
 			},
@@ -216,8 +240,8 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				 ~p1_wind.set(\freqNorm, v);
-				 ~p1_wind.set(\amp, v/5);
+				~p1_wind.set(\freqNorm, v);
+				~p1_wind.set(\amp, v/5);
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
@@ -229,7 +253,8 @@ fork{
 
 	~p1_flower_temperature = {
 		|i=0, v=0|
-		// postf("~p1_flower_temperature i:% v:% \n", i, v);
+		v.postln;
+		if(~postOSC==True,	{postf("~p1_flower_temperature i:% v:% \n", i, v);});
 		~tempoFactor = v + 0.8;
 		TempoClock.tempo = ~tempoFactor;
 	};
@@ -255,6 +280,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~tac.play;
+				~ldrOnset.value(0, i, v);
 			},
 		);
 	};
@@ -273,6 +299,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~tic.play;
+				~ldrOnset.value(0, i, v);
 			},
 		);
 	};
@@ -289,7 +316,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				 ~p1_sonars[i].set(\amp, v);
+				~p1_sonars[i].set(\amp, v);
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
@@ -313,7 +340,7 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
-				},
+			},
 			0, {
 				//"----->OFF FLEX".postln;
 			},
@@ -341,6 +368,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~tac.play;
+				~ldrOnset.value(1, i, v);
 			},
 		);
 	};
@@ -360,6 +388,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~tic.play;
+				~ldrOnset.value(1, i, v);
 			},
 		);
 	};
@@ -376,7 +405,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				 ~p2_sonars[i].set(\amp, v);
+				~p2_sonars[i].set(\amp, v);
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
@@ -384,7 +413,7 @@ fork{
 				~p2_sonars[i]=Synth(\droneee, [freq: ~rootFreq*1.5*(i+1)]);
 			},
 		);
-};
+	};
 
 
 	/* =======================================
@@ -404,7 +433,7 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
-				},
+			},
 			0, {
 				//"----->OFF FLEX".postln;
 			},
@@ -435,6 +464,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~tac.play;
+				~ldrOnset.value(2, i, v);
 			},
 		)
 	};
@@ -455,6 +485,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~tic.play;
+				~ldrOnset.value(2, i, v);
 			},
 		)
 	};
@@ -471,7 +502,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				 ~p3_sonars[i].set(\amp, v);
+				~p3_sonars[i].set(\amp, v);
 			},
 			2, {
 				// "----->ONSET SONAR".postln;

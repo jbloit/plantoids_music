@@ -13,21 +13,23 @@ fork{
 	// ==========================================================
 	//                                                        MUSIC TO LIGHT
 	// ==========================================================
-	~lightRemote = NetAddr("127.0.0.1", 12345);
+	~lightRemote = NetAddr("127.0.0.1", 8000);
 
 	// call this when LDRs are triggered
 	~ldrOnset = {|plantIndex=0, sensorIndex=0, velocity=0|
-		~lightRemote.sendMsg("/music2light/ldrNote", plantIndex, sensorIndex, velocity);
+		~lightRemote.sendMsg("/music2light/ldrNote", plantIndex, sensorIndex);
+		postf("LDR SEND OSC \n");
 	};
 
 	// call this when notes are triggered from flex quake sensors
 
 	// tempo change
 
+
 	// root note change
 
 	// background pattern events
-	~patternEvent = {|plantIndex=0|
+	~patternEvent = {|plantIndex=0, velocity=0|
 		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, velocity)
 	};
 
@@ -181,6 +183,7 @@ fork{
 		\rel, 0.3,
 		\legato, 0.5,
 		\amp, Pfunc({~bassLevel})*Pseq([0.5, 0.5, 0.5, 0.25], inf),
+		\light, Pfunc({~patternEvent.value(0, 1)})
 	)).play;
 
 	Pdef(\bd).quant= 4;

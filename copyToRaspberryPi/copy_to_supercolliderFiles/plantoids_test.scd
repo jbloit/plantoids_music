@@ -13,11 +13,11 @@ fork{
 	// ==========================================================
 	//                                                        MUSIC TO LIGHT
 	// ==========================================================
-	~lightRemote = NetAddr("127.0.0.1", 8000);
+	~lightRemote = NetAddr("127.0.0.1", 8001);
 
 	// call this when LDRs are triggered
 	~ldrOnset = {|plantIndex=0, sensorIndex=0, velocity=0|
-		~lightRemote.sendMsg("/music2light/ldrNote", plantIndex, sensorIndex);
+		~lightRemote.sendMsg("/music2light/ldrNote", plantIndex, sensorIndex, velocity);
 		postf("LDR SEND OSC \n");
 	};
 

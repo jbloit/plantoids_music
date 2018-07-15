@@ -30,8 +30,8 @@ fork{
 
 	// background pattern events
 	~patternEvent = {|plantIndex=0, velocity=0|
-		// postf("BASS VELOCITY % \n", velocity*255);
-		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, velocity*255)
+		// postf("BASS VELOCITY % \n", (velocity*255).asInt);
+		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, (velocity*255).asInt);
 	};
 
     // ==========================================================

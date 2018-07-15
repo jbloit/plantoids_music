@@ -13,7 +13,7 @@ fork{
 	// ==========================================================
 	//                                                        MUSIC TO LIGHT
 	// ==========================================================
-	~lightRemote = NetAddr("127.0.0.1", 8001);
+	~lightRemote = NetAddr("127.0.0.1", 8000);
 
 	// call this when LDRs are triggered
 	~ldrOnset = {|plantIndex=0, sensorIndex=0, velocity=0|
@@ -30,7 +30,8 @@ fork{
 
 	// background pattern events
 	~patternEvent = {|plantIndex=0, velocity=0|
-		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, velocity)
+		// postf("BASS VELOCITY % \n", velocity*255);
+		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, velocity*255)
 	};
 
     // ==========================================================
@@ -151,6 +152,10 @@ fork{
 	~arpLevel = 0.5;
 	~bassLevel = 0.5;
 
+	~printBassVelocity = {|vel=0|
+		postf("---- bass velocity %\n", vel);
+	};
+
 	Pdef(\arp1).quant= 4;
 	Pdef(\arp2).quant= 4;
 	Pdef(\arp3).quant= 4;
@@ -183,7 +188,8 @@ fork{
 		\rel, 0.3,
 		\legato, 0.5,
 		\amp, Pfunc({~bassLevel})*Pseq([0.5, 0.5, 0.5, 0.25], inf),
-		\light, Pfunc({~patternEvent.value(0, 1)})
+		\light, Pfunc({arg ev; ~patternEvent.value(0, ev[\amp])}),
+		// \debug, Pfunc({arg ev; ~printBassVelocity.value(ev[\amp])}),
 	)).play;
 
 	Pdef(\bd).quant= 4;

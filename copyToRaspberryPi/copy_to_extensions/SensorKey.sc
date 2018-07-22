@@ -1,6 +1,6 @@
 SensorKey {
 	// Turn continuous values into note on/note off states.
-
+	// set "triggerUpwards" to 0 if you want to trigger when values go below a threshold instead of above.
 	/*
 	Returns a state index based on previous and current values of light sensors:
 	isNoteOn: 2
@@ -8,8 +8,8 @@ SensorKey {
 	isOn: 1
 	isOff: 0
 	*/
-	var <>thresh, prevVal, <>triggerUpwards;
-	*new {|thresh= 0.5, triggerUpwards=true|
+	var <>thresh, <>triggerUpwards, prevVal;
+	*new {|thresh= 0.5, triggerUpwards=1|
 		^super.newCopyArgs(thresh, triggerUpwards).reset;
 	}
 	reset {
@@ -18,14 +18,22 @@ SensorKey {
 	process {|newValue|
 		var returnState, isNoteOn, isNoteOff, isOn, isOff;
 
-		// TODO: fix this mode
-		// if ((triggerUpwards != true), {newValue = 1-newValue; prevVal = 1-prevVal;}, {});
+		if ((triggerUpwards > 0), {
+			// UPWARDS state detection
+			isNoteOn = (prevVal <= thresh) && (newValue >= thresh);
+			isNoteOff = (prevVal >= thresh) && (newValue <= thresh);
+			isOn = (prevVal >= thresh) && (newValue >= thresh);
+			isOff = (prevVal < thresh) && (newValue < thresh);
+		}, {
+			// DOWNWARDS state detection
+			isNoteOn = (prevVal >= thresh) && (newValue <= thresh);
+			isNoteOff = (prevVal <= thresh) && (newValue >= thresh);
+			isOn = (prevVal <= thresh) && (newValue <= thresh);
+			isOff = (prevVal > thresh) && (newValue > thresh);
+		}
+		);
 
-		// state detection
-		isNoteOn = (prevVal <= thresh) && (newValue >= thresh);
-		isNoteOff = (prevVal >= thresh) && (newValue <= thresh);
-		isOn = (prevVal >= thresh) && (newValue >= thresh);
-		isOff = (prevVal < thresh) && (newValue < thresh);
+
 
 		// store previous value
 		prevVal = newValue;

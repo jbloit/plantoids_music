@@ -1,68 +1,3 @@
-
-~faderMapper = SensorMaracas.new(0.1, 100);
-~faderMapper2 = SensorMaracas.new(0.1, 100);
-
-SynthDef("kick", {
-	arg out=0,tu = 1,amp=0.1;
-	var env0, env1, env1m, sig;
-	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction:2);
-	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
-	env1m = env1.midicps;
-	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
-	sig = sig + WhiteNoise.ar(1);
-	sig = LPF.ar(sig, env1m*1.5, env0);
-	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
-	sig = sig * amp;
-	sig = sig.clip2(1);
-	Out.ar(out, sig!2);
-}).send(s);
-
-
-~guard = 0;
-OSCdef(\lemurFader).free;
-OSCdef(\lemurFader, {
-	| msg, time, addr, port |
-	var val, index, mapped, onsetState;
-
-	val = msg[1];
-
-	// postf("-->fader  v:%\n", val);
-	onsetState = ~faderMapper.process(val);
-	if ((onsetState==2),  {
-		if(~guard != 1) {
-			~guard = 1;
-			TempoClock.sched( TempoClock.timeToNextBeat(1/8), {
-				~guard = 0;
-				Synth(\kick);
-			});
-		};
-	});
-},'/Fader/x', n);
-
-
-~guard2 = 0;
-OSCdef(\lemurFader2).free;
-OSCdef(\lemurFader2, {
-	| msg, time, addr, port |
-	var val, index, mapped, onsetState;
-
-	val = msg[1];
-
-	// postf("-->fader  v:%\n", val);
-	onsetState = ~faderMapper2.process(val);
-	if ((onsetState==2),  {
-		if(~guard2 != 1) {
-			~guard2 = 1;
-			TempoClock.sched( TempoClock.timeToNextBeat(1/8), {
-				~guard2 = 0;
-				Synth(\snaretuned2);
-			});
-		};
-	});
-},'/Fader2/x', n);
-
-
-(
 SynthDef(\snaretuned2, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	var sig;
 	var sig1, sig2, sig3, sig4, sig5, sig6, sig7, sig8;
@@ -91,14 +26,81 @@ SynthDef(\snaretuned2, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	sig = sig + sig4 / 1.2;
 	sig = HPF.ar(sig, env2);
 	sig = sig * SinOsc.ar(1000);
-
-
-
 	sig = sig * EnvGen.kr(Env([0,1,0],[0.01,0.1]), 1, doneAction:2);
 	sig = sig * 2;
 	sig = Pan2.ar(sig, pan, amp).sum;
 	Out.ar(out, sig);
 }).add;
-);
 
-TempoClock.default.tempo
+SynthDef("kick", {
+	arg out=0,tu = 1,amp=0.1;
+	var env0, env1, env1m, sig;
+	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction:2);
+	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
+	env1m = env1.midicps;
+	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
+	sig = sig + WhiteNoise.ar(1);
+	sig = LPF.ar(sig, env1m*1.5, env0);
+	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
+	sig = sig * amp;
+	sig = sig.clip2(1);
+	Out.ar(out, sig!2);
+}).send(s);
+
+// Example of a music callback
+~p1_flower_sonar = {|i=0, v=0, state=0|
+	// postf("~p1_flower_sonar i:% v:% \n", i, v);
+
+	switch(state,
+		-1, {
+			"----->OFFSET SONAR".postln;
+		},
+		0, {
+			"----->OFF SONAR".postln;
+		},
+		1, {
+			"----->CHANGE SONAR".postln;
+
+		},
+		2, {
+			// "----->ONSET SONAR".postln;
+			switch(i,
+				0, {Synth(\kick)},
+				1, {Synth(\snaretuned2)});
+		},
+	);
+};
+
+// the mappers directly map the sensor values to the music callbacks
+~faderMapper=SensorMaracas.new(thresh:0.1, filterOrder:10, musicCallback: ~p1_flower_sonar, noteIndex:0, quant:1/8);
+~faderMapper2=SensorMaracas.new(thresh:0.1, filterOrder:10, musicCallback: ~p1_flower_sonar, noteIndex:1, quant:1/8);
+
+
+OSCdef(\lemurFader).free;
+OSCdef(\lemurFader, {
+	| msg, time, addr, port |
+	var val, index, mapped, onsetState;
+
+	val = msg[1];
+
+	// postf("-->fader  v:%\n", val);
+	onsetState = ~faderMapper.process(val);
+
+},'/Fader/x', n);
+
+OSCdef(\lemurFader2).free;
+OSCdef(\lemurFader2, {
+	| msg, time, addr, port |
+	var val, index, mapped, onsetState;
+
+	val = msg[1];
+
+	// postf("-->fader  v:%\n", val);
+	~faderMapper2.process(val);
+
+},'/Fader2/x', n);
+
+
+TempoClock.default.tempo;
+
+

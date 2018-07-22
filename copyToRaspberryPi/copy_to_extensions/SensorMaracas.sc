@@ -7,14 +7,15 @@ SensorMaracas {
 	isNoteOn: 2
 	isNoteOff: -1
 	*/
-	var <>thresh, filterOrder, prevVal, prevDirection, prevArray;
-	*new {|thresh= 0.5, filterOrder=10|
-		^super.newCopyArgs(thresh, filterOrder).reset;
+	var <>thresh, filterOrder, <>musicCallback, <>noteIndex, <>quant, prevVal, prevDirection, prevArray, guard;
+	*new {|thresh= 0.5, filterOrder=10, musicCallback, noteIndex=0, quant=0|
+		^super.newCopyArgs(thresh, filterOrder, musicCallback, noteIndex, quant).reset;
 	}
 	reset {
 		prevDirection = -1; // 1: up, -1: down
 		prevVal = thresh;
 		prevArray =Array.fill(filterOrder, 0);
+		guard = 0;
 	}
 
 	// send a note On state whenever the sensor changes direction, or crosses the initial threshold.
@@ -38,6 +39,27 @@ SensorMaracas {
 		// return state value
 		if (isNoteOn,  {returnState=2});
 		if (isNoteOff,  {returnState= -1});
+
+		// on note On, apply quantization, if required
+		if (isNoteOn,
+
+			{ if(quant>0,
+				{	if(guard != 1) {
+					guard = 1;
+					TempoClock.sched( TempoClock.timeToNextBeat(quant), {
+						guard = 0;
+						musicCallback.value(noteIndex, newValue, returnState);
+					});
+				};},
+				{
+					musicCallback.value(noteIndex, newValue, returnState);
+			});
+			},
+
+			{
+				{musicCallback.value(noteIndex, newValue, returnState);};
+			}
+		);
 
 		^returnState
 	}

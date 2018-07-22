@@ -7,9 +7,9 @@ SensorMaracas {
 	isNoteOn: 2
 	isNoteOff: -1
 	*/
-	var <>thresh, filterOrder, <>musicCallback, <>noteIndex, <>quant, prevVal, prevDirection, prevArray, guard;
-	*new {|thresh= 0.5, filterOrder=10, musicCallback, noteIndex=0, quant=0|
-		^super.newCopyArgs(thresh, filterOrder, musicCallback, noteIndex, quant).reset;
+	var <>inputMax, <>thresh, filterOrder, <>musicCallback, <>noteIndex, <>quant, prevVal, prevDirection, prevArray, guard;
+	*new {|inputMax=1024, thresh= 0.5, filterOrder=10, musicCallback, noteIndex=0, quant=0|
+		^super.newCopyArgs(inputMax, thresh, filterOrder, musicCallback, noteIndex, quant).reset;
 	}
 	reset {
 		prevDirection = -1; // 1: up, -1: down
@@ -21,6 +21,8 @@ SensorMaracas {
 	// send a note On state whenever the sensor changes direction, or crosses the initial threshold.
 	process {|newValue|
 		var returnState, isNoteOn, isNoteOff, isOn, isOff, direction;
+
+		newValue = newValue / inputMax;
 
 		direction = if ( (newValue > prevVal), {1}, {-1});
 

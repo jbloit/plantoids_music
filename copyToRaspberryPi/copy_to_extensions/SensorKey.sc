@@ -9,9 +9,9 @@ SensorKey {
 	isOn: 1
 	isOff: 0
 	*/
-	var <>thresh, <>triggerUpwards, <>musicCallback, <>noteIndex, <>quant, prevVal, guard;
-	*new {|thresh= 0.5, triggerUpwards=1, musicCallback, noteIndex=0, quant=0|
-		^super.newCopyArgs(thresh, triggerUpwards, musicCallback, noteIndex, quant).reset;
+	var <>inputMax, <>thresh, <>triggerUpwards, <>musicCallback, <>noteIndex, <>quant, prevVal, guard;
+	*new {|inputMax=1024, thresh= 0.5, triggerUpwards=1, musicCallback, noteIndex=0, quant=0|
+		^super.newCopyArgs(inputMax, thresh, triggerUpwards, musicCallback, noteIndex, quant).reset;
 	}
 	reset {
 		prevVal = thresh;
@@ -21,7 +21,9 @@ SensorKey {
 	process {|newValue|
 		var returnState, isNoteOn, isNoteOff, isOn, isOff;
 
-	if ((triggerUpwards > 0), {
+		newValue = newValue / inputMax;
+
+		if ((triggerUpwards > 0), {
 			// UPWARDS state detection
 			isNoteOn = (prevVal <= thresh) && (newValue >= thresh);
 			isNoteOff = (prevVal >= thresh) && (newValue <= thresh);

@@ -43,7 +43,7 @@ SensorMaracas {
 		if (isNoteOff,  {returnState= -1});
 
 		// on note On, apply quantization, if required
-		if (isNoteOn,
+		if ((returnState == 2),
 
 			{ if(quant>0,
 				{	if(guard != 1) {
@@ -59,7 +59,7 @@ SensorMaracas {
 			},
 
 			{
-				{musicCallback.value(noteIndex, newValue, returnState);};
+				musicCallback.value(noteIndex, newValue, returnState);
 			}
 		);
 

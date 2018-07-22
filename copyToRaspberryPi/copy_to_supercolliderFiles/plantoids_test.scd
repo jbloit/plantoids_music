@@ -262,8 +262,7 @@ fork{
 
 	~p1_flower_temperature = {
 		|i=0, v=0|
-		v.postln;
-		if(~postOSC==True,	{postf("~p1_flower_temperature i:% v:% \n", i, v);});
+		// v.postln;
 		~tempoFactor = v + 0.8;
 		TempoClock.tempo = ~tempoFactor;
 	};

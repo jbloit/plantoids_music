@@ -21,7 +21,11 @@ SensorKey {
 	process {|newValue|
 		var returnState, isNoteOn, isNoteOff, isOn, isOff;
 
+		// postf("KEY, newValue: % \n", newValue);
+
 		newValue = newValue / inputMax;
+
+		// postf("KEY, newValue: % \n", newValue);
 
 		if ((triggerUpwards > 0), {
 			// UPWARDS state detection
@@ -47,8 +51,11 @@ SensorKey {
 		if (isOn,  {returnState=1});
 		if (isOff,  {returnState=0});
 
+
+		// postf("KEY, returnState: % \n", returnState);
+
 		// on note On, apply quantization, if required
-		if (isNoteOn,
+		if ((returnState == 2),
 
 			// PROCESS NOTE ON FOR QUANTIZATION
 			{ if(quant>0,
@@ -66,7 +73,8 @@ SensorKey {
 
 			// DONT PROCESS OTHER EVENTS, JUST EXECUTE CALLBACK
 			{
-				{musicCallback.value(noteIndex, newValue, returnState);};
+					musicCallback.value(noteIndex, newValue, returnState);
+				// postf("NON-ONSET event: % \n", returnState);
 			}
 		);
 

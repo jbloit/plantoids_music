@@ -1,5 +1,6 @@
 
-~faderMapper = SensorMaracas.new(0.1, 200);
+~faderMapper = SensorMaracas.new(0.1, 100);
+~faderMapper2 = SensorMaracas.new(0.1, 100);
 
 SynthDef("kick", {
 	arg out=0,tu = 1,amp=0.1;
@@ -48,7 +49,7 @@ OSCdef(\lemurFader2, {
 	val = msg[1];
 
 	// postf("-->fader  v:%\n", val);
-	onsetState = ~faderMapper.process(val);
+	onsetState = ~faderMapper2.process(val);
 	if ((onsetState==2),  {
 		if(~guard2 != 1) {
 			~guard2 = 1;
@@ -89,7 +90,7 @@ SynthDef(\snaretuned2, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 
 	sig = sig + sig4 / 1.2;
 	sig = HPF.ar(sig, env2);
-	sig = sig * SinOsc.ar(1000); 
+	sig = sig * SinOsc.ar(1000);
 
 
 

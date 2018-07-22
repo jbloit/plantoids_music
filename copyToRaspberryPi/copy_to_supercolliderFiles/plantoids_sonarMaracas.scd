@@ -63,7 +63,7 @@ SynthDef("kick", {
 
 		},
 		2, {
-			// "----->ONSET SONAR".postln;
+			"----->ONSET SONAR".postln;
 			switch(i,
 				0, {Synth(\kick)},
 				1, {Synth(\snaretuned2)});
@@ -73,7 +73,7 @@ SynthDef("kick", {
 
 // the mappers directly map the sensor values to the music callbacks
 ~faderMapper=SensorMaracas.new(thresh:0.1, filterOrder:10, musicCallback: ~p1_flower_sonar, noteIndex:0, quant:1/8);
-~faderMapper2=SensorMaracas.new(thresh:0.1, filterOrder:10, musicCallback: ~p1_flower_sonar, noteIndex:1, quant:1/8);
+~faderMapper2=SensorKey.new(thresh:0.5, musicCallback: ~p1_flower_sonar, noteIndex:1, quant:1/4);
 
 
 OSCdef(\lemurFader).free;

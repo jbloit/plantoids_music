@@ -51,7 +51,7 @@ OSCdef(\p1_parseAnalogSensors).free;
 OSCdef(\p1_parseAnalogSensors, {
 	| msg, time, addr, port |
 	var val, index, mapped, onsetState;
-	index = msg[1] - 1; // numbered from 1 in OSC...
+	index = msg[1];
 	val = msg[2];
 
 	~p1_analogMappers[index].process(val);
@@ -70,7 +70,7 @@ OSCdef(\p1_parseSonars).free;
 OSCdef(\p1_parseSonars, {
 	| msg, time, addr, port |
 	var val, index, mapped, onsetState;
-	index = msg[1] - 1; // numbered from 1 in OSC...
+	index = msg[1];
 	val = msg[2];
 
 	~p1_sonarMappers[index].process(val);
@@ -85,7 +85,7 @@ OSCdef(\p1_parseTemperature).free;
 OSCdef(\p1_parseTemperature, {
 	| msg, time, addr, port |
 	var val;
-	val = msg[1] ;
+	val = msg[2] ;
 	~p1_temperatureMapper.process(val);
 
 }, '/plantoid/1/1/temp', n);
@@ -98,7 +98,7 @@ OSCdef(\p1_parseHumidity).free;
 OSCdef(\p1_parseHumidity, {
 	| msg, time, addr, port |
 	var val;
-	val = msg[1];
+	val = msg[2];
 	~p1_humidityMapper.process(val);
 }, '/plantoid/1/1/hum', n);
 

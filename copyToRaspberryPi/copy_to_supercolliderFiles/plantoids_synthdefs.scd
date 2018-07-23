@@ -375,7 +375,7 @@ SynthDef(\notes,{arg out=0,freq = 69,gate = 1,tu = 1,amp=0.5;
 	Out.ar(out,sig*amp);
 }).add;
 
-Synth(\notes, [\freq, 79])
+// Synth(\notes, [\freq, 79])
 
 
 SynthDef(\notes2,{arg out=0,gate =1,notes=68,at = 0.01,sus=0.4,snd=18;

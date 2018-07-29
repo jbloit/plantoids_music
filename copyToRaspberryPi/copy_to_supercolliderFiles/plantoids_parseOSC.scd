@@ -103,67 +103,61 @@ OSCdef(\p1_parseHumidity, {
 }, '/plantoid/1/1/hum', n);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
 // ------------------------------------------  Plant 2
+
+~p2_analogMappers = [
+	//0
+	SensorKey.new(inputMax:~flex_max, thresh:0.1, musicCallback: ~p2_flower_flexQuake, noteIndex:0, quant:0),
+	//1
+	SensorKey.new(inputMax:~ldr_max, thresh:0.3, musicCallback: ~p2_leaves_light, noteIndex:0, quant:1/8),
+	//2
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_leaves_light, noteIndex:1, quant:1/8),
+	//3
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:0, quant:1/8),
+	//4
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:1, quant:1/8),
+	//5
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:2, quant:1/8),
+	//6
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:3, quant:1/8),
+	//7
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:4, quant:1/8),
+
+];
+
 OSCdef(\p2_parseAnalogSensors).free;
 OSCdef(\p2_parseAnalogSensors, {
 	| msg, time, addr, port |
 
 	var val, index, mapped, onsetState;
-	index = msg[1]; // numbered from 1 in OSC...
+	index = msg[1];
+	val = msg[2] ;
 
-	switch(index,
-		1, {val = msg[2] / ~flex_max;
-			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:false);
-			~p2_flower_flexQuake.value(0, val, onsetState);
-		},
-		2, {val = msg[2] / ~ldr_max;
-			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:true);
-			~p2_leaves_light.value(0, val, onsetState);
-		},
-		3, {val = msg[2] / ~ldr_max;
-			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:true);
-			~p2_leaves_light.value(1, val, onsetState);
-		}
-	);
-	if(
-		( index > 3 ),
-		{val = msg[2] / ~ldr_max;
-			onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:true);
-			~p2_stem_light.value( (index-4),  val, onsetState);
-		},
-		{}
-	);
+	~p2_analogMappers[index].process(val);
 
 }, '/plantoid/2/1/analog', n);
+
+
+~p2_sonarMappers  = [
+	SensorMaracas.new(inputMax:~sonar_max, thresh:0.1, filterOrder:10, musicCallback: ~p2_stem_sonar, noteIndex:0, quant:1/8),
+	SensorMaracas.new(inputMax:~sonar_max, thresh:0.1, filterOrder:10, musicCallback: ~p2_stem_sonar, noteIndex:1, quant:1/8),
+	SensorMaracas.new(inputMax:~sonar_max, thresh:0.1, filterOrder:10, musicCallback: ~p2_stem_sonar, noteIndex:2, quant:1/8),
+	SensorMaracas.new(inputMax:~sonar_max, thresh:0.1, filterOrder:10, musicCallback: ~p2_stem_sonar, noteIndex:3, quant:1/8),
+];
 
 OSCdef(\p2_parseSonars).free;
 OSCdef(\p2_parseSonars, {
 	| msg, time, addr, port |
 	var val, index, mapped, onsetState;
-	index = msg[1]; // numbered from 1 in OSC...
-	val = msg[2] / ~sonar_max;
+	index = msg[1];
+	val = msg[2];
 
-	onsetState =~analogOnset.value(plantIndex:1, sensorIndex:index, newValue:val, isLight:false, thresh:0.1);
-	~p2_stem_sonar.value(index-1, val, onsetState);
+	~p2_sonarMappers[index].process(val);
 
 }, '/plantoid/2/1/sonar', n);
 
 
+/*
 // ------------------------------------------  Plant 3
 OSCdef(\p3_parseAnalogSensors).free;
 OSCdef(\p3_parseAnalogSensors, {

@@ -54,10 +54,31 @@ fork{
 	~arpLevel = 0.5;
 	~bassLevel = 0.5;
 
-	~printBassVelocity = {|vel=0|
-		postf("---- bass velocity %\n", vel);
-	};
 
+	~p11_freq1 = Bus.control(s,1);
+	~p11_freq2 = Bus.control(s,1);
+	~p11_freq3 = Bus.control(s,1);
+	~p11_amp = Bus.control(s,1);
+	~p11_rel = Bus.control(s,1);
+	~p11_noise = Bus.control(s,1);
+
+	~p11_freq1.value = 0.1;
+	~p11_freq2.value = 0.1;
+	~p11_freq3.value = 0.1;
+	~p11_amp.value = 0.3;
+	~p11_rel.value = 0.1;
+	~p11_noise.value = 0.1;
+
+	Pdef(\plant11,
+		Pbind(\instrument,\plant11,
+			\dur,Prand([1/8,1/4,1/2],inf),
+			\freq1,~p11_freq1.asMap,
+			\freq2,~p11_freq2.asMap,
+			\freq3,~p11_freq3.asMap,
+			\amp,~p11_amp.asMap,
+			\rel,~p11_rel.asMap,
+			\noise,~p11_noise.asMap)
+	).play(quant:1);
 
 
 	~p1_flower_ambientLight = {
@@ -136,16 +157,20 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+/*				switch(i,
+					0, {~p1_amp.value = v;},
+					1, {~p11_amp.value = v;}
+				)*/
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tac.play;
-				~ldrOnset.value(0, i, v);
 			},
 		);
 	};
 
 	~p1_stem_light = {|i=0, v=0, state=0|
+
+		postf("~p1_stem_light i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
@@ -155,11 +180,23 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				switch(i,
+					0,{~p11_freq1.value = v},
+					1,{~p11_freq2.value = v},
+					2,{~p11_freq3.value = v},
+					3,{~p11_rel.value = v},
+					4,{~p11_noise.value = v},
+					5,{~p11_freq1.value = v},
+					6,{~p11_freq2.value = v},
+					7,{~p11_freq3.value = v},
+					8,{~p11_rel.value = v},
+					9,{~p11_noise.value = v},
+					10,{~p11_freq1.value = v},
+				)
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tic.play;
-				~ldrOnset.value(0, i, v);
+
 			},
 		);
 	};
@@ -167,6 +204,7 @@ fork{
 	~p1_stem_sonar = {|i=0, v=0, state=0|
 
 		var iv = ((v*i) / 4) + 0.01;
+
 		// postf("~p1_stem_sonar i:% v:% \n", i, v);
 
 		switch(state,
@@ -179,7 +217,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p1_sonars[i].set(\amp, v);
+
 			},
 			2, {
 				// "----->ONSET SONAR".postln;

@@ -69,6 +69,7 @@ fork{
 	~p11_rel.value = 0.1;
 	~p11_noise.value = 0.1;
 
+	Pdef(\plante11).quant =4;
 	Pdef(\plant11,
 		Pbind(\instrument,\plant11,
 			\dur,Prand([1/8,1/4,1/2],inf),
@@ -78,7 +79,7 @@ fork{
 			\amp,~p11_amp.asMap,
 			\rel,~p11_rel.asMap,
 			\noise,~p11_noise.asMap)
-	).play(quant:1);
+	).play();
 
 
 	~p1_flower_ambientLight = {
@@ -170,7 +171,7 @@ fork{
 
 	~p1_stem_light = {|i=0, v=0, state=0|
 
-		postf("~p1_stem_light i:% v:% \n", i, v);
+		// postf("~p1_stem_light i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;

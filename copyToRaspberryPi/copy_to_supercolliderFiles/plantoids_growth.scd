@@ -240,6 +240,24 @@ fork{
 	~p2_sonars= Array.newClear(4);
 	~p2_quake;
 
+
+	~p21_freq = Bus.control(s,1);
+	~p21_noise = Bus.control(s,1);
+	~p21_amp = Bus.control(s,1);
+
+	~p21_amp.value = 0.2;
+	~p21_freq.value = 0.1;
+	~p21_noise.value = 0.1;
+
+	Pdef(\plante21).quant =4;
+	Pdef(\plant21,
+	Pbind(\instrument,\plant21,
+		\dur,Prand([1/8,1/4,1/8],inf),
+		\amp,~p21_amp.asMap,
+		\freq,~p21_freq.asMap,
+		\noise,~p21_freq.asMap)
+).play;
+
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|
 		// postf("~p2_flower_flexQuake i:% v:% \n", i, v);
@@ -267,6 +285,12 @@ fork{
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
+
+				switch(i,
+					0, {~p21_amp.value = v;},
+					1, {~p2_amp.value = v;}
+				);
+
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
@@ -290,6 +314,13 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				switch(i,
+					0,{~p21_freq.value = v},
+					1,{~p11_noise.value = v},
+					2,{~p21_freq.value = v},
+					3,{~p11_noise.value = v},
+					4,{~p21_freq.value = v},
+				)
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
@@ -315,8 +346,10 @@ fork{
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
-				~p2_sonars[i].free;
-				~p2_sonars[i]=Synth(\droneee, [freq: ~rootFreq*1.5*(i+1)]);
+				switch(i,
+					0, {Synth(\plant2, [\freq, v, \amp, v])},
+					1, {Synth(\plant2, [\freq, v, \amp, v])},
+				);
 			},
 		);
 	};

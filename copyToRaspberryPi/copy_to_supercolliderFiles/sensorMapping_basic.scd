@@ -1,3 +1,7 @@
+// DEFAULT SENSOR MAPPERS
+// These map the continous sensor values into discrete events, which are sent to callbacks in a music scene.
+// Add different values for this at the end of your music scene, to override these values.
+
 ~p1_analogMappers = [
 	//0
 	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_flower_ambientLight, noteIndex:0, quant:0),

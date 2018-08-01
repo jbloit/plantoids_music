@@ -37,9 +37,9 @@ SynthDef(\plant1,{arg freq1=0.5,freq2=0.5,freq3=0.5,amp=1,gate=1,rel=1;
 }).add;
 
 
-SynthDef(\plant11,{arg freq1=0.5,freq2=0.5,freq3=0.5,amp=1,gate=1,rel=1,noise=1;
+SynthDef(\plant11,{arg freq1=0.5,freq2=0.5,freq3=0.5,amp=1,gate=1,rel=1,noise=1, factor1=1, factor2=1;
 	var env= EnvGen.ar(Env.perc(0.01,rel.linlin(0,1,0.1,0.8)),gate,doneAction:2);
-	var envf= EnvGen.ar(Env([freq1.linlin(0,1,200,5000),freq2.linlin(0,1,200,1500),freq3.linlin(0,1,100,300)],[0.01,0.25]));
+	var envf= EnvGen.ar(Env([freq1.linlin(0,1,200,5000),freq2.linlin(0,1,200,1500),freq3.linlin(0,1,100,300)]*factor1*factor2,[0.01,0.25]));
 	var sig = WhiteNoise.ar(env*noise)+SinOsc.ar(envf)*env*amp.linlin(0,1,0,0.25);
 	sig = Limiter.ar(LeakDC.ar(sig),0.9);
 	Out.ar([0,1],sig);

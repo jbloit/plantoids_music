@@ -15,7 +15,7 @@
 //drone
 
 
-Ndef(\dronesplantes, {|
+SynthDef(\droneplant1, {|
 	freq= 100,
 	fmod= 0.11,
 	fmoda= 1,
@@ -34,7 +34,8 @@ lfoa);
 	mainsig = Splay.ar(mainsig,lfospread, amp,lfocenter);
 	mainsig = Limiter.ar(LeakDC.ar(mainsig),0.8);
 	mainsig;
-        }).play;
+	Out.ar(0, mainsig);
+        }).add;
 
 
 ~sonars1 = Bus.control(s,1);
@@ -56,6 +57,12 @@ lfoa);
 ~drone.set(\amod, ~leaves_light1.asMap);
 ~drone.set(\amoda, ~leaves_light2.asMap);
 
+~sonars1.value = 0.9;
+~sonars2.value = 0.8;
+~sonars3.value = 0.9;
+~sonars4.value = 0.8;
+~leaves_light1.value = 0.9;
+~leaves_light2.value = 0.6;
 
 
 Ndef(\dronesplantes).edit;

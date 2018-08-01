@@ -69,18 +69,39 @@ fork{
 	~p11_rel.value = 0.1;
 	~p11_noise.value = 0.1;
 
-	Pdef(\plante11).quant =4;
+
+	~p11_root = Bus.control(s,1);
+	~p11_root.value = 0.3;
+
+/*	Pdef(\plant11).quant =4;
+	 Pdef(\plant11,
+	 	Pbind(\instrument,\plant11,
+	 		\dur,Prand([1/8,1/4,1/2],inf),
+			\
+	 		\freq1, Prand([~p11_freq1.asMap/2, ~p11_freq1.asMap*2, ~p11_freq1.asMap/4], inf) * ~p11_root.asMap,
+	 		\freq2,Prand([~p11_freq2.asMap/2, ~p11_freq2.asMap*2, ~p11_freq2.asMap/4], inf) * ~p11_root.asMap,
+	 		\freq3,Prand([~p11_freq3.asMap/2, ~p11_freq3.asMap*2, ~p11_freq3.asMap/4], inf) * ~p11_root.asMap,
+	 		\amp,~p11_amp.asMap,
+	 		\rel,~p11_rel.asMap,
+
+	 	\noise,~p11_noise.asMap)
+	 ).play();*/
+
+	~p11_scale = rrand(0.0, 1.0!10);
+
+	Pdef(\plant11).quant =4;
 	Pdef(\plant11,
 		Pbind(\instrument,\plant11,
 			\dur,Prand([1/8,1/4,1/2],inf),
-			\freq1,~p11_freq1.asMap,
+			\factor1, ~p11_root.asMap,
+			\factor2, Prand(~p11_scale, inf),
+			\freq1, ~p11_freq1.asMap,
 			\freq2,~p11_freq2.asMap,
 			\freq3,~p11_freq3.asMap,
 			\amp,~p11_amp.asMap,
 			\rel,~p11_rel.asMap,
 			\noise,~p11_noise.asMap)
 	).play();
-
 
 	~p1_flower_ambientLight = {
 		|i=0, v=0|
@@ -90,6 +111,7 @@ fork{
 		~percLevel = 1 - v;
 	};
 
+	s.makeGui;
 	~p1_flower_flexQuake = {|i=0, v=0, state=0|
 		// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
 
@@ -105,8 +127,10 @@ fork{
 
 			},
 			2, {
-				// "----->ONSET FLEX".postln;
-				Synth(\thump, [\filter, v, \amp, v/2]);
+				"----->ONSET FLEX".postln;
+				~p11_root.value = rrand(0.0, 1.0).postln;
+				~p11_scale = rrand(0.0, 1.0!10);
+				// postf("flex rand : %\n", ~p11_root.getSynchronous);
 			},
 		);
 	};
@@ -256,7 +280,7 @@ fork{
 		\amp,~p21_amp.asMap,
 		\freq,~p21_freq.asMap,
 		\noise,~p21_freq.asMap)
-).play;
+);
 
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|

@@ -51,6 +51,13 @@
 		var src= BLowPass4.ar(Saw.ar(freq, amp), freq+(mod+1*100).min(900), 1-env+0.1);
 		OffsetOut.ar(out, Pan2.ar(src*env, pan));
 	}).add;
+
+	SynthDef(\avbassperc, {|out= 0, amp= 0.1, freq= 100, pan= 0, atk= 0.01, rel= 0.8, cur= -4, mod= 0|
+		var env= EnvGen.ar(Env.perc(atk, 0.75, rel, 1, cur), doneAction:2);
+		var src= BLowPass4.ar(Saw.ar(freq, amp), freq+(mod+1*100).min(900), 1-env+0.1);
+		OffsetOut.ar(out, Pan2.ar(src*env, pan));
+	}).add;
+
 	SynthDef(\avlead, {|out= 0, amp= 0.1, freq= 500, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
 		var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
 		var src= Pulse.ar(freq, 1-env.lag(1)*0.5, amp);
@@ -61,3 +68,4 @@
 		var src= BPF.ar(WhiteNoise.ar(amp+SinOsc.ar(mod, 0.5pi, amp*0.25)), XLine.kr(start, end, 20), 2-env);
 		OffsetOut.ar(out, Pan2.ar(src*env, pan+SinOsc.kr(0.1, 0, 0.3)));
 	}).add;
+

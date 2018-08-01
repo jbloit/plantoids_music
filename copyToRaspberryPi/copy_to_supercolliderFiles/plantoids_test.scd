@@ -88,14 +88,10 @@ fork{
 	~p1_wind;
 	~p1_sonars= Array.newClear(4);
 	~p1_quake;
-	~bassModulation = 1;
+
 	~percLevel = 0.5;
 	~arpLevel = 0.5;
-	~bassLevel = 0.5;
 
-	~printBassVelocity = {|vel=0|
-		postf("---- bass velocity %\n", vel);
-	};
 
 	Pdef(\arp1).quant= 4;
 	Pdef(\arp2).quant= 4;
@@ -121,17 +117,7 @@ fork{
 		\amp, Pfunc({~arpLevel})*Pseq([1, 0], inf)*0.1,
 	)).play;
 
-	Pdef(\bass).quant= 4;
-	Pdef(\bass, PmonoArtic(\avbass,
-		\freq, Pseq([100, 50, 50, 120], inf)*Pseq([Pseq([1], 64), Pseq([1.25], 64)], inf),  //transpose each 64*0.25/4= 4 bar
-		\dur, 0.25,
-		\mod, Pfunc({~bassModulation}),
-		\rel, 0.3,
-		\legato, 0.5,
-		\amp, Pfunc({~bassLevel})*Pseq([0.5, 0.5, 0.5, 0.25], inf),
-		\light, Pfunc({arg ev; ~patternEvent.value(0, ev[\amp])}),
-		// \debug, Pfunc({arg ev; ~printBassVelocity.value(ev[\amp])}),
-	)).play;
+
 
 	Pdef(\bd).quant= 4;
 	Pdef(\bd, PmonoArtic(\avbd,
@@ -211,7 +197,7 @@ fork{
 	~p1_flower_humidity = {
 		|i=0, v=0|
 		// postf("~p1_flower_humidity i:% v:% \n", i, v);
-		~bassModulation = v*10;
+
 	};
 
 	~p1_leaves_light = {|i=0, v=0, state=0|
@@ -371,9 +357,22 @@ fork{
 	~remote = NetAddr("127.0.0.1", 12345);
 	~light = {|val=0| ~remote.sendMsg("/music2light/global/tempo", val); "LIGHTOSC".postln};
 
-	// ~light.value(1);
-	// ~light.value(1);
-	// ~light.value(1);
+	~bassLevel = 0.5;
+	~bassModulation = 1;
+
+	Pdef(\bass).quant= 4;
+	Pdef(\bass, PmonoArtic(\avbass,
+		\freq, Pseq([100, 50, 50, 120], inf)*Pseq([Pseq([1], 64), Pseq([1.25], 64)], inf),  //transpose each 64*0.25/4= 4 bar
+		\dur, 0.25,
+		\mod, Pfunc({~bassModulation}),
+		\rel, 0.3,
+		\legato, 0.5,
+		\amp, Pfunc({~bassLevel})*Pseq([0.5, 0.5, 0.5, 0.25], inf),
+		\light, Pfunc({arg ev; ~patternEvent.value(0, ev[\amp])}),
+		// \debug, Pfunc({arg ev; ~printBassVelocity.value(ev[\amp])}),
+	)).play;
+
+
 
 	~p3_sonars= Array.newClear(4);
 
@@ -409,11 +408,11 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~bassModulation = v*10;
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tac.play;
-				~ldrOnset.value(2, i, v);
+
 			},
 		)
 	};
@@ -440,11 +439,11 @@ fork{
 	};
 
 	~p3_stem_sonar = {|i=0, v=0, state=0|
-		// postf("~p3_stem_sonar i:% v:% \n", i, v);
+		// postf("~p3_stem_sonar i:% v:% s: %\n", i, v, state);
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
-				~p3_sonars[i].free;
+
 			},
 			0, {
 				//"----->OFF SONAR".postln;
@@ -455,8 +454,8 @@ fork{
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
-				~p3_sonars[i].free;
-				~p3_sonars[i]=Synth(\droneee, [freq: ~rootFreq*3/5*(i+1)]);
+				Synth(\avbassperc, [\freq, ~rootFreq*3/5*(i+1), \mod, 33]);
+				// ~p3_sonars[i]=Synth(\droneee, [freq: ~rootFreq*3/5*(i+1)]);
 			},
 		);
 	};

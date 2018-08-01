@@ -55,28 +55,24 @@ SensorKey {
 		// postf("KEY, returnState: % \n", returnState);
 
 		// on note On, apply quantization, if required
-		if ((returnState == 2),
-
+		if (returnState == 2) { 
 			// PROCESS NOTE ON FOR QUANTIZATION
-			{ if(quant>0,
-				{	if(guard != 1) {
+			if(quant>0) {	
+				if(guard != 1) {
 					guard = 1;
 					TempoClock.sched( TempoClock.timeToNextBeat(quant), {
 						guard = 0;
 						musicCallback.value(noteIndex, newValue, returnState);
 					});
-				};},
-				{
-					musicCallback.value(noteIndex, newValue, returnState);
-			});
-			},
-
+				}
+			} {
+				musicCallback.value(noteIndex, newValue, returnState);
+			};
+		} {
 			// DONT PROCESS OTHER EVENTS, JUST EXECUTE CALLBACK
-			{
-					musicCallback.value(noteIndex, newValue, returnState);
-				// postf("NON-ONSET event: % \n", returnState);
-			}
-		);
+			musicCallback.value(noteIndex, newValue, returnState);
+			// postf("NON-ONSET event: % \n", returnState);
+		};
 
 		^returnState
 	}

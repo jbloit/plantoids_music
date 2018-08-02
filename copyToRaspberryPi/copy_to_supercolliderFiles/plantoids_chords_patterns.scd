@@ -45,13 +45,13 @@ Pdef(\chordpat,
 			Prout({ arg ev;
 				1.yield;
 				7.do { arg i;
-					m.stepchord_voices[i+1].yield;
+					~stepchord_voices[i+1].yield;
 				}
 			}),
 		],inf).collect({ arg x; if(x==0) { Rest(0) } { 1 } }),
 		//\isRest, Pfunc({ arg ev; ev[\legato] <= 0 }),
-		\lfofreq1, m.bus[\lfofreq1].asMap,
-		\lfofreq2, m.bus[\lfofreq2].asMap,
+		\lfofreq1, ~bus[\lfofreq1].asMap,
+		\lfofreq2, ~bus[\lfofreq2].asMap,
 		\legato, Pseq([0.4,0.3,0.2,0.1],inf),
 		\dur, 1/4,
 		\amp, 0.1,

@@ -25,11 +25,11 @@ SynthDef(\stepchord, { arg out=0, amp=0.1, gate=1, pan=0, freq=200;
 	Out.ar(out, sig);
 }).add;
 
-	m = m ? ();
-	m.bus = m.bus ? ();
-	m.bus[\lfofreq1] = m.bus[\lfofreq1] ?? { Bus.control(s,1) };
-	m.bus[\lfofreq2] = m.bus[\lfofreq2] ?? { Bus.control(s,1) };
-	m.stepchord_voices = 0!11;
+
+	~bus = ~bus ? ();
+	~bus[\lfofreq1] = ~bus[\lfofreq1] ?? { Bus.control(s,1) };
+	~bus[\lfofreq2] = ~bus[\lfofreq2] ?? { Bus.control(s,1) };
+	~stepchord_voices = 0!11;
 Pdef(\chordpat, 
 	Pbind(
 		\instrument, \stepchord,
@@ -41,14 +41,14 @@ Pdef(\chordpat,
 			4,7,9,12,
 			9,7,9,12,
 		],inf),
-		\isRest, Pseq([
+		\xisRest, Pseq([
 			Prout({ arg ev;
 				1.yield;
 				7.do { arg i;
 					m.stepchord_voices[i+1].yield;
 				}
-			}).trace,
-		],inf).coin.not,
+			}),
+		],inf).collect({ arg x; if(x==0) { Rest(0) } { 1 } }),
 		//\isRest, Pfunc({ arg ev; ev[\legato] <= 0 }),
 		\lfofreq1, m.bus[\lfofreq1].asMap,
 		\lfofreq2, m.bus[\lfofreq2].asMap,
@@ -56,6 +56,6 @@ Pdef(\chordpat,
 		\dur, 1/4,
 		\amp, 0.1,
 	)
-).play;
+);
 );
 

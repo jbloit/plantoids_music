@@ -1,6 +1,5 @@
 
 (
-	s.boot;
 fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
@@ -160,7 +159,7 @@ fork{
 				// "----->OFFSET LIGHT".postln;
 				"1".debug;
 
-				m.stepchord_voices[i] = 0;
+				~stepchord_voices[i] = 0;
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
@@ -174,14 +173,9 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				"4".debug;
-//				if(~stepchord_voices[i].isNil) {
-if(v > 0.3) {
-
-					m.stepchord_voices[i] = 1
-}
-//				};
-						//~tic.play;
-				//~ldrOnset.value(0, i, v);
+				if(v > 0.3) {
+					~stepchord_voices[i] = 1
+				}
 			},
 		);
 	};
@@ -202,10 +196,10 @@ if(v > 0.3) {
 				//"jkj".debug(i);
 				[
 					{
-						m.bus[\lfofreq1].set(v.linexp(0,1,0.1,20));
+						~bus[\lfofreq1].set(v.linexp(0,1,0.1,20));
 					},
 					{
-						m.bus[\lfofreq2].set(v.linexp(0,1,0.1,20));
+						~bus[\lfofreq2].set(v.linexp(0,1,0.1,20));
 					}
 				].wrapAt(i).value;
 			},

@@ -51,6 +51,7 @@ SensorMaracas {
 					TempoClock.sched( TempoClock.timeToNextBeat(quant), {
 						guard = 0;
 						musicCallback.value(noteIndex, newValue, returnState);
+						nil;
 					});
 				};},
 				{

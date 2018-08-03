@@ -54,10 +54,10 @@ SensorMaracas_debug {
 		prevDirection = direction;
 
 		// return state value
-		if (isNoteOn,  {returnState=2});
-		if (isNoteOff,  {returnState= -1});
 		if (isOn,  {returnState=1});
 		if (isOff,  {returnState=0});
+		if (isNoteOn,  {returnState=2});
+		if (isNoteOff,  {returnState= -1});
 
 		// on note On, apply quantization, if required
 		if (returnState == 2) {

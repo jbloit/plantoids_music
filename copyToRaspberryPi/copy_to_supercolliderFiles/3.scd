@@ -4,5 +4,5 @@ s.quit;
 s.boot;
 s.waitForBoot{
 	~path = "/home/pi/prynth/server/public/supercolliderfiles/";
-	(~path++"bubbles.scd").load;
+	(~path++"plantoids_growth.scd").load;
 };

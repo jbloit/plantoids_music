@@ -4,7 +4,7 @@
 
 //plante1
 
-SynthDef(\dronesplantes, {|
+SynthDef(\droneplant1, {|
 	freq= 100,
 	fmod= 0.11,
 	fmoda= 1,
@@ -17,13 +17,13 @@ SynthDef(\dronesplantes, {|
 	var lfospread = SinOsc.ar(SinOsc.ar(SinOsc.ar(0.13, 0, 5, 6), 0, 8,
 50), 0, 1, 1);
 	var lfocenter = SinOsc.ar(1.2, 0, 0.6);
-	var mainsig = SinOsc.ar([freq, freq*2,freq*3]+SinOsc.ar([fmod, fmod*2, fmod*3], 0, [fmoda, fmoda*2, fmoda*3]),lfop,
+	var mainsig = SinOsc.ar([freq.linlin(0,1,209,20000), freq.linlin(0,1,209,20000)*2,freq.linlin(0,1,209,20000)*3]+SinOsc.ar([fmod.linlin(0,1,20,20000), fmod.linlin(0,1,20,20000)*2, fmod.linlin(0,1,20,20000)*3], 0, [fmoda, fmoda*2, fmoda*3]),lfop,
 lfoa);
 	mainsig = FreeVerb.ar(mainsig,1,1)+mainsig;
 	mainsig = Splay.ar(mainsig,lfospread, amp,lfocenter);
 	mainsig = Limiter.ar(LeakDC.ar(mainsig),0.8);
 	mainsig;
-	Out.ar([0,1],mainsig);
+	Out.ar(0,mainsig);
         }).add;
 
 
@@ -46,6 +46,20 @@ SynthDef(\plant11,{arg freq1=0.5,freq2=0.5,freq3=0.5,amp=1,gate=1,rel=1,noise=1,
 }).add;
 
 
+SynthDef(\plant12, {
+	arg out=0,tu = 1,amp=1;
+	var env0, env1, env1m, sig;
+	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction:2);
+	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
+	env1m = env1.midicps;
+	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
+	sig = sig + WhiteNoise.ar(1);
+	sig = LPF.ar(sig, env1m*1.5, env0);
+	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
+	sig = sig * amp;
+	sig = sig.clip2(1);
+	Out.ar(out, sig);
+}).add;
 
 /*
 Pdef(\plant1,
@@ -77,13 +91,13 @@ Pdef(\plant11,
 
 SynthDef(\plant2,{arg freq=0.5,amp=1,gate=1;
     var env= EnvGen.ar(Env.perc,gate,doneAction:2);
-	var sig = SinOsc.ar(freq.linlin(0,1,200,800))*env*amp.linlin(0,1,0,0.25 );
+	var sig = SinOsc.ar(freq.linlin(0,1,200,80))*env*amp.linlin(0,1,0,0.25 );
 	sig = Limiter.ar(LeakDC.ar(sig),0.9);
 	Out.ar([0,1],sig);
 }).add;
 SynthDef(\plant21,{arg freq=0.5,amp=1,gate=1,noise=1;
     var env= EnvGen.ar(Env.perc,gate,doneAction:2);
-	var sig = WhiteNoise.ar(noise*env)+SinOsc.ar(freq.linlin(0,1,4000,12000))*env*amp.linlin(0,1,0,0.25);
+	var sig = WhiteNoise.ar(noise*env)+SinOsc.ar(freq.linlin(0,1,400,120))*env*amp.linlin(0,1,0,0.25);
     sig = Limiter.ar(LeakDC.ar(sig),0.9);
 	Out.ar([0,1],sig);
 }).add;
@@ -113,7 +127,7 @@ Pdef(\plant21,
 SynthDef(\plant3,{arg freq=0.5,amp=1,gate=1,filter=600;
     var env= EnvGen.ar(Env.perc,gate,doneAction:2);
 	var envf  = EnvGen.ar(Env([10000,freq.linlin(0,1,30,49).midicps/440*432],[0.001]));
-	var sig = LFSaw.ar(envf*2)*LFSaw.ar(envf)*env*amp.linlin(0,1,0,0.5);
+	var sig = LFSaw.ar(envf*2)*LFSaw.ar(envf)*env*amp.linlin(0,1,0,4);
 	sig = BPF.ar(sig,filter.linlin(0,1,30,12000),1);
 	Out.ar([0,1],sig);
 }).add;
@@ -126,15 +140,8 @@ SynthDef(\plant3,{arg freq=0.5,amp=1,gate=1,filter=600;
 }).add;
 
 
-/*
-Pdef(\plant3,
-	Pbind(\instrument, \plant3,
-		\amp, ~leaves_light31.asMap,
-		\filter, ~leaves_light32.asMap,
-		\dur, Prand([1/8,1/8],inf),
-		\isRest, Pseq([0.5,1],inf).coin.not,  \freq,Prand([~stems_light31.asMap,~stems_light32.asMap,~stems_light33.asMap,~stems_light34.asMap,~stems_light35.asMap],inf)
-)).play;
 
+/*
 Pdef(\plant31,
 	Pbind(\instrument,\plant31,
 		\freq,~sonars31.asMap,

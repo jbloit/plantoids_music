@@ -10,7 +10,7 @@ fork{
 
 	~postOSC  = False;
 	"plantoids_synthdefs.scd".loadRelative(true, {"loaded synthdefs".postln});
-	"plantoids_chords_patterns.scd".loadRelative(true, {"loaded pat".postln});
+	"plantoids_fern_patterns.scd".loadRelative(true, {"loaded pat".postln});
 
 	// ==========================================================
 	//														MUSIC TO LIGHT
@@ -41,7 +41,8 @@ fork{
 
 	~rootFreq = 99;
 
-	~tempoFactor = 1; // factor of 60bpm
+	~tempoVal = 1.0;
+	~tempoFactor = ~tempoVal; // factor of 60bpm
 	TempoClock.tempo = ~tempoFactor;
 
 	/* =======================================
@@ -91,7 +92,7 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
-				Synth(\thump, [\filter, v, \amp, v/2]);
+				~gen_notebank.();
 			},
 		);
 	};
@@ -102,19 +103,15 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
-				~p1_wind.free;},
+			},
 			0, {
 				//"----->OFF FLEX".postln;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p1_wind.set(\freqNorm, v);
-				~p1_wind.set(\amp, v/5);
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
-				~p1_wind.free;
-				~p1_wind = Synth(\windBasic);
 			},
 		);
 	};
@@ -122,14 +119,13 @@ fork{
 	~p1_flower_temperature = {
 		|i=0, v=0|
 		v.postln;
-		~tempoFactor = v + 0.8;
+		~tempoFactor = v.linlin(0,1, 0.9,1.1)*~tempoVal;
 		TempoClock.tempo = ~tempoFactor;
 	};
 
 	~p1_flower_humidity = {
 		|i=0, v=0|
 		// postf("~p1_flower_humidity i:% v:% \n", i, v);
-		~bassModulation = v*10;
 	};
 
 	~p1_leaves_light = {|i=0, v=0, state=0|
@@ -146,8 +142,6 @@ fork{
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tac.play;
-				~ldrOnset.value(0, i, v);
 			},
 		);
 	};
@@ -157,25 +151,24 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
-				"1".debug;
+				//"1".debug;
 
 				~stepchord_voices[i] = 0;
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
-				"2".debug;
+				//"2".debug;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~stepchord_legato[i] = max(v,0.1);
 
-				"3".debug;
+				//"3".debug;
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				"4".debug;
-				if(v > 0.3) {
-					~stepchord_voices[i] = 1
-				}
+				//"4".debug;
+				~stepchord_voices[i] = 1
 			},
 		);
 	};
@@ -232,7 +225,6 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
-				Synth(\thump, [\filter, v, \amp, v/2]);
 			},
 		);
 	};
@@ -250,14 +242,12 @@ fork{
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tac.play;
-				~ldrOnset.value(1, i, v);
 			},
 		);
 	};
 
 	~p2_stem_light = {|i=0, v=0, state=0|
-		postf("~p2_stem_light i:% v:% \n", i, v);
+		//postf("~p2_stem_light i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
@@ -267,11 +257,13 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~fernhi_rest[i] = v.round;
+				if(i==3) {
+					~fernhi_legato = max(v*4,0.2);
+				}
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tic.play;
-				~ldrOnset.value(1, i, v);
 			},
 		);
 	};
@@ -287,9 +279,18 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				[
+					{ ~bus[\fernhi_hpfac].set(v.linexp(0,1, 0.1,22)) },
+					{ ~bus[\fernhi_hprq].set(v.linexp(0,1, 0.1,1)) },
+					{ ~bus[\fernhi_rel].set(v.linlin(0,1, 0.1,1.4)) },
+					//{ ~fernhat_ampfac = v.linlin(0,1, 0.5,1.4).debug("v")},
+					{ ~fernhi_durfac = v.linexp(0,1, 1/2,1/12)},
+				].wrapAt(i).value;
 			},
 			2, {
-				// "----->ONSET SONAR".postln;
+				 //"----->ONSET SONAR".postln;
+				~fernhat_next = 1;
+				~fernhat_ampfac = 2;
 			},
 		);
 	};
@@ -322,7 +323,6 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
-				Synth(\thump, [\filter, v, \amp, v/2]);
 			},
 		);
 
@@ -342,8 +342,6 @@ fork{
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tac.play;
-				~ldrOnset.value(2, i, v);
 			},
 		)
 	};
@@ -360,11 +358,11 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~fernbass_lpftab[i] = v;
+				~bus[\fernbass_lpf].value = ~fernbass_lpftab.collect({ arg a, b; a*( ( b+1 )/10 ) }).sum.linlin(0,2, 50,1500)
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				~tic.play;
-				~ldrOnset.value(2, i, v);
 			},
 		)
 	};
@@ -374,19 +372,20 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
-				~p3_sonars[i].free;
 			},
 			0, {
 				//"----->OFF SONAR".postln;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p3_sonars[i].set(\amp, v);
+				if(i==0) {
+					~fernbass_durfac = ( 1/(2**((0..3))) ).at(( v*3 ).round.asInteger)/2
+				};
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
-				~p3_sonars[i].free;
-				~p3_sonars[i]=Synth(\droneee, [freq: ~rootFreq*3/5*(i+1)]);
+				~fernbass_next = 1;
+				~fernhat_next = 1;
 			},
 		);
 	};
@@ -394,7 +393,7 @@ fork{
 
 	// manage the OSC parsing:
 	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
-	"sensorMapping_basic.scd".loadRelative(true, {"loaded parse OSC".postln});
+	"sensorMapping_fern.scd".loadRelative(true, {"loaded parse OSC fern".postln});
 
 };
 )

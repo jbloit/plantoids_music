@@ -102,20 +102,20 @@ fork{
 		\legato, 0.2,
 		\amp, Pfunc({~arpLevel})*Pseq([1, 1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 48),
 		\pan, -0.3,
-	)).play;
+	));
 	Pdef(\arp2, PmonoArtic(\avlead,
 		\freq, Pseq([100, 120, 300, 50, 120, 300], inf)*2,
 		\dur, 0.25,  //0.25= 1/4
 		\legato, 0.2,
 		\amp, Pfunc({~arpLevel})*Pseq([1, 1, 0], inf)*Pseg(Pseq([0, 0.1], inf), 44),
 		\pan, 0.3,
-	)).play;
+	));
 	Pdef(\arp3, PmonoArtic(\avlead,
 		\freq, Pseq([100, 120, 300, 400, 120, 120, 120], inf)*2,
 		\dur, 0.125,  //0.125= 1/8
 		\legato, 0.2,
 		\amp, Pfunc({~arpLevel})*Pseq([1, 0], inf)*0.1,
-	)).play;
+	));
 
 
 
@@ -125,7 +125,7 @@ fork{
 		\dur, Pseq([1, 1, 1, 1, 1, 1, 2], inf),  //duration pattern - should add up to 8
 		\legato, 0.1,
 		\amp, Pfunc({~percLevel}),
-	)).play;
+	));
 
 	Pdef(\hh).quant= 4;
 	Pdef(\hh, PmonoArtic(\avhh,
@@ -133,7 +133,7 @@ fork{
 		\legato, 0.1,
 		\amp, Pseq([0.25, 1], inf)*Pfunc({~percLevel}),
 		\pan, Pseq([0.3, 0, -0.3], inf),
-	)).play;
+	));
 
 	~p1_flower_ambientLight = {
 		|i=0, v=0|
@@ -360,9 +360,12 @@ fork{
 	~bassLevel = 0.5;
 	~bassModulation = 1;
 
+	~transpose = 1.0;
+
 	Pdef(\bass).quant= 4;
 	Pdef(\bass, PmonoArtic(\avbass,
-		\freq, Pseq([100, 50, 50, 120], inf)*Pseq([Pseq([1], 64), Pseq([1.25], 64)], inf),  //transpose each 64*0.25/4= 4 bar
+		// \freq, Pseq([100, 50, 50, 120], inf)*Pseq([Pseq([1], 64), Pseq([1.25], 64)], inf),  //transpose each 64*0.25/4= 4 bar
+		\freq, Pseq([100, 50, 50, 120], inf) * Pfunc({~transpose}),
 		\dur, 0.25,
 		\mod, Pfunc({~bassModulation}),
 		\rel, 0.3,
@@ -372,6 +375,7 @@ fork{
 		// \debug, Pfunc({arg ev; ~printBassVelocity.value(ev[\amp])}),
 	)).play;
 
+	// comment transformer [ 100, 50, 50, 120] en root*degreePattern*scale
 
 
 	~p3_sonars= Array.newClear(4);
@@ -392,6 +396,7 @@ fork{
 			2, {
 				// "----->ONSET FLEX".postln;
 				Synth(\thump, [\filter, v, \amp, v/2]);
+				~transpose = rrand(1.0, 2.0);
 			},
 		);
 

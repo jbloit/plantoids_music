@@ -1,5 +1,5 @@
+//problem with global ram allocation... how to run on pi level hardware?
 
-(
 fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
@@ -9,11 +9,10 @@ fork{
 	// GLOBAL VARS
 
 	~postOSC  = False;
-	"plantoids_synthdefs.scd".loadRelative(true, {"loaded synthdefs".postln});
-	"plantoids_fern_patterns.scd".loadRelative(true, {"loaded pat".postln});
+	"plantoids_TDi1_synthdefs.scd".loadRelative(true, {"loaded synthdefs".postln});
 
 	// ==========================================================
-	//														MUSIC TO LIGHT
+	//                                                        MUSIC TO LIGHT
 	// ==========================================================
 	~lightRemote = NetAddr("127.0.0.1", 8000);
 
@@ -39,10 +38,9 @@ fork{
 	// P1 Synths
 	// ---------------------------------- /
 
-	~rootFreq = 99;
+	~rootFreq = 60;
 
-	~tempoVal = 1.0;
-	~tempoFactor = ~tempoVal; // factor of 60bpm
+	~tempoFactor = 0.4; // factor of 60bpm
 	TempoClock.tempo = ~tempoFactor;
 
 	/* =======================================
@@ -58,14 +56,32 @@ fork{
 	~arpLevel = 0.5;
 	~bassLevel = 0.5;
 
-	~printBassVelocity = {|vel=0|
-		postf("---- bass velocity %\n", vel);
-	};
 
-	//////"init"
-	Pdef(\chordpat).play;
+	~p11_freq1 = Bus.control(s,1);
+	~p11_freq2 = Bus.control(s,1);
+	~p11_freq3 = Bus.control(s,1);
+	~p11_amp = Bus.control(s,1);
+	~p11_rel = Bus.control(s,1);
+	~p11_noise = Bus.control(s,1);
 
-	////
+	~p11_freq1.value = 0.1;
+	~p11_freq2.value = 0.1;
+	~p11_freq3.value = 0.1;
+	~p11_amp.value = 0.3;
+	~p11_rel.value = 0.1;
+	~p11_noise.value = 0.1;
+
+	Pdef(\plante11).quant =4;
+	Pdef(\plant11,
+		Pbind(\instrument,\plant11,
+			\dur,Prand([1,1/4,1/2,1/4],inf),
+			\freq1,~p11_freq1.asMap,
+			\freq2,~p11_freq2.asMap,
+			\freq3,~p11_freq3.asMap,
+			\amp,~p11_amp.asMap,
+			\rel,~p11_rel.asMap,
+			\noise,~p11_noise.asMap)
+	).play();
 
 
 	~p1_flower_ambientLight = {
@@ -92,7 +108,7 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
-				~gen_notebank.();
+				Synth(\thump, [\filter, v, \amp, v/2]);
 			},
 		);
 	};
@@ -103,15 +119,19 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
-			},
+				~p1_wind.free;},
 			0, {
 				//"----->OFF FLEX".postln;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~p1_wind.set(\freqNorm, v);
+				~p1_wind.set(\amp, v/5);
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
+				~p1_wind.free;
+				~p1_wind = Synth(\windBasic);
 			},
 		);
 	};
@@ -119,13 +139,14 @@ fork{
 	~p1_flower_temperature = {
 		|i=0, v=0|
 		v.postln;
-		~tempoFactor = v.linlin(0,1, 0.9,1.1)*~tempoVal;
+		~tempoFactor = v + 0.8;
 		TempoClock.tempo = ~tempoFactor;
 	};
 
 	~p1_flower_humidity = {
 		|i=0, v=0|
 		// postf("~p1_flower_humidity i:% v:% \n", i, v);
+		~bassModulation = v*5;
 	};
 
 	~p1_leaves_light = {|i=0, v=0, state=0|
@@ -139,6 +160,10 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+/*				switch(i,
+					0, {~p1_amp.value = v;},
+					1, {~p11_amp.value = v;}
+				)*/
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
@@ -146,35 +171,45 @@ fork{
 		);
 	};
 
-	~stepchord_voices = 0!11;
 	~p1_stem_light = {|i=0, v=0, state=0|
+
+		// postf("~p1_stem_light i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
-				//"1".debug;
-
-				~stepchord_voices[i] = 0;
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
-				//"2".debug;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~stepchord_legato[i] = max(v,0.1);
-
-				//"3".debug;
+				switch(i,
+					0,{~p11_freq1.value = v},
+					1,{~p11_freq2.value = v},
+					2,{~p11_freq3.value = v},
+					3,{~p11_rel.value = v},
+					4,{~p11_noise.value = v},
+					5,{~p11_freq1.value = v},
+					6,{~p11_freq2.value = v},
+					7,{~p11_freq3.value = v},
+					8,{~p11_rel.value = v},
+					9,{~p11_noise.value = v},
+					10,{~p11_freq1.value = v},
+				)
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-				//"4".debug;
-				~stepchord_voices[i] = 1
+
 			},
 		);
 	};
 
 	~p1_stem_sonar = {|i=0, v=0, state=0|
-		postf("~p1_stem_sonar i:% v:% \n", i, v);
+
+		var iv = ((v*i) / 4) + 0.01;
+
+		// postf("~p1_stem_sonar i:% v:% \n", i, v);
+
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
@@ -186,18 +221,15 @@ fork{
 			1, {
 				//"----->CHANGE VALUE".postln;
 
-				//"jkj".debug(i);
-				[
-					{
-						~bus[\lfofreq1].set(v.linexp(0,1,0.1,20));
-					},
-					{
-						~bus[\lfofreq2].set(v.linexp(0,1,0.1,20));
-					}
-				].wrapAt(i).value;
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
+				switch(i,
+					0, {Synth(\plant1, [\freq1, iv, \freq2, v, \freq3, 1-v,\amp, v])},
+					1, {Synth(\plant1, [\freq1, iv, \freq2, v, \freq3, 1-v,\amp, v])},
+					2, {Synth(\plant1, [\freq1, iv, \freq2, v, \freq3, 1-v,\amp, v])},
+					3, {Synth(\plant1, [\freq1, iv, \freq2, v, \freq3, 1-v,\amp, v])}
+				);
 			},
 		);
 	};
@@ -209,6 +241,24 @@ fork{
 	~p2_wind;
 	~p2_sonars= Array.newClear(4);
 	~p2_quake;
+
+
+	~p21_freq = Bus.control(s,1);
+	~p21_noise = Bus.control(s,1);
+	~p21_amp = Bus.control(s,1);
+
+	~p21_amp.value = 0.2;
+	~p21_freq.value = 0.1;
+	~p21_noise.value = 0.1;
+
+	Pdef(\plante21).quant =4;
+	Pdef(\plant21,
+	Pbind(\instrument,\plant21,
+		\dur,Prand([1/4,1/4,1/4],inf),
+		\amp,~p21_amp.asMap,
+		\freq,~p21_freq.asMap,
+		\noise,~p21_freq.asMap)
+).play;
 
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|
@@ -225,6 +275,7 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
+				Synth(\thump, [\filter, v, \amp, v/2]);
 			},
 		);
 	};
@@ -236,18 +287,26 @@ fork{
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
+
+				switch(i,
+					0, {~p21_amp.value = v;},
+					1, {~p2_amp.value = v;}
+				);
+
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
+				~tac.play;
+				~ldrOnset.value(1, i, v);
 			},
 		);
 	};
 
 	~p2_stem_light = {|i=0, v=0, state=0|
-		//postf("~p2_stem_light i:% v:% \n", i, v);
+		postf("~p2_stem_light i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
@@ -257,13 +316,18 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~fernhi_rest[i] = v.round;
-				if(i==3) {
-					~fernhi_legato = max(v*4,0.2);
-				}
+				switch(i,
+					0,{~p21_freq.value = v},
+					1,{~p11_noise.value = v},
+					2,{~p21_freq.value = v},
+					3,{~p11_noise.value = v},
+					4,{~p21_freq.value = v},
+				)
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
+				~tic.play;
+				~ldrOnset.value(1, i, v);
 			},
 		);
 	};
@@ -273,24 +337,21 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
+				~p2_sonars[i].free;
 			},
 			0, {
 				//"----->OFF SONAR".postln;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				[
-					{ ~bus[\fernhi_hpfac].set(v.linexp(0,1, 0.1,22)) },
-					{ ~bus[\fernhi_hprq].set(v.linexp(0,1, 0.1,1)) },
-					{ ~bus[\fernhi_rel].set(v.linlin(0,1, 0.1,1.4)) },
-					//{ ~fernhat_ampfac = v.linlin(0,1, 0.5,1.4).debug("v")},
-					{ ~fernhi_durfac = v.linexp(0,1, 1/2,1/12)},
-				].wrapAt(i).value;
+				~p2_sonars[i].set(\amp, v);
 			},
 			2, {
-				 //"----->ONSET SONAR".postln;
-				~fernhat_next = 1;
-				~fernhat_ampfac = 2;
+				// "----->ONSET SONAR".postln;
+				switch(i,
+					0, {Synth(\plant2, [\freq, v, \amp, v])},
+					1, {Synth(\plant2, [\freq, v, \amp, v])},
+				);
 			},
 		);
 	};
@@ -323,6 +384,7 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
+				Synth(\thump, [\filter, v, \amp, v/2]);
 			},
 		);
 
@@ -342,6 +404,8 @@ fork{
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
+				~tac.play;
+				~ldrOnset.value(2, i, v);
 			},
 		)
 	};
@@ -358,11 +422,11 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~fernbass_lpftab[i] = v;
-				~bus[\fernbass_lpf].value = ~fernbass_lpftab.collect({ arg a, b; a*( ( b+1 )/10 ) }).sum.linlin(0,2, 50,1500)
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
+				~tic.play;
+				~ldrOnset.value(2, i, v);
 			},
 		)
 	};
@@ -372,20 +436,19 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
+				~p3_sonars[i].free;
 			},
 			0, {
 				//"----->OFF SONAR".postln;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				if(i==0) {
-					~fernbass_durfac = ( 1/(2**((0..3))) ).at(( v*3 ).round.asInteger)/2
-				};
+				~p3_sonars[i].set(\amp, v);
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
-				~fernbass_next = 1;
-				~fernhat_next = 1;
+				~p3_sonars[i].free;
+				~p3_sonars[i]=Synth(\droneee, [freq: ~rootFreq*3/5*(i+1)]);
 			},
 		);
 	};
@@ -393,7 +456,5 @@ fork{
 
 	// manage the OSC parsing:
 	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
-	"sensorMapping_fern.scd".loadRelative(true, {"loaded parse OSC fern".postln});
 
 };
-)

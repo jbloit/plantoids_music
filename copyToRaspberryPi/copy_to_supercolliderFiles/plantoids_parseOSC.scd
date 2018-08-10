@@ -2,7 +2,7 @@
 // Allows to decouple the OSC message parsing and the composition
 // this maps analog index to worker functions
 
-~postOSC = false;
+~postOSC = true;
 
 ~ldr_max = 1024;
 ~flex_max = 1024;

@@ -72,3 +72,6 @@ sig=
 		);
 		Out.ar([0,1],sig*env2*0.02*amp);
 }).add;
+
+
+

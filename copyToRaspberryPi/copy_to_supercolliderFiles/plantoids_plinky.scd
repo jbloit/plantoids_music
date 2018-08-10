@@ -318,7 +318,7 @@ fork{
 
 	// PLANT 3 = PERC ?
 
-	Pdef(\kick,Pbind(\instrument,\kick,\dur,1,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play;
+	Pdef(\kick,Pbind(\instrument,\kick,\dur,1,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play(quant:4);
 
 	Ndef(\reverb,{
 		var in=InFeedback.ar(0,2);
@@ -400,6 +400,12 @@ fork{
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
+				switch(i,
+					0, {if (v >0.6) {Synth(\snare)} {Synth(\hat)}; },
+					1, {if (v>0.6) {Synth(\junglesnare)} {Synth(\kick808)}; },
+
+				);
+
 			},
 		);
 	};

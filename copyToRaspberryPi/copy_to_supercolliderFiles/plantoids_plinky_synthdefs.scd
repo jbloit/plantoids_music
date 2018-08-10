@@ -9,7 +9,7 @@ SynthDef(\kick, {
 	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
 	sig = sig + WhiteNoise.ar(1);
 	sig = LPF.ar(sig, env1m*1.5, env0);
-	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
+	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0);
 	sig = sig * amp*0.3;
 	sig = sig.clip2(1);
 	Out.ar([0,1], sig);
@@ -102,7 +102,7 @@ Pbind(\instrument, \sampler,
 ).play*/
 
 // MONO KICKS
-
+/*
 SynthDef("kick", {
 	arg out=0,tu = 1,amp=1;
 	var env0, env1, env1m, sig;
@@ -117,6 +117,7 @@ SynthDef("kick", {
 	sig = sig.clip2(1);
 	Out.ar(out, sig);
 }).send(s);
+*/
 
 SynthDef("kickhi", {
 	arg out=0,tu = 1;
@@ -217,7 +218,7 @@ SynthDef(\kick808,{arg rel=1,tu=1,amp=0.5;
 	var enf  = EnvGen.ar(Env([1000,20,20],[0.001,0.001,0.001],-4));
 	var sig = SinOsc.ar(tu*(enf+40))*env;
 	sig = sig + LPF.ar(SinOsc.ar(SinOsc.ar(100,0,50,100*tu),0,0.2)*env,1000);
-	Out.ar(0,sig*env*amp);
+	Out.ar([0,1],sig*env*amp);
 }).add;
 // Synth(\kick808)
 
@@ -228,7 +229,7 @@ SynthDef(\hat,{arg gate = 1, amp=1, out=0,rel=0.1;
 	var sig = PinkNoise.ar(env);
 	sig = HPF.ar(sig,freq);
 	sig = sig.tanh;
-	Out.ar(out,sig*amp*12);
+	Out.ar([0,1],sig*amp*12);
 }).add;
 
 // Synth(\hat)
@@ -256,7 +257,7 @@ SynthDef(\hat808, { arg out=0,tu=1, amp=0.1, gate=1, pan=0;
 	sig = sig * (1+EnvGen.ar(Env.perc((-0.1),\rel.kr(0.1),-4),gate))*tu;
 	sig = Ringz.ar(sig,(10..15)*1000.234,1).mean;
 	sig = RHPF.ar(sig, \lpf.kr(2000)*env*tu, \rq.kr(0.5));
-	Out.ar(out, sig*amp);
+	Out.ar([0,1], sig*amp);
 }).add;
 
 
@@ -316,7 +317,7 @@ SynthDef(\snare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
 	sig = sig + Mix.ar(BPF.ar(sig,[327,430],[0.5,0.5])*0.1);
 	sig = RLPF.ar(sig, \lpf.kr(15100)*tu, \rq.kr(0.5));
 	sig = sig * EnvGen.ar(Env.perc(0.01,\rel.kr(0.1),-4),gate,doneAction:2);
-	Out.ar(out, sig*amp);
+	Out.ar([0,1], sig*amp);
 }).add;
 // Synth(\snare)
 
@@ -473,4 +474,13 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 
 
 
+
+
+
+SynthDef(\plant1,{arg freq=432,amp=1,gate=1;
+    var env= EnvGen.ar(Env.perc,gate,doneAction:2);
+	var sig = SinOsc.ar(freq/440*432)*env*amp.linlin(0,1,0,0.25 );
+	sig = Limiter.ar(LeakDC.ar(sig),0.9);
+	Out.ar([0,1],sig*0.1);
+}).add;
 

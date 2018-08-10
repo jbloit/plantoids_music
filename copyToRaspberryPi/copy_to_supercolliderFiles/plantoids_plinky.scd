@@ -54,10 +54,18 @@ fork{
 	~state_flex=(-1);
 	~detune = 0;
 	~transpose=0;
+
+	// arpeggiator
+	~stepsCount = 11;
+	~arpSteps = Array.fill(~stepsCount,{0});
+	~setStep = {|i, val|
+		if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
+	};
+
 	Pdef(\lead1,
 		Pbind(\instrument,\lead1,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead1_degree+~detune}),
+			\degree, Pfunc({~lead1_degree}),
 			\scale, Pfunc({~scale}),
 			\root,Pfunc({~transpose}),
 			\dur, 1,
@@ -67,7 +75,7 @@ fork{
 	Pdef(\lead2,
 		Pbind(\instrument,\lead2,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead2_degree+3+~detune}),
+			\degree, Pfunc({~lead2_degree+3}),
 			\scale, Pfunc({~scale}),
 			\root,Pfunc({~transpose}),
 			\octave,4,
@@ -76,9 +84,9 @@ fork{
 	).stop;
 
 	Pdef(\lead3,
-		Pbind(\instrument,\lead3,
+		Pbind(\instrument,\lead2,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead3_degree+4+~detune}),
+			\degree, Pfunc({~lead3_degree+4}),
 			\scale, Pfunc({~scale}),
 			\root,Pfunc({~transpose}),
 			\octave,3,
@@ -89,13 +97,24 @@ fork{
 	Pdef(\lead4,
 		Pbind(\instrument,\lead4,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead4_degree-1+~detune}),
+			\degree, Pfunc({~lead4_degree-1}),
 			\scale, Pfunc({~scale}),
 			\root,Pfunc({~transpose}),
 			\octave,4,
 			\dur, 1,
 		)
 	).stop;
+
+	Pdef(\arp1,
+		Pbind(\instrument,\lead1,
+			\amp,Pseq([1],inf),
+			\root,Pfunc({~transpose}),
+			\isRest,Pseq(~arpSteps,inf).coin.not,
+			\degree,Pseq(~arpSteps,inf),
+			\dur,1/2,
+			\scale,Pfunc({~scale})
+	)).play.quant(11);
+
 
 	~p1_flower_ambientLight = {
 		|i=0, v=0|
@@ -139,7 +158,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-								~detune = v;
+				~detune = v;
 
 
 			},
@@ -189,11 +208,14 @@ fork{
 				//"----->OFF LIGHT".postln;
 			},
 			1, {
-				//"----->CHANGE VALUE".postln;
+					// "----->CHANGE VALUE".postln;
+
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-			},
+
+					~setStep.value(i, (v*15).asInt);
+				},
 		);
 	};
 
@@ -215,13 +237,13 @@ fork{
 				//"----->OFF SONAR".postln;
 			},
 			1, {
-				"----->CHANGE VALUE".postln;
+				// "----->CHANGE VALUE".postln;
 				switch(i,
-					0, {~lead1_degree = (v*15).asInt.postln;Pdef(\lead1).play;},
-					1, {~lead2_degree = (v*15).asInt.postln;Pdef(\lead2).play;},
-					2, {~lead3_degree = (v*15).asInt.postln;Pdef(\lead3).play;},
-					3, {~lead4_degree = (v*15).asInt.postln;Pdef(\lead4).play;},
-				);			},
+					0, {~lead1_degree = (v*15).asInt;Pdef(\lead1).play;},
+					1, {~lead2_degree = (v*15).asInt;Pdef(\lead2).play;},
+					2, {~lead3_degree = (v*15).asInt;Pdef(\lead3).play;},
+					3, {~lead4_degree = (v*15).asInt;Pdef(\lead4).play;},
+			);			},
 			2, {
 				// "----->ONSET SONAR".postln;
 				switch(i,
@@ -229,7 +251,7 @@ fork{
 					1, {},
 					2, {},
 					3, {},
-				);			},
+			);			},
 		);
 	};
 
@@ -321,8 +343,8 @@ fork{
 	Pdef(\kick,Pbind(\instrument,\kick,\dur,1,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play(quant:4);
 
 	Ndef(\reverb,{
-		var in=InFeedback.ar(0,2);
-		in=FreeVerb.ar(in);
+		var in=In.ar(0,2);
+		in=FreeVerb.ar(in,1);
 		in
 	}).play;
 

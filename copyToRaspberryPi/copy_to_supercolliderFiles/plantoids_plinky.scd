@@ -9,7 +9,7 @@ fork{
 	~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 	~postOSC  = false;
 	~rootFreq = 99;
-	~tempoFactor = 1; // factor of 60bpm
+	~tempoFactor = 300/60; // factor of 60bpm
 	~scale = Scale.majorPentatonic;
 
 	TempoClock.tempo = ~tempoFactor;
@@ -58,7 +58,7 @@ fork{
 			\amp,Pseq([1],inf),
 			\degree, Pfunc({~lead1_degree}),
 			\scale, Pfunc({~scale}),
-			\dur, 1/8,
+			\dur, 1,
 		)
 	).stop;
 
@@ -67,7 +67,8 @@ fork{
 			\amp,Pseq([1],inf),
 			\degree, Pfunc({~lead2_degree}),
 			\scale, Pfunc({~scale}),
-			\dur, 1/8,
+			\octave,4,
+			\dur, 4,
 		)
 	).stop;
 
@@ -76,7 +77,9 @@ fork{
 			\amp,Pseq([1],inf),
 			\degree, Pfunc({~lead3_degree}),
 			\scale, Pfunc({~scale}),
-			\dur, 1/4,
+			\octave,3,
+
+			\dur, 2,
 		)
 	).stop;
 
@@ -85,7 +88,9 @@ fork{
 			\amp,Pseq([1],inf),
 			\degree, Pfunc({~lead4_degree}),
 			\scale, Pfunc({~scale}),
-			\dur, 1/4,
+					\octave,4,
+
+			\dur, 1,
 		)
 	).stop;
 
@@ -203,18 +208,18 @@ fork{
 			1, {
 				"----->CHANGE VALUE".postln;
 				switch(i,
-					0, {~lead1_degree = (v*15).asInt},
-					1, {~lead2_degree = (v*15).asInt},
-					2, {~lead3_degree = (v*15).asInt},
-					3, {~lead4_degree = (v*15).asInt},
+					0, {~lead1_degree = (v*15).asInt.postln;Pdef(\lead1).play;},
+					1, {~lead2_degree = (v*15).asInt.postln;Pdef(\lead2).play;},
+					2, {~lead3_degree = (v*15).asInt.postln;Pdef(\lead3).play;},
+					3, {~lead4_degree = (v*15).asInt.postln;Pdef(\lead4).play;},
 				);			},
 			2, {
 				// "----->ONSET SONAR".postln;
 				switch(i,
-					0, {Pdef(\lead1).play;},
-					1, {Pdef(\lead2).play;},
-					2, {Pdef(\lead3).play;},
-					3, {Pdef(\lead4).play;},
+					0, {},
+					1, {},
+					2, {},
+					3, {},
 				);			},
 		);
 	};

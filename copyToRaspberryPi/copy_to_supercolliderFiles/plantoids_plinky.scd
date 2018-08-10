@@ -51,13 +51,15 @@ fork{
 	~lead2_degree = 0;
 	~lead3_degree = 0;
 	~lead4_degree = 0;
-
-
+	~state_flex=(-1);
+	~detune = 0;
+	~transpose=0;
 	Pdef(\lead1,
 		Pbind(\instrument,\lead1,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead1_degree}),
+			\degree, Pfunc({~lead1_degree+~detune}),
 			\scale, Pfunc({~scale}),
+			\root,Pfunc({~transpose}),
 			\dur, 1,
 		)
 	).stop;
@@ -65,8 +67,9 @@ fork{
 	Pdef(\lead2,
 		Pbind(\instrument,\lead2,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead2_degree}),
+			\degree, Pfunc({~lead2_degree+3+~detune}),
 			\scale, Pfunc({~scale}),
+			\root,Pfunc({~transpose}),
 			\octave,4,
 			\dur, 4,
 		)
@@ -75,10 +78,10 @@ fork{
 	Pdef(\lead3,
 		Pbind(\instrument,\lead3,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead3_degree}),
+			\degree, Pfunc({~lead3_degree+4+~detune}),
 			\scale, Pfunc({~scale}),
+			\root,Pfunc({~transpose}),
 			\octave,3,
-
 			\dur, 2,
 		)
 	).stop;
@@ -86,10 +89,10 @@ fork{
 	Pdef(\lead4,
 		Pbind(\instrument,\lead4,
 			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead4_degree}),
+			\degree, Pfunc({~lead4_degree-1+~detune}),
 			\scale, Pfunc({~scale}),
-					\octave,4,
-
+			\root,Pfunc({~transpose}),
+			\octave,4,
 			\dur, 1,
 		)
 	).stop;
@@ -115,6 +118,10 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
+
+				~transpose = rrand(0,10).postln;
+
+
 			},
 		);
 	};
@@ -132,6 +139,8 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+								~detune = v;
+
 
 			},
 			2, {

@@ -2,6 +2,8 @@
 // Allows to decouple the OSC message parsing and the composition
 // this maps analog index to worker functions
 
+~postOSC = false;
+
 ~ldr_max = 1024;
 ~flex_max = 1024;
 ~sonar_max = 500;
@@ -21,7 +23,7 @@ OSCdef(\p1_parseAnalogSensors, {
 	val = msg[2];
 
 	~p1_analogMappers[index].process(val);
-
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
 }, '/plantoid/1/1/analog', n);
 
 
@@ -34,6 +36,7 @@ OSCdef(\p1_parseSonars, {
 	val = msg[2];
 
 	~p1_sonarMappers[index].process(val);
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
 
 }, '/plantoid/1/1/sonar', n);
 
@@ -47,6 +50,7 @@ OSCdef(\p1_parseTemperature, {
 	val = msg[2] ;
 	~p1_temperatureMapper.process(val);
 
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
 }, '/plantoid/1/1/temp', n);
 
 
@@ -58,6 +62,8 @@ OSCdef(\p1_parseHumidity, {
 	var val;
 	val = msg[2];
 	~p1_humidityMapper.process(val);
+
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
 }, '/plantoid/1/1/hum', n);
 
 
@@ -74,6 +80,8 @@ OSCdef(\p2_parseAnalogSensors, {
 
 	~p2_analogMappers[index].process(val);
 
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
+
 }, '/plantoid/2/1/analog', n);
 
 
@@ -86,6 +94,8 @@ OSCdef(\p2_parseSonars, {
 	val = msg[2];
 
 	~p2_sonarMappers[index].process(val);
+
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
 
 }, '/plantoid/2/1/sonar', n);
 
@@ -105,6 +115,8 @@ OSCdef(\p3_parseAnalogSensors, {
 
 	~p3_analogMappers[index].process(val);
 
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
+
 }, '/plantoid/3/1/analog', n);
 
 
@@ -117,6 +129,8 @@ OSCdef(\p3_parseSonars, {
 	val = msg[2];
 
 	~p3_sonarMappers[index].process(val);
+
+	if (~postOSC) {postf("OSC IN - % \n", msg)};
 
 }, '/plantoid/3/1/sonar', n);
 

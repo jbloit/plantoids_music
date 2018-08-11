@@ -6,9 +6,9 @@
 
 ~ldr_max = 1024;
 ~flex_max = 1024;
-~sonar_max = 500;
+~sonar_max = 3000;
 ~temperature_max = 50;
-~humidity_max = 10;
+~humidity_max = 50;
 
 // ------------------------------------------  Plant 1
 
@@ -23,7 +23,7 @@ OSCdef(\p1_parseAnalogSensors, {
 	val = msg[2];
 
 	~p1_analogMappers[index].process(val);
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 }, '/plantoid/1/1/analog', n);
 
 
@@ -36,7 +36,7 @@ OSCdef(\p1_parseSonars, {
 	val = msg[2];
 
 	~p1_sonarMappers[index].process(val);
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 }, '/plantoid/1/1/sonar', n);
 
@@ -50,7 +50,7 @@ OSCdef(\p1_parseTemperature, {
 	val = msg[2] ;
 	~p1_temperatureMapper.process(val);
 
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 }, '/plantoid/1/1/temp', n);
 
 
@@ -63,7 +63,7 @@ OSCdef(\p1_parseHumidity, {
 	val = msg[2];
 	~p1_humidityMapper.process(val);
 
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 }, '/plantoid/1/1/hum', n);
 
 
@@ -80,7 +80,7 @@ OSCdef(\p2_parseAnalogSensors, {
 
 	~p2_analogMappers[index].process(val);
 
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 }, '/plantoid/2/1/analog', n);
 
@@ -95,7 +95,7 @@ OSCdef(\p2_parseSonars, {
 
 	~p2_sonarMappers[index].process(val);
 
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 }, '/plantoid/2/1/sonar', n);
 
@@ -115,7 +115,7 @@ OSCdef(\p3_parseAnalogSensors, {
 
 	~p3_analogMappers[index].process(val);
 
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 }, '/plantoid/3/1/analog', n);
 
@@ -130,7 +130,7 @@ OSCdef(\p3_parseSonars, {
 
 	~p3_sonarMappers[index].process(val);
 
-	if (~postOSC) {postf("OSC IN - % \n", msg)};
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 }, '/plantoid/3/1/sonar', n);
 

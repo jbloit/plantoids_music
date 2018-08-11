@@ -171,8 +171,8 @@ fork{
 	~p1_flower_temperature = {
 		|i=0, v=0|
 		// v.postln;
-		~tempoFactor = v + 0.8;
-		TempoClock.tempo = ~tempoFactor;
+		// ~tempoFactor = v + 0.8;
+		// TempoClock.tempo = ~tempoFactor;
 	};
 
 	~p1_flower_humidity = {
@@ -341,12 +341,6 @@ fork{
 	// PLANT 3 = PERC ?
 
 	Pdef(\kick,Pbind(\instrument,\kick,\dur,1,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play(quant:4);
-
-	Ndef(\reverb,{
-		var in=In.ar(0,2);
-		in=FreeVerb.ar(in,1);
-		in
-	}).play;
 
 
 	~p3_flower_flexQuake = {|i=0, v=0, state=0|

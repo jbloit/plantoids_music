@@ -113,7 +113,7 @@ fork{
 			\degree,Pseq(~arpSteps,inf),
 			\dur,1/2,
 			\scale,Pfunc({~scale})
-	)).play.quant(11);
+	)).play.quant(~stepsCount);
 
 
 	~p1_flower_ambientLight = {

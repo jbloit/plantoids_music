@@ -16,12 +16,12 @@
 	//4
 	SensorMaracas.new(inputMax:~ldr_max, thresh:0.1, filterOrder:10, musicCallback: ~p3_stem_light, noteIndex:4, quant:1/8),
 
+
+	// 5,6,7: NOT USED
 	//5
 	SensorMaracas.new(inputMax:~ldr_max, thresh:0.1, filterOrder:10, musicCallback: ~p3_stem_light, noteIndex:-1, quant:1/8),
-
 	//6
 	SensorMaracas.new(inputMax:~ldr_max, thresh:0.1, filterOrder:10, musicCallback: ~p3_stem_light, noteIndex:-1, quant:1/8),
-
 	//7
 	SensorMaracas.new(inputMax:~ldr_max, thresh:0.1, filterOrder:10, musicCallback: ~p3_stem_light, noteIndex:-1, quant:1/8),
 ];

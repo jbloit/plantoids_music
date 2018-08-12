@@ -2,11 +2,7 @@
 // Allows to decouple the OSC message parsing and the composition
 // this maps analog index to worker functions
 
-OSCdef.clear;
-
-currentEnvironment.clear;
-
-~postOSC = true;
+~postOSC = false;
 
 ~ldr_max = 1024;
 ~flex_max = 1024;
@@ -90,8 +86,6 @@ OSCdef(\p3_parseTemperature, {
 }, '/plantoid/3/1/temp', n);
 
 
-
-
 OSCdef(\p3_parseHumidity).free;
 OSCdef(\p3_parseHumidity, {
 	| msg, time, addr, port |
@@ -105,7 +99,6 @@ OSCdef(\p3_parseHumidity, {
 
 
 // ------------------------------------------  Plant 2 (MEDIUM PLANTOID)
-
 
 OSCdef(\p2_parseAnalogSensors).free;
 OSCdef(\p2_parseAnalogSensors, {
@@ -137,10 +130,7 @@ OSCdef(\p2_parseSonars, {
 }, '/plantoid/2/1/sonar', n);
 
 
-
 // ------------------------------------------  Plant 1 (SMALL PLANTOID)
-
-
 
 OSCdef(\p1_parseAnalogSensors).free;
 OSCdef(\p1_parseAnalogSensors, {
@@ -157,7 +147,6 @@ OSCdef(\p1_parseAnalogSensors, {
 }, '/plantoid/1/1/analog', n);
 
 
-
 OSCdef(\p1_parseSonars).free;
 OSCdef(\p1_parseSonars, {
 	| msg, time, addr, port |
@@ -171,4 +160,4 @@ OSCdef(\p1_parseSonars, {
 }, '/plantoid/1/1/sonar', n);
 
 
-"sensorMapping_basic.scd".loadRelative(true, {"loaded parse OSC".postln});
+"sensorMapping_basic.scd".loadRelative(true, {"loaded sensorMapping_basic".postln});

@@ -15,32 +15,6 @@ fork{
 	TempoClock.tempo = ~tempoFactor;
 
 
-	// ==========================================================
-	//                                                        MUSIC TO LIGHT
-	// ==========================================================
-	~lightRemote = NetAddr("127.0.0.1", 8000);
-
-	// call this when LDRs are triggered
-	~ldrOnset = {|plantIndex=0, sensorIndex=0, velocity=0|
-		~lightRemote.sendMsg("/music2light/ldrNote", plantIndex, sensorIndex, velocity);
-		postf("LDR SEND OSC \n");
-	};
-
-	// call this when notes are triggered from flex quake sensors
-
-	// tempo change
-
-
-	// root note change
-
-	// background pattern events
-	~patternEvent = {|plantIndex=0, velocity=0|
-		// postf("BASS VELOCITY % \n", (velocity*255).asInt);
-		~lightRemote.sendMsg("/music2light/patternNote", plantIndex, (velocity*255).asInt);
-	};
-
-
-
 	/* =======================================
 	SENSOR CALLBACKS : Plant 1
 	=======================================*/
@@ -139,8 +113,6 @@ fork{
 				// "----->ONSET FLEX".postln;
 
 				~transpose = rrand(0,10).postln;
-
-
 			},
 		);
 	};
@@ -220,7 +192,7 @@ fork{
 	};
 
 	~p1_stem_sonar = {|i=0, v=0, state=0|
-		// postf("~p1_stem_sonar i:% v:% state:%\n", i, v, state);
+		postf("~p1_stem_sonar i:% v:% state:%\n", i, v, state);
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
@@ -263,7 +235,7 @@ fork{
 
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|
-		// postf("~p2_flower_flexQuake i:% v:% \n", i, v);
+		postf("~p2_flower_flexQuake i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
@@ -280,7 +252,7 @@ fork{
 		);
 	};
 	~p2_leaves_light = {|i=0, v=0, state=0|
-		// postf("p2 leaves state=%\n", state);
+		postf("p2 leaves state=%\n", state);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
@@ -429,5 +401,5 @@ fork{
 
 	// manage the OSC parsing:
 	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
-	"plantoids_plinky_sensorMapping.scd".loadRelative(true, {"loaded parse OSC".postln});
+	// "plantoids_plinky_sensorMapping.scd".loadRelative(true, {"loaded parse OSC".postln});
 };

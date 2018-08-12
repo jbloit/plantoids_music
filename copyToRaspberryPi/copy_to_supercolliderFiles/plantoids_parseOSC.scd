@@ -2,6 +2,10 @@
 // Allows to decouple the OSC message parsing and the composition
 // this maps analog index to worker functions
 
+OSCdef.clear;
+
+currentEnvironment.clear;
+
 ~postOSC = true;
 
 ~ldr_max = 1024;
@@ -9,9 +13,6 @@
 ~sonar_max = 3000;
 ~temperature_max = 50;
 ~humidity_max = 50;
-
-<<<<<<< Updated upstream
-=======
 
 /** Notes video oakland adressage sensors
 
@@ -54,9 +55,6 @@ Pareil que p2
 
 */
 
-
-
->>>>>>> Stashed changes
 // ------------------------------------------  Plant 1
 
 // the mappers directly map the sensor values to the music callbacks
@@ -69,8 +67,10 @@ OSCdef(\p1_parseAnalogSensors1, {
 	index = msg[1];
 	val = msg[2];
 
+		if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
+
 	~p1_analogMappers_box1[index].process(val);
-	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
+
 }, '/plantoid/1/1/analog', n);
 
 
@@ -81,9 +81,10 @@ OSCdef(\p1_parseAnalogSensors2, {
 	var val, index, mapped, onsetState;
 	index = msg[1];
 	val = msg[2];
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 	~p1_analogMappers_box2[index].process(val);
-	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
+
 }, '/plantoid/1/2/analog', n);
 
 
@@ -95,8 +96,10 @@ OSCdef(\p1_parseSonars1, {
 	index = msg[1];
 	val = msg[2];
 
-	~p1_sonarMappers_box2[index].process(val);
 	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
+
+	~p1_sonarMappers_box1[index].process(val);
+
 
 }, '/plantoid/1/1/sonar', n);
 
@@ -108,12 +111,11 @@ OSCdef(\p1_parseSonars2, {
 	index = msg[1];
 	val = msg[2];
 
-	~p1_sonarMappers_box2[index].process(val);
 	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
+	~p1_sonarMappers_box2[index].process(val);
+
 }, '/plantoid/1/2/sonar', n);
-
-
 
 
 OSCdef(\p1_parseTemperature).free;
@@ -121,9 +123,10 @@ OSCdef(\p1_parseTemperature, {
 	| msg, time, addr, port |
 	var val;
 	val = msg[2] ;
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
+
 	~p1_temperatureMapper.process(val);
 
-	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 }, '/plantoid/1/1/temp', n);
 
 
@@ -134,9 +137,10 @@ OSCdef(\p1_parseHumidity, {
 	| msg, time, addr, port |
 	var val;
 	val = msg[2];
+	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
+
 	~p1_humidityMapper.process(val);
 
-	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 }, '/plantoid/1/1/hum', n);
 
 
@@ -202,7 +206,6 @@ OSCdef(\p3_parseSonars, {
 	val = msg[2];
 
 	~p3_sonarMappers[index].process(val);
-
 	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
 }, '/plantoid/3/1/sonar', n);

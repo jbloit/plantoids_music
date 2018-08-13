@@ -301,4 +301,5 @@ fork{
 
 	// manage the OSC parsing:
 	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
+	// "plantoids_plinky_sensorMapping.scd".loadRelative(true, {"loaded additional sensor mapping".postln});
 };

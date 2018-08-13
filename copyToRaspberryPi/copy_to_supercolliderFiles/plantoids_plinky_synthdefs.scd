@@ -1,19 +1,17 @@
 // Put sythdefs here
 
-SynthDef(\kick, {
-	arg out=0,tu = 1,amp=1,pitch=1;
-	var env0, env1, env1m, sig;
-	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction:2);
-	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
-	env1m = env1.midicps;
-	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
-	sig = sig + WhiteNoise.ar(1);
-	sig = LPF.ar(sig, env1m*1.5, env0);
-	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0);
-	sig = sig * amp*0.3;
-	sig = sig.clip2(1);
-	Out.ar([0,1], sig);
+// =========================================================
+//                                                                            MELODIC
+// =========================================================
+
+SynthDef(\plant1,{arg freq=432,amp=1,gate=1;
+    var env= EnvGen.ar(Env.perc,gate,doneAction:2);
+	var sig = SinOsc.ar(freq/440*432)*env*amp.linlin(0,1,0,0.25 );
+	sig = Limiter.ar(LeakDC.ar(sig),0.9);
+	Out.ar([0,1],sig*0.1);
 }).add;
+
+
 
 SynthDef(\lead1,{arg freq=432,amp=1,gate=1;
     var env= EnvGen.ar(Env.perc,gate,doneAction:2);
@@ -74,6 +72,35 @@ sig=
 }).add;
 
 
+SynthDef(\avbass, {|out= 0, amp= 0.1, freq= 100, pan= 0, atk= 0.01, rel= 0.2, cur= -4, mod= 0, gate= 1|
+    var env= EnvGen.ar(Env.adsr(atk, atk, 0.75, rel, 1, cur), gate, doneAction:2);
+    var src= BLowPass4.ar(Saw.ar(freq, amp), freq+(mod+1*100).min(900), 1-env+0.1);
+    OffsetOut.ar(out, Pan2.ar(src*env, pan));
+}).add;
+
+// Synth(\avbass);
+
+// (instrument: \avbass, degree:0, mod:10, dur:0.1, latency:Ref(0)).play;
+
+SynthDef(\avlead, {|out= 0, amp= 0.1, freq= 500, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+    var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+    var src= Pulse.ar(freq, 1-env.lag(1)*0.5, amp);
+    OffsetOut.ar(out, Pan2.ar(src*env, pan));
+}).add;
+SynthDef(\avswop, {|out= 0, amp= 0.1, start= 5000, end= 500, mod= 0, pan= 0, atk= 0.01, rel= 4, cur= -4, gate= 1|
+    var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+    var src= BPF.ar(WhiteNoise.ar(amp+SinOsc.ar(mod, 0.5pi, amp*0.25)), XLine.kr(start, end, 20), 2-env);
+    OffsetOut.ar(out, Pan2.ar(src*env, pan+SinOsc.kr(0.1, 0, 0.3)));
+}).add;
+
+
+
+
+
+// =========================================================
+//                                                                            SAMPLER
+// =========================================================
+
 Buffer.freeAll;
 ~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 
@@ -93,18 +120,12 @@ SynthDef(\sampler, {
 	~kickBuffers = ~kickBuffers.add(Buffer.read(s, path.fullPath));
 });
 
-/*
-Pdef(\kick,
-Pbind(\instrument, \sampler,
-	\buf, ~kickBuffers[0],
-	\dur, Pseq([1],inf),
-	)
-).play*/
+// =========================================================
+//                                                                            PERC
+// =========================================================
 
-// MONO KICKS
-/*
-SynthDef("kick", {
-	arg out=0,tu = 1,amp=1;
+SynthDef(\kick, {
+	arg out=0,tu = 1,amp=1,pitch=1;
 	var env0, env1, env1m, sig;
 	env0 =  EnvGen.ar(Env.new([0.5, 1, 0.3, 0], [0.01, 0.5, 0.26], [-4, -2, -4]), doneAction:2);
 	env1 = EnvGen.ar(Env.new([120, 43, 29], [0.03, 0.29], [-4, -5]));
@@ -112,12 +133,13 @@ SynthDef("kick", {
 	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
 	sig = sig + WhiteNoise.ar(1);
 	sig = LPF.ar(sig, env1m*1.5, env0);
-	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
-	sig = sig * amp;
+	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0);
+	sig = sig * amp*0.3;
 	sig = sig.clip2(1);
-	Out.ar(out, sig);
-}).send(s);
-*/
+	Out.ar([0,1], sig);
+}).add;
+
+// Synth(\kick);
 
 SynthDef("kickhi", {
 	arg out=0,tu = 1;
@@ -187,7 +209,7 @@ SynthDef(\t1kick2,{arg out = 0,snd=18,rel = 0.6,pitch=0.1 ,amp =1;
 
 // STEREO KICKS
 
-SynthDef(\kickmed, { | out = 0,snd=18,level=1, pan=0, atk= 0.01,decay = 0.2,release=0.26, fratio=1.5,noise=1,done=2,freq1= 120,freq2=30,freq3=30,dc=1,aamp1=1,aamp2=1,aamp3=1,aamp4=1,curve1= (-4),curve2=(-2),curve3=(-4),famp1,famp2,famp3,famp4,p1,oamp=0.1,owhich2=0,ochoose=0|
+SynthDef(\kickmed, { | out = 0,snd=18,amp=1, pan=0, atk= 0.01,decay = 0.2,release=0.26, fratio=1.5,noise=1,done=2,freq1= 120,freq2=30,freq3=30,dc=1,aamp1=1,aamp2=1,aamp3=1,aamp4=1,curve1= (-4),curve2=(-2),curve3=(-4),famp1,famp2,famp3,famp4,p1,oamp=0.1,owhich2=0,ochoose=0|
 	var env0,env1,
 env1m, son, son2,son3,son4,p2;
 	p2 = p1 * (-pi);
@@ -206,12 +228,12 @@ son = son + WhiteNoise.ar(noise);
 son = LPF.ar(son, env1m*fratio, env0);
 	son = son + SelectX.ar(owhich2,[ SinOsc.ar(env1m, p1, env0), LFSaw.ar(env1m, p1, env0), LFPulse.ar(env1m, p1, env0), LFTri.ar(env1m, p1, env0)]);
 son = son * 1;
-son = son*level.distort;
-OffsetOut.ar(out, son*level).tanh;
-//OffsetOut.ar(snd, Mono(son)*level).tanh;
+son = son*amp.distort;
+OffsetOut.ar(out, son*amp!2).tanh;
+//OffsetOut.ar(snd, Mono(son)*amp).tanh;
 }).add;
 
-// Synth(\kickmed)
+// Synth(\kickmed, [\amp, 0.3, \decay, 0.01, \release, 0.01, \atk, 0.1, \freq1,90, \freq2, 110, \fratio, 10]);
 
 SynthDef(\kick808,{arg rel=1,tu=1,amp=0.5;
 	var env = EnvGen.ar(Env([0,1,0],[0,rel],-8),doneAction:2);
@@ -246,7 +268,7 @@ SynthDef(\hat909, {|out=0, freq=230, hpf=6500, release=0.15, amp=1, fxb=0, fxv=0
 }).add;
 
 
-
+// Synth(\hat909, [\freq, 220, \amp, 0.7 ]);
 
 
 SynthDef(\hat808, { arg out=0,tu=1, amp=0.1, gate=1, pan=0;
@@ -283,7 +305,7 @@ var sig = CuspN.ar(
 	Out.ar(out,sig*env0);
 }).add;
 
-// Synth(\noise2);
+// Synth(\noise2,[\rel, 0.1]);
 
 
 SynthDef(\noise,{arg out =0,rel  = 0.25,a=4;
@@ -350,7 +372,7 @@ SynthDef(\junglesnare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200,kracte
 	Out.ar(out, sig*amp);
 }).add;
 
-// Synth(\junglesnare)
+// Synth(\junglesnare, [\pan, 0]);
 
 
 SynthDef(\t5snare, { arg out=0,tu=1, amp=0.3, gate=1, pan=0, freq=200,snd;
@@ -475,12 +497,4 @@ SynthDef(\sinus,{arg out=0, freq=100,gate =1,release=0.1,lfo=1,amp=0.5;
 
 
 
-
-
-SynthDef(\plant1,{arg freq=432,amp=1,gate=1;
-    var env= EnvGen.ar(Env.perc,gate,doneAction:2);
-	var sig = SinOsc.ar(freq/440*432)*env*amp.linlin(0,1,0,0.25 );
-	sig = Limiter.ar(LeakDC.ar(sig),0.9);
-	Out.ar([0,1],sig*0.1);
-}).add;
 

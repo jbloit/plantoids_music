@@ -9,17 +9,21 @@ fork{
 	~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 	~postOSC  = false;
 	~rootFreq = 99;
-	~tempoFactor = 300/60; // factor of 60bpm
+	~tempoFactor = 1;
 	~scale = Scale.majorPentatonic;
 
 	TempoClock.tempo = ~tempoFactor;
 
 
 	/* =======================================
-	SENSOR CALLBACKS : Plant 1
+	SENSOR CALLBACKS : Plant 1 (SMALL)
 	=======================================*/
 
-	// PLANT 1 = MELODIC LEADS
+	// PERCS
+
+
+	// background ongoing kick
+	Pdef(\kick,Pbind(\instrument,\kick,\dur,1/4,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play(quant:4);
 
 	~lead1_degree = 0;
 	~lead2_degree = 0;
@@ -30,54 +34,13 @@ fork{
 	~transpose=0;
 
 	// arpeggiator
-	~stepsCount = 11;
-	~arpSteps = Array.fill(~stepsCount,{0});
+	~stepsCount = 33;
+
+	~arpSteps = rrand(0,12!~stepsCount);
+
 	~setStep = {|i, val|
 		if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
 	};
-
-	Pdef(\lead1,
-		Pbind(\instrument,\lead1,
-			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead1_degree}),
-			\scale, Pfunc({~scale}),
-			\root,Pfunc({~transpose}),
-			\dur, 1,
-		)
-	).stop;
-
-	Pdef(\lead2,
-		Pbind(\instrument,\lead2,
-			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead2_degree+3}),
-			\scale, Pfunc({~scale}),
-			\root,Pfunc({~transpose}),
-			\octave,4,
-			\dur, 4,
-		)
-	).stop;
-
-	Pdef(\lead3,
-		Pbind(\instrument,\lead2,
-			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead3_degree+4}),
-			\scale, Pfunc({~scale}),
-			\root,Pfunc({~transpose}),
-			\octave,3,
-			\dur, 2,
-		)
-	).stop;
-
-	Pdef(\lead4,
-		Pbind(\instrument,\lead4,
-			\amp,Pseq([1],inf),
-			\degree, Pfunc({~lead4_degree-1}),
-			\scale, Pfunc({~scale}),
-			\root,Pfunc({~transpose}),
-			\octave,4,
-			\dur, 1,
-		)
-	).stop;
 
 	Pdef(\arp1,
 		Pbind(\instrument,\lead1,
@@ -85,15 +48,60 @@ fork{
 			\root,Pfunc({~transpose}),
 			\isRest,Pseq(~arpSteps,inf).coin.not,
 			\degree,Pseq(~arpSteps,inf),
-			\dur,1/2,
+			\dur,1/4,
 			\scale,Pfunc({~scale})
 	)).play.quant(~stepsCount);
 
+	// role: change sounds to be triggered
+	~p1_sonarValues = Array.fill(2, {0});
+	~p1_stem_sonar = {|i=0, v=0, state=0|
+		// postf("~p1_stem_sonar i:% v:% state:%\n", i, v, state);
+		switch(state,
+			-1, {
+				// "----->OFFSET SONAR".postln;
+			},
+			0, {
+				//"----->OFF SONAR".postln;
+			},
+			1, {
+				// "----->CHANGE VALUE".postln;
+				~p1_sonarValues[i] = v;
+			},
+			2, {
+				// "----->ONSET SONAR".postln;
 
-	~p1_flower_ambientLight = {
-		|i=0, v=0|
-		// postf("~p1_flower_ambientLight i:% v:% \n", i, v);
+			},
+		);
 	};
+
+	// role trigger some instruments
+	~p1_stem_light = {|i=0, v=0, state=0|
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				// "----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+				// postf("~p1_onset Light i:% v:% \n", i, v);
+				if (i.odd) {
+					var amp = ~p1_sonarValues[0];
+					Synth(\hat909, [\freq, 220 + (i * 10), \amp, amp]);
+
+				} {
+					var amp = ~p1_sonarValues[1];
+					Synth(\kickmed, [\amp, amp, \decay, 0.01, \release, 0.01, \atk, 0.1, \freq1,90, \freq2, 110, \fratio, (i+1)]);
+
+				};
+			},
+		);
+	};
+
 
 	~p1_flower_flexQuake = {|i=0, v=0, state=0|
 		// postf("~p1_flower_flexQuake i:% v:% \n", i, v);
@@ -112,33 +120,11 @@ fork{
 			2, {
 				// "----->ONSET FLEX".postln;
 
-				~transpose = rrand(0,10).postln;
+				// ~transpose = rrand(0,10).postln;
 			},
 		);
 	};
 
-	~p1_flower_flexWind = {|i=0, v=0, state=0|
-		// postf("~p1_flower_flexWind i:% v:% \n", i, v);
-
-		switch(state,
-			-1, {
-				// "----->OFFSET FLEX".postln;
-
-			},
-			0, {
-				//"----->OFF FLEX".postln;
-			},
-			1, {
-				//"----->CHANGE VALUE".postln;
-				~detune = v;
-
-
-			},
-			2, {
-				// "----->ONSET FLEX".postln;
-			},
-		);
-	};
 
 	~p1_flower_temperature = {
 		|i=0, v=0|
@@ -153,89 +139,18 @@ fork{
 
 	};
 
-	~p1_leaves_light = {|i=0, v=0, state=0|
-		// postf("~p1_leaves_light i:% v:% \n", i, v);
-		switch(state,
-			-1, {
-				// "----->OFFSET LIGHT".postln;
-			},
-			0, {
-				//"----->OFF LIGHT".postln;
-			},
-			1, {
-				//"----->CHANGE VALUE".postln;
-			},
-			2, {
-				// "----->ONSET LIGHT".postln;
-			},
-		);
-	};
 
-	~p1_stem_light = {|i=0, v=0, state=0|
-		switch(state,
-			-1, {
-				// "----->OFFSET LIGHT".postln;
-			},
-			0, {
-				//"----->OFF LIGHT".postln;
-			},
-			1, {
-					// "----->CHANGE VALUE".postln;
 
-			},
-			2, {
-				// "----->ONSET LIGHT".postln;
-
-					~setStep.value(i, (v*15).asInt);
-				},
-		);
-	};
-
-	~p1_stem_sonar = {|i=0, v=0, state=0|
-		postf("~p1_stem_sonar i:% v:% state:%\n", i, v, state);
-		switch(state,
-			-1, {
-				// "----->OFFSET SONAR".postln;
-
-				switch(i,
-					0, {Pdef(\lead1).stop;},
-					1, {Pdef(\lead2).stop;},
-					2, {Pdef(\lead3).stop;},
-					3, {Pdef(\lead4).stop;},
-				);
-
-			},
-			0, {
-				//"----->OFF SONAR".postln;
-			},
-			1, {
-				// "----->CHANGE VALUE".postln;
-				switch(i,
-					0, {~lead1_degree = (v*15).asInt;Pdef(\lead1).play;},
-					1, {~lead2_degree = (v*15).asInt;Pdef(\lead2).play;},
-					2, {~lead3_degree = (v*15).asInt;Pdef(\lead3).play;},
-					3, {~lead4_degree = (v*15).asInt;Pdef(\lead4).play;},
-			);			},
-			2, {
-				// "----->ONSET SONAR".postln;
-				switch(i,
-					0, {},
-					1, {},
-					2, {},
-					3, {},
-			);			},
-		);
-	};
 
 	/* =======================================
-	SENSOR CALLBACKS : Plant 2
+	SENSOR CALLBACKS : Plant 2 (MEDIUM)
 	=======================================*/
 
 	// PLANT 2 = BASS ?
 
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|
-		postf("~p2_flower_flexQuake i:% v:% \n", i, v);
+		// postf("~p2_flower_flexQuake i:% v:% \n", i, v);
 		switch(state,
 			-1, {
 				// "----->OFFSET FLEX".postln;
@@ -251,41 +166,9 @@ fork{
 			},
 		);
 	};
-	~p2_leaves_light = {|i=0, v=0, state=0|
-		postf("p2 leaves state=%\n", state);
-		switch(state,
-			-1, {
-				// "----->OFFSET LIGHT".postln;
-			},
-			0, {
-				//"----->OFF LIGHT".postln;
-			},
-			1, {
-				//"----->CHANGE VALUE".postln;
-			},
-			2, {
-				// "----->ONSET LIGHT".postln;
-			},
-		);
-	};
 
-	~p2_stem_light = {|i=0, v=0, state=0|
-		postf("~p2_stem_light i:% v:% \n", i, v);
-		switch(state,
-			-1, {
-				// "----->OFFSET LIGHT".postln;
-			},
-			0, {
-				//"----->OFF LIGHT".postln;
-			},
-			1, {
-				//"----->CHANGE VALUE".postln;
-			},
-			2, {
-				// "----->ONSET LIGHT".postln;
-			},
-		);
-	};
+	// role: change notes to be played
+	~p2_sonarValues = Array.fill(2, {0});
 	~p2_stem_sonar = {|i=0, v=0, state=0|
 		// postf("~p2_stem_sonar i:% v:% state: %\n", i, v, state);
 
@@ -298,22 +181,50 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~p2_sonarValues[i] = v;
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
 			},
 		);
 	};
+	~p2_stem_light = {|i=0, v=0, state=0|
+		// postf("~p2_stem_light i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+
+				if (i.odd)
+				{
+					var degree = (~p2_sonarValues[0] * 12).asInt ;
+					(instrument: \lead1, scale: ~scale, octave:3, degree:degree, mod:(i+2), dur:1/4, latency:Ref(0)).play;
+				}
+				{
+					var degree = (~p2_sonarValues[1] * 12).asInt ;
+					(instrument: \lead1, scale: ~scale, octave:3, degree:degree, mod:(i+2), dur:1/4, latency:Ref(0)).play;
+				};
+			},
+		);
+	};
+
 
 
 	/* =======================================
-	SENSOR CALLBACKS : Plant 3
+	SENSOR CALLBACKS : Plant 3 (BIG)
 	=======================================*/
 
-	// PLANT 3 = PERC ?
+	// PLANT 3 = LEADS
 
-	Pdef(\kick,Pbind(\instrument,\kick,\dur,1,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play(quant:4);
-
+	~p3_synthArray = [\lead1, \lead1, \lead1, \lead1];
 
 	~p3_flower_flexQuake = {|i=0, v=0, state=0|
 		// postf("~p3_flower_flexQuake i:% v:% \n", i, v);
@@ -330,76 +241,64 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
+				~arpSteps = rrand(0,12!~stepsCount);
+
 			},
 		);
 
 	};
 
-	~p3_leaves_light = {|i=0, v=0, state=0|
-		// postf("~p3_leaves_light i:% v:% \n", i, v);
-		switch(state,
-			-1, {
-				// "----->OFFSET LIGHT".postln;
-			},
-			0, {
-				//"----->OFF LIGHT".postln;
-			},
-			1, {
-				//"----->CHANGE VALUE".postln;
-			},
-			2, {
-				// "----->ONSET LIGHT".postln;
-
-			},
-		)
-	};
-
-	~p3_flower_light = {
-		|i=0, v=0, state=0|
-		// postf("~p3_flower_light i:% v:% \n", i, v);
-		switch(state,
-			-1, {
-				// "----->OFFSET LIGHT".postln;
-			},
-			0, {
-				//"----->OFF LIGHT".postln;
-			},
-			1, {
-				//"----->CHANGE VALUE".postln;
-			},
-			2, {
-				// "----->ONSET LIGHT".postln;
-			},
-		)
-	};
+	// role: change notes to be played
+	~p3_sonarValues = Array.fill(4, {0});
 
 	~p3_stem_sonar = {|i=0, v=0, state=0|
 		// postf("~p3_stem_sonar i:% v:% s: %\n", i, v, state);
 		switch(state,
 			-1, {
 				// "----->OFFSET SONAR".postln;
-
 			},
 			0, {
 				//"----->OFF SONAR".postln;
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
+				~p3_sonarValues[i] = v;
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
-				switch(i,
-					0, {if (v >0.6) {Synth(\snare)} {Synth(\hat)}; },
-					1, {if (v>0.6) {Synth(\junglesnare)} {Synth(\kick808)}; },
-
-				);
 
 			},
 		);
 	};
 
+	~p3_stem_light = {|i=0, v=0, state=0|
+		// postf("~p3_stem_light i:% v:% \n", i, v);
+		switch(state,
+			-1, {
+				// "----->OFFSET LIGHT".postln;
+			},
+			0, {
+				//"----->OFF LIGHT".postln;
+			},
+			1, {
+				//"----->CHANGE VALUE".postln;
+			},
+			2, {
+				// "----->ONSET LIGHT".postln;
+
+				// set the sonar index that controls the note for this light sensor
+				var sonarIndex = (i % 4);
+				var synth = ~p3_synthArray[sonarIndex];
+
+
+				var degree = (~p3_sonarValues[sonarIndex] * 12).asInt;
+
+				(instrument: synth, scale: ~scale, degree:degree, dur:1/4, amp:v, latency:Ref(0)).play;
+
+			},
+		);
+	};
 
 	// manage the OSC parsing:
 	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
-	// "plantoids_plinky_sensorMapping.scd".loadRelative(true, {"loaded parse OSC".postln});
 };

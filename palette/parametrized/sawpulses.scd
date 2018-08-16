@@ -135,8 +135,6 @@ a = Scale.chromatic;
 	Pdef(\chords,
 	Pbind(\instrument, \sawpulse, \dur, 2, \scale, a, \degree, Pseq([[0, 4, 7]], inf), \root, 0, \octave, 4, \mw, 0.00, \ffreq, 2000, \rq, 0.3 )).play;
 
-Pdef(\pulses,
-	Pbind(\instrument, \sawpulse, \dur, 1/8, \scale, a, \degree, Pseq([0, 3, 7], inf), \octave, 3, \mw, 0.00, \ffreq, 2000, \rq, 1 )).play;
 )
 
 
@@ -248,12 +246,19 @@ a = Scale.minorPentatonic;
 (
 a = Scale.minorPentatonic;
 
-Pdef(\lead,
+Pdef(\lead_0,
 	Pbind(\instrument, \sawpulse, \dur, Prand([ 1/8, 1], inf), \scale, a, \degree, Pstutter( rrand(1,3), Prand((0..8), inf)), \isRest,Prand([1,0], inf).coin.not, \root, 0, \octave, 5, \mw, 0.01, \ffreq, 2000, \rq, 0.1
 	)).play;
 )
 
+Pdef(\lead_0).stop;
+Pdef(\lead_0).play;
+
+i = 0;
+Pdef((\lead_++i).asSymbol).stop;
+
 //
+
 (
 a = Scale.minorPentatonic;
 
@@ -281,8 +286,72 @@ Pdef(\lead5,
 	)).play;
 )
 
+(
+~scale = Scale.chromatic;
+~degrees = [0, 3, 5, 7, 10];
+~beat  = [
+	[1/4, 1/4, 1/4, 1/4],
+	[2/8, 1/8, 2/8, 1/8, 2/8]
+];
 
-Scale.directory;
+Pdef(\lead,
+	Pbind(\instrument, \sawpulse, \dur, Pseq( ~beat[0], inf), \scale, ~scale, \degree, Pseq([0, 12], inf), \root, 0, \octave, 3, \mw, 0.0, \ffreq, 1300, \rq, 1
+)).play;
+
+
+Pdef(\lead1,
+	Pbind(\instrument, \sawpulse, \dur, Pseq( ~beat[1], inf), \scale, ~scale, \degree, Pseq([~degrees[2]], inf), \root, 0, \octave, 4, \mw, 0.0, \ffreq, 1300, \rq, 1
+)).play;
+
+)
+
+Pdef(\lead).play
+Pdef(\lead).stop
+Pdef(\lead1).play
+Pdef(\lead1).stop
+
+p = PmonoArtic(\sawpulse, \dur, 0.2, \freq, Pwhite(1,8) * 100, \legato, Pwrand(#[0.5, 1.0], #[0.1, 0.9], inf) ).play;
+p.stop;
+
+
+// simplified
+(
+SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
+	var sig, plfo, fcurve ;
+	var plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05;
+	ffreq = timbre.linexp(0, 1, 200, 8000);
+	rq = timbre.linexp(0,1, 0.1, 1);
+	plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
+	freq = Lag.kr(freq, freqlag) * plfo;
+	fcurve = EnvGen.kr(Env.adsr(0, 0.3, 0.1, 20), gate);
+	fcurve = (fcurve - 1).madd(0.7, 1) * ffreq;
+	sig = Mix.ar([Pulse.ar(freq, 0.9), Saw.ar(freq*1.007)]);
+	sig = RLPF.ar(sig, fcurve, rq)
+	* EnvGen.kr(Env.adsr(0.04, 0.2, 0.6, 0.1), gate, doneAction:2)
+	* amp;
+	Out.ar(out, sig ! 2)
+}).add;
+)
+
+(
+~scale = Scale.chromatic;
+~degrees = [0, 3, 5, 7, 10];
+~beat  = [
+	[1/4, 1/4, 1/4, 1/4],
+	[2/8, 1/8, 2/8, 1/8, 2/8]
+];
+
+Pdef(\lead,
+	Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~beat[0], inf), \scale, ~scale, \degree, Pseq([0, 12], inf), \root, 0, \octave, 3, \timbre, 0.4
+)).play;
+
+
+Pdef(\lead1,
+	Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~beat[1], inf), \scale, ~scale, \degree, Pseq([~degrees[2]], inf), \root, 0, \octave, 4, \timbre, 1
+)).play;
+
+)
+
 
 Pdef(\pulses).stop;
 Pdef(\chords).stop

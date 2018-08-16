@@ -123,7 +123,8 @@ OSCdef(\p2_parseSonars, {
 	index = msg[1];
 	val = msg[2];
 
-	~p2_sonarMappers[index].process(val);
+	if (index<2)
+	{~p2_sonarMappers[index].process(val);};
 
 	if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 

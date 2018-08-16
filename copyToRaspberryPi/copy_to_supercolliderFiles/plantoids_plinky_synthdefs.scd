@@ -93,9 +93,21 @@ SynthDef(\avswop, {|out= 0, amp= 0.1, start= 5000, end= 500, mod= 0, pan= 0, atk
     OffsetOut.ar(out, Pan2.ar(src*env, pan+SinOsc.kr(0.1, 0, 0.3)));
 }).add;
 
-
-
-
+SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
+	var sig, plfo, fcurve ;
+	var plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05;
+	ffreq = timbre.linexp(0, 1, 200, 8000);
+	rq = timbre.linexp(0,1, 0.1, 1);
+	plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
+	freq = Lag.kr(freq, freqlag) * plfo;
+	fcurve = EnvGen.kr(Env.adsr(0, 0.3, 0.1, 20), gate);
+	fcurve = (fcurve - 1).madd(0.7, 1) * ffreq;
+	sig = Mix.ar([Pulse.ar(freq, 0.9), Saw.ar(freq*1.007)]);
+	sig = RLPF.ar(sig, fcurve, rq)
+	* EnvGen.kr(Env.adsr(0.04, 0.2, 0.6, 0.1), gate, doneAction:2)
+	* amp;
+	Out.ar(out, sig ! 2)
+}).add;
 
 // =========================================================
 //                                                                            SAMPLER

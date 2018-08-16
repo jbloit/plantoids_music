@@ -335,8 +335,16 @@ SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
 
 (
 ~scale = Scale.chromatic;
-~degrees = [0, 3, 5, 7, 10];
-~beat  = [
+~degrees = [
+		[0],
+		[0, 7],
+		[0, 7, 10],
+		[0, 3, 7, 10],
+		[0, 3, 5, 7, 10],
+		[0, 1, 3, 5, 7, 10],
+		[0, 1, 3, 5, 7, 8, 10]
+	];
+~claves  = [
 	[4, 4, 4, 4],
 	[3, 3, 3, 3, 4],
 	[3, 3, 2, 3, 3, 2],
@@ -352,13 +360,15 @@ SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
+~currentDegrees = ~degrees[4];
+
 Pdef(\lead,
-	Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~beat[3]/16, inf), \scale, ~scale, \degree, Pseq([0, 7, 12], inf), \root, 0, \octave, 3, \timbre, 0.4
+	Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pseq(~degrees[0], inf), \root, 0, \octave, 3, \timbre, 0.4
 )).play(quant:1);
 
 
 Pdef(\lead1,
-	Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~beat[5]/16, inf), \scale, ~scale, \degree, Pseq([~degrees[2]], inf), \root, 0, \octave, 4, \timbre, 0.5
+	Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pseq(~degrees[4], inf), \root, 0, \octave, 4, \timbre, 0.5
 )).play(quant:1/8);
 
 )

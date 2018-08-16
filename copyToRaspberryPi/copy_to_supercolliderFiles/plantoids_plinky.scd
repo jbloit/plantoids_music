@@ -8,11 +8,65 @@ fork{
 	// GLOBAL VARS
 	~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 	~postOSC  = false;
-	~rootFreq = 99;
-	~tempoFactor = 1;
-	~scale = Scale.majorPentatonic;
+	~root = 0;
+	~tempoFactor = 0.5;
 
 	TempoClock.tempo = ~tempoFactor;
+
+	~scale = Scale.chromatic;
+	~degrees = [
+		[0],
+		[0, 7],
+		[0, 7, 10],
+		[0, 3, 7, 10],
+		[0, 3, 5, 7, 10],
+		[0, 1, 3, 5, 7, 10],
+		[0, 1, 3, 5, 7, 8, 10]
+	];
+	~claves  = [
+		[4, 4, 4, 4],
+		[3, 3, 3, 3, 4],
+		[3, 3, 2, 3, 3, 2],
+		[2, 2, 3, 2, 2, 3, 2],
+		[2, 2, 2, 2, 2, 2, 2, 2],
+		[2, 2, 2, 1, 2, 2, 2, 1, 2],
+		[2, 1, 2, 1, 2, 2, 1, 2, 1, 2],
+		[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1],
+		[1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2],
+		[1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
+		[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+	];
+
+	/* =======================================
+	BACKGROUND MUSIC LAYERS (IDLE STATE)
+	=======================================*/
+
+
+	// background ongoing kick
+	Pdef(\kick,Pbind(\instrument,\kick,\dur,1/4,\amp,Pseq([0.3,0.1,0.05, 0.01],inf))).play(quant:4);
+
+	// arpeggiator
+	~stepsCount = 33;
+	~arpSteps = rrand(0,12!~stepsCount);
+
+	~setStep = {|i, val|
+		if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
+	};
+
+	/*
+	Pdef(\arp1,
+	Pbind(\instrument,\lead1,
+	\amp,Pseq([1],inf),
+	\root,Pfunc({~root}),
+	\octave, 3,
+	\isRest,Pseq(~arpSteps,inf).coin.not,
+	\degree,Pseq(~arpSteps,inf),
+	\dur,1/8,
+	\scale,Pfunc({~scale})
+	)).play.quant(1);
+	*/
 
 
 	/* =======================================
@@ -21,36 +75,6 @@ fork{
 
 	// PERCS
 
-
-	// background ongoing kick
-	Pdef(\kick,Pbind(\instrument,\kick,\dur,1/4,\isRest,Pseq([1,1,0],inf).coin.not,\amp,Pseq([0.3,0.1,0],inf))).play(quant:4);
-
-	~lead1_degree = 0;
-	~lead2_degree = 0;
-	~lead3_degree = 0;
-	~lead4_degree = 0;
-	~state_flex=(-1);
-	~detune = 0;
-	~transpose=0;
-
-	// arpeggiator
-	~stepsCount = 33;
-
-	~arpSteps = rrand(0,12!~stepsCount);
-
-	~setStep = {|i, val|
-		if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
-	};
-
-	Pdef(\arp1,
-		Pbind(\instrument,\lead1,
-			\amp,Pseq([1],inf),
-			\root,Pfunc({~transpose}),
-			\isRest,Pseq(~arpSteps,inf).coin.not,
-			\degree,Pseq(~arpSteps,inf),
-			\dur,1/4,
-			\scale,Pfunc({~scale})
-	)).play.quant(~stepsCount);
 
 	// role: change sounds to be triggered
 	~p1_sonarValues = Array.fill(2, {0});
@@ -146,7 +170,43 @@ fork{
 	SENSOR CALLBACKS : Plant 2 (MEDIUM)
 	=======================================*/
 
-	// PLANT 2 = BASS ?
+	// TODO:
+	// - have a different synth for sonar 0 and 1
+	// - pick another synth for sonar 0 on flex_0 onset
+	// - pick another synth for sonar 1 on flex_1 onset
+
+	~p2_volume = 0.6;
+	~p2_voicesCount = 6;
+	~p2_amps = Array.fill(~p2_voicesCount, {0});
+	~p2_timbres = Array.fill(~p2_voicesCount, {0});
+	~p2_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
+	~p2_activeVoices = Array.fill(~p2_voicesCount, {0}); // monitor active voices, as an array of 1 or 0
+
+	// degree controlled by sonar 0 and 1 alternatively
+	Pdef(\p2_0,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[0]})
+	));
+
+	Pdef(\p2_1,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[1]})
+	));
+
+	Pdef(\p2_2,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[2]})
+	));
+
+	Pdef(\p2_3,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[3]})
+	));
+
+	Pdef(\p2_4,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[4]})
+	));
+
+	Pdef(\p2_5,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[5]})
+	));
+
 
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|
@@ -167,8 +227,6 @@ fork{
 		);
 	};
 
-	// role: change notes to be played
-	~p2_sonarValues = Array.fill(2, {0});
 	~p2_stem_sonar = {|i=0, v=0, state=0|
 		// postf("~p2_stem_sonar i:% v:% state: %\n", i, v, state);
 
@@ -181,7 +239,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p2_sonarValues[i] = v;
+				~p2_degrees[i] = ~degrees[4][(v * 8).asInt];
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
@@ -193,25 +251,30 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
+				~p2_activeVoices[i] = 0;
+				Pdef((\p2_++i).asSymbol).stop;
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
+				~p2_activeVoices[i] = 0;
 			},
 			1, {
-				//"----->CHANGE VALUE".postln;
+				//"----->ON LIGHT".postln;
+
+				// normalize amp depending on the number of active voices for this plantoid
+				var amp;
+				~p2_activeVoices[i] = 1;
+				amp = min(1, v * (1 / sum(~p2_activeVoices)));
+				~p2_amps[i] = amp * ~p2_volume;
+
+				// timbre doesn't need to be normalized
+				~p2_timbres[i] = v;
+
 			},
 			2, {
 				// "----->ONSET LIGHT".postln;
-
-				if (i.odd)
-				{
-					var degree = (~p2_sonarValues[0] * 12).asInt ;
-					(instrument: \lead1, scale: ~scale, octave:3, degree:degree, mod:(i+2), dur:1/4, latency:Ref(0)).play;
-				}
-				{
-					var degree = (~p2_sonarValues[1] * 12).asInt ;
-					(instrument: \lead1, scale: ~scale, octave:3, degree:degree, mod:(i+2), dur:1/4, latency:Ref(0)).play;
-				};
+				~p2_activeVoices[i] = 1;
+				Pdef((\p2_++i).asSymbol).play(quant:1);
 			},
 		);
 	};
@@ -301,5 +364,4 @@ fork{
 
 	// manage the OSC parsing:
 	"plantoids_parseOSC.scd".loadRelative(true, {"loaded parse OSC".postln});
-	// "plantoids_plinky_sensorMapping.scd".loadRelative(true, {"loaded additional sensor mapping".postln});
 };

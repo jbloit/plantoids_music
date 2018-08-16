@@ -5,15 +5,15 @@
 
 ~p3_analogMappers_box1 = [
 	//0
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:0, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:0, quant:0),
 	//1
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:1, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:1, quant:0),
 	//2
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:2, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:2, quant:0),
 	//3
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:3, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:3, quant:0),
 	//4
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:4, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:4, quant:0),
 
 
 	// 5,6,7: NOT USED
@@ -29,19 +29,19 @@
 	//0
 	SensorKey.new(inputMax:~flex_max, thresh:0.1, musicCallback: ~p3_flower_flexQuake, noteIndex:0, quant:0),
 	//1
-	SensorKey.new(inputMax:~flex_max, thresh:0.1, musicCallback: ~p3_flower_flexQuake, noteIndex:1, quant:1/8),
+	SensorKey.new(inputMax:~flex_max, thresh:0.1, musicCallback: ~p3_flower_flexQuake, noteIndex:1, quant:0),
 	//2
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p3_stem_light, noteIndex:5, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p3_stem_light, noteIndex:5, quant:0),
 	//3
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p3_flower_ambientLight, noteIndex:0, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p3_flower_ambientLight, noteIndex:0, quant:0),
 	//4
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p3_stem_light, noteIndex:6, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p3_stem_light, noteIndex:6, quant:0),
 	//5
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:7, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:7, quant:0),
 	//6
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:8, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:8, quant:0),
 	//7
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:9, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p3_stem_light, noteIndex:9, quant:0),
 ];
 
 ~p3_sonarMappers_box1  = [
@@ -68,17 +68,17 @@
 	//1
 	SensorKey.new(inputMax:~flex_max, thresh:0.1, musicCallback: ~p2_flower_flexQuake, noteIndex:1, quant:0),
 	//2
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:0, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:0, quant:0),
 	//3
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:1, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:1, quant:0),
 	//4
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:2, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:2, quant:0),
 	//5
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:3, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:3, quant:0),
 	//6
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:4, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p2_stem_light, noteIndex:4, quant:0),
 	//7
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:5, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p2_stem_light, noteIndex:5, quant:0),
 
 ];
 
@@ -96,17 +96,17 @@
 	//1
 	SensorKey.new(inputMax:~flex_max, thresh:0.1, musicCallback: ~p1_flower_flexQuake, noteIndex:1, quant:0),
 	//2
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p1_stem_light, noteIndex:0, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1,  musicCallback: ~p1_stem_light, noteIndex:0, quant:0),
 	//3
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:1, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:1, quant:0),
 	//4
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:2, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:2, quant:0),
 	//5
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:3, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:3, quant:0),
 	//6
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:4, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:4, quant:0),
 	//7
-	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:5, quant:1/8),
+	SensorKey.new(inputMax:~ldr_max, thresh:0.1, musicCallback: ~p1_stem_light, noteIndex:5, quant:0),
 
 ];
 

@@ -59,18 +59,18 @@ fork{
 		if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
 	};
 
-	/*
+
 	Pdef(\arp1,
-	Pbind(\instrument,\lead1,
-	\amp,Pseq([1],inf),
-	\root,Pfunc({~root}),
-	\octave, 3,
-	\isRest,Pseq(~arpSteps,inf).coin.not,
-	\degree,Pseq(~arpSteps,inf),
-	\dur,1/8,
-	\scale,Pfunc({~scale})
+		Pbind(\instrument,\lead1,
+			\amp,Pseq([1],inf),
+			\root,Pfunc({~root}),
+			\octave, 3,
+			\isRest,Pseq(~arpSteps,inf).coin.not,
+			\degree,Prand(~degrees[3], inf),
+			\dur,1/8,
+			\scale,Pfunc({~scale})
 	)).play.quant(1);
-	*/
+
 
 
 	/* =======================================
@@ -117,15 +117,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				// postf("~p1_onset Light i:% v:% \n", i, v);
-				if (i.odd) {
-					var amp = ~p1_sonarValues[0];
-					Synth(\hat909, [\freq, 220 + (i * 10), \amp, amp]);
 
-				} {
-					var amp = ~p1_sonarValues[1];
-					Synth(\kickmed, [\amp, amp, \decay, 0.01, \release, 0.01, \atk, 0.1, \freq1,90, \freq2, 110, \fratio, (i+1)]);
-
-				};
 			},
 		);
 	};

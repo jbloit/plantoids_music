@@ -219,6 +219,7 @@ fork{
 			},
 			2, {
 				// "----->ONSET FLEX".postln;
+				~root = rrand(-2, 2);
 			},
 		);
 	};

@@ -78,6 +78,38 @@ fork{
 	=======================================*/
 
 	// PERCS
+	~p1_volume = 0.6;
+	~p1_voicesCount = 6;
+	~p1_amps = Array.fill(~p1_voicesCount, {0});
+	~p1_timbres = Array.fill(~p1_voicesCount, {0});
+	~p1_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
+	~p1_activeVoices = Array.fill(~p1_voicesCount, {0}); // monitor active voices, as an array of 1 or 0
+
+
+	Pdef(\p1_0,
+		Pbind(\instrument, \kickhi, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[0]})
+	));
+
+	Pdef(\p1_1,
+		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[1]})
+	));
+
+	Pdef(\p1_2,
+		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[2]})
+	));
+
+
+	Pdef(\p1_3,
+		Pbind(\instrument, \kickhi, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[3]})
+	));
+
+	Pdef(\p1_4,
+		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[4]})
+	));
+
+	Pdef(\p1_5,
+		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[5]})
+	));
 
 
 	// role: change sounds to be triggered
@@ -107,17 +139,29 @@ fork{
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
+				~p1_activeVoices[i] = 0;
+				Pdef((\p1_++i).asSymbol).stop;
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
+				~p1_activeVoices[i] = 0;
 			},
 			1, {
-				// "----->CHANGE VALUE".postln;
+				//"----->ON LIGHT".postln;
+
+				// normalize amp depending on the number of active voices for this plantoid
+				var amp;
+				~p1_activeVoices[i] = 1;
+				amp = min(1, v * (1 / sum(~p1_activeVoices)));
+				~p1_amps[i] = amp * ~p1_volume;
+
+				// timbre doesn't need to be normalized
+				~p1_timbres[i] = v;
 			},
 			2, {
-				// "----->ONSET LIGHT".postln;
-				// postf("~p1_onset Light i:% v:% \n", i, v);
-
+				"----->ONSET LIGHT".postln;
+				~p1_activeVoices[i] = 1;
+				Pdef((\p1_++i).asSymbol).play(quant:1);
 			},
 		);
 	};
@@ -283,6 +327,10 @@ fork{
 	=======================================*/
 
 	// PLANT 3 = LEADS
+	// TODO:
+	// - have a different synth for sonar 0 , 1, 2, 3
+	// - pick another synth for sonar 0  and 1 on flex_0 onset
+	// - pick another synth for sonar 2 and 3 on flex_1 onset
 
 	~p3_volume = 0.6;
 	~p3_voicesCount = 10;
@@ -401,7 +449,7 @@ fork{
 
 			},
 			2, {
-				"----->ONSET LIGHT".postln;
+				// "----->ONSET LIGHT".postln;
 				~p3_activeVoices[i] = 1;
 				Pdef((\p3_++i).asSymbol).play(quant:1);
 			},

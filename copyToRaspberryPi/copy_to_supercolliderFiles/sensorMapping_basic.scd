@@ -5,7 +5,7 @@
 // adapt threshold to measured ambient light. (auto sets trigger direction)
 ~ambientLightAdaptLDRs = {|i=0, v=0, state=0|
 
-	postf("ADAPT LDRS, THRESH: %\n", v);
+	// postf("ADAPT LDRS, THRESH: %\n", v);
 	if (~p3_analogMappers_box1.isNil)
 	{}
 	{

@@ -154,21 +154,22 @@ SynthDef(\kick, {
 // Synth(\kick);
 
 SynthDef("kickhi", {
-	arg out=0,tu = 1;
+	arg out=0,timbre = 1;
 	var env0, env1, env1m, sig;
+	// timbre  = 1 - timbre;
 	env0 =  EnvGen.ar(Env.new([0.5, 0.1, 0.01, 0.01,0], [0.01, 0.5, 1.26,0.1], [-4, -2, -4]), doneAction:2);
 	env1 = EnvGen.ar(Env.new([122, 30, 33,28], [0.05, 0.29,1], [-4, -5]));
 	env1m = env1.midicps;
-	sig = LFPulse.ar(env1m*tu, 0, 0.5, 1, -0.5);
+	sig = LFPulse.ar(env1m*timbre, 0, 0.5, 1, -0.5);
 	sig = out + WhiteNoise.ar(1);
 	sig = LPF.ar(sig, env1m*1.5, env0);
-	sig = sig + SinOsc.ar(env1m*tu, 0.5, env0*4);
+	sig = sig + SinOsc.ar(env1m*timbre, 0.5, env0*4);
 	sig = sig * 1.2;
 	sig = sig.clip2(1);
-	Out.ar(out, sig);
+	Out.ar(out, sig!2);
 }).send(s);
 
-
+// Synth(\kickhi, [\timbre, 0.3])
 
 SynthDef(\kick2,{arg out=0,gate = 1 ,freq=60,tu = 1,amp=1,atf = 80, rel =1;
 	var env = EnvGen.ar(Env.perc(0,rel),gate,doneAction:2);
@@ -266,11 +267,12 @@ SynthDef(\hat,{arg gate = 1, amp=1, out=0,rel=0.1;
 	Out.ar([0,1],sig*amp*12);
 }).add;
 
-// Synth(\hat)
+// Synth(\hat, [\rel,0.1])
 
 
-SynthDef(\hat909, {|out=0, freq=230, hpf=6500, release=0.15, amp=1, fxb=0, fxv=0, bbcb=0, bbcv=0|
-  var pulse, sig, env, freqs;
+SynthDef(\hat909, {|out=0, freq=230, release=0.15, amp=0.4, fxb=0, fxv=0, bbcb=0, bbcv=0, timbre=0.3|
+  var pulse, sig, env, freqs, hpf;
+	hpf = timbre.linexp(0, 1, 1000, 6400);
   freqs = [freq, freq*1.4471, freq*1.617, freq*1.9265, freq*2.5028, freq*2.6637];
   pulse = Mix.ar(Pulse.ar(freqs, {0.9.rand}!6, mul: 1));
   sig = RHPF.ar(RHPF.ar(pulse, hpf), hpf);
@@ -280,7 +282,7 @@ SynthDef(\hat909, {|out=0, freq=230, hpf=6500, release=0.15, amp=1, fxb=0, fxv=0
 }).add;
 
 
-// Synth(\hat909, [\freq, 220, \amp, 0.7 ]);
+// Synth(\hat909, [\timbre, 0.8]);
 
 
 SynthDef(\hat808, { arg out=0,tu=1, amp=0.1, gate=1, pan=0;
@@ -317,7 +319,7 @@ var sig = CuspN.ar(
 	Out.ar(out,sig*env0);
 }).add;
 
-// Synth(\noise2,[\rel, 0.1]);
+// Synth(\noise2,[\rel, 0.5]);
 
 
 SynthDef(\noise,{arg out =0,rel  = 0.25,a=4;
@@ -338,7 +340,7 @@ var sig = LatoocarfianL.ar(
 	Out.ar(out,sig*env0);
 }).add;
 
-/*Synth(\noise);*/
+// Synth(\noise);
 
 
 SynthDef(\snare, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
@@ -407,21 +409,21 @@ SynthDef(\t5snare, { arg out=0,tu=1, amp=0.3, gate=1, pan=0, freq=200,snd;
 
 // Synth(\t5snare)
 
-SynthDef(\snare808, { arg out=0,tu=1, amp=0.1, gate=1, pan=0, freq=200;
+SynthDef(\snare808, { arg out=0,timbre=1, amp=0.1, gate=1, pan=0, freq=200;
 	var sig;
 	var env = EnvGen.ar(Env.perc(0.01,1));
 	var enf = EnvGen.ar(Env([600,177,230],[0.01,0.01],-4));
-	sig = SinOsc.ar(tu*enf+127,0,0.5)*env;
+	sig = SinOsc.ar(timbre*enf+127,0,0.5)*env;
 	sig = WhiteNoise.ar+sig;
-	sig = RHPF.ar(sig, \hpf.kr(170)*tu, \rq.kr(0.5));
+	sig = RHPF.ar(sig, \hpf.kr(170)*timbre, \rq.kr(0.5));
 	sig = sig + Mix.ar(BPF.ar(sig,[127,430],[0.5,0.5])*0.1);
-	sig = RLPF.ar(sig, \lpf.kr(11100)*tu, \rq.kr(0.5));
+	sig = RLPF.ar(sig, \lpf.kr(11100)*timbre, \rq.kr(0.5));
 	sig = sig * EnvGen.ar(Env.perc(0.01,\rel.kr(0.1),-4),gate,doneAction:2);
 	sig = Pan2.ar(sig, pan, amp);
 	Out.ar(out, sig);
 }).add;
 
-// Synth(\snare808)
+// Synth(\snare808, [ \timbre, 0.8])
 
 //  snare
 

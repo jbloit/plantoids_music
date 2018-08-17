@@ -6,7 +6,7 @@
 
 ~ldr_max = 1024;
 ~flex_max = 1024;
-~sonar_max = 3000;
+~sonar_max = 2000;
 ~temperature_max = 50;
 ~humidity_max = 50;
 
@@ -25,7 +25,10 @@ OSCdef(\p3_parseAnalogSensors1, {
 
 		if (~postOSC) {postf("OSC IN  [%] - % \n", time, msg)};
 
-	~p3_analogMappers_box1[index].process(val);
+	if (index < 5)
+	{
+		~p3_analogMappers_box1[index].process(val);
+	};
 
 }, '/plantoid/3/1/analog', n);
 

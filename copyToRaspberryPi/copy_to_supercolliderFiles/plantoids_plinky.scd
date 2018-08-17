@@ -91,11 +91,11 @@ fork{
 	));
 
 	Pdef(\p1_1,
-		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[1]})
+		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[1]})
 	));
 
 	Pdef(\p1_2,
-		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[2]})
+		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p1_timbres[2]})
 	));
 
 
@@ -104,11 +104,11 @@ fork{
 	));
 
 	Pdef(\p1_4,
-		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[4]})
+		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[4]})
 	));
 
 	Pdef(\p1_5,
-		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[5]})
+		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p1_timbres[5]})
 	));
 
 
@@ -215,7 +215,7 @@ fork{
 	// - pick another synth for sonar 0 on flex_0 onset
 	// - pick another synth for sonar 1 on flex_1 onset
 
-	~p2_volume = 0.6;
+	~p2_volume = 0.7;
 	~p2_voicesCount = 6;
 	~p2_amps = Array.fill(~p2_voicesCount, {0});
 	~p2_timbres = Array.fill(~p2_voicesCount, {0});
@@ -224,27 +224,27 @@ fork{
 
 	// degree controlled by sonar 0 and 1 alternatively
 	Pdef(\p2_0,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[0]})
+		Pbind(\instrument, \lead1, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[0]})
 	));
 
 	Pdef(\p2_1,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[1]})
+		Pbind(\instrument, \lead2, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p2_timbres[1]})
 	));
 
 	Pdef(\p2_2,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[2]})
+		Pbind(\instrument, \lead1, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[2]})
 	));
 
 	Pdef(\p2_3,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[3]})
+		Pbind(\instrument, \lead2, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p2_timbres[3]})
 	));
 
 	Pdef(\p2_4,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[4]})
+		Pbind(\instrument, \lead1, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[4]})
 	));
 
 	Pdef(\p2_5,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p2_timbres[5]})
+		Pbind(\instrument, \leaad2, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p2_degrees[1]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p2_timbres[5]})
 	));
 
 
@@ -332,7 +332,7 @@ fork{
 	// - pick another synth for sonar 0  and 1 on flex_0 onset
 	// - pick another synth for sonar 2 and 3 on flex_1 onset
 
-	~p3_volume = 0.6;
+	~p3_volume = 0.4;
 	~p3_voicesCount = 10;
 	~p3_amps = Array.fill(~p3_voicesCount, {0});
 	~p3_timbres = Array.fill(~p3_voicesCount, {0});
@@ -342,7 +342,7 @@ fork{
 
 	// degree controlled by sonar 0, 1, 2, 3 alternatively
 	Pdef(\p3_0,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[0]})
+		Pbind(\instrument, \avlead, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[0]})
 	));
 
 	Pdef(\p3_1,
@@ -350,15 +350,15 @@ fork{
 	));
 
 	Pdef(\p3_2,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[2]})
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[2]})
 	));
 
 	Pdef(\p3_3,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[3]})
+		Pbind(\instrument, \moogbass, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[3]})
 	));
 
 	Pdef(\p3_4,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[4]})
+		Pbind(\instrument, \avlead, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[4]})
 	));
 
 	Pdef(\p3_5,
@@ -366,18 +366,18 @@ fork{
 	));
 
 	Pdef(\p3_6,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[6]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[6]})
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[6]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[6]})
 	));
 
 	Pdef(\p3_7,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[7]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[7]})
+		Pbind(\instrument, \moogbass, \dur, Pseq( ~claves[7]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[7]})
 	));
 
 	Pdef(\p3_8,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[8]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[8]})
+		Pbind(\instrument, \avlead, \dur, Pseq( ~claves[8]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[8]})
 	));
 
-	Pdef(\p2_9,
+	Pdef(\p3_9,
 		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[9]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[9]})
 	));
 

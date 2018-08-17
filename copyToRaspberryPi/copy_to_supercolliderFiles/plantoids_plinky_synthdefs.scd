@@ -82,11 +82,12 @@ SynthDef(\avbass, {|out= 0, amp= 0.1, freq= 100, pan= 0, atk= 0.01, rel= 0.2, cu
 
 // (instrument: \avbass, degree:0, mod:10, dur:0.1, latency:Ref(0)).play;
 
-SynthDef(\avlead, {|out= 0, amp= 0.1, freq= 500, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+SynthDef(\avlead, {|out= 0, amp= 0.1, freq= 400, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
     var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
     var src= Pulse.ar(freq, 1-env.lag(1)*0.5, amp);
     OffsetOut.ar(out, Pan2.ar(src*env, pan));
 }).add;
+
 SynthDef(\avswop, {|out= 0, amp= 0.1, start= 5000, end= 500, mod= 0, pan= 0, atk= 0.01, rel= 4, cur= -4, gate= 1|
     var env= EnvGen.ar(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
     var src= BPF.ar(WhiteNoise.ar(amp+SinOsc.ar(mod, 0.5pi, amp*0.25)), XLine.kr(start, end, 20), 2-env);
@@ -108,6 +109,56 @@ SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
 	* amp;
 	Out.ar(out, sig ! 2)
 }).add;
+
+SynthDef(\moogbass, {
+	arg out = 0, pan = 0, freq = 440, amp = 0.8, gate = 1, cutoff = 1000, gain = 2.0, lagamount = 0.01, att = 0.001, dec = 0.3, sus = 0.9, rel = 0.2, chorus = 0.7;
+
+	var osc, filter, env, filterenv, snd, chorusfx;
+
+	osc = Mix(VarSaw.ar(
+		freq: freq.lag(lagamount) * [1.0, 1.001, 2.0],
+		iphase: Rand(0.0,1.0) ! 3,
+		width: Rand(0.5,0.75) ! 3,
+		mul: 0.5));
+
+	filterenv = EnvGen.ar(
+		envelope: Env.asr(0.2, 1, 0.2),
+		gate: gate);
+
+	filter =  MoogFF.ar(
+		in: osc,
+		freq: cutoff * (1.0 + (0.5 * filterenv)),
+		gain: gain);
+
+	env = EnvGen.ar(
+		envelope: Env.adsr(0.001, 0.3, 0.9, 0.2, amp),
+		gate: gate,
+		doneAction: 2);
+
+	snd = (0.7 * filter + (0.3 * filter.distort)) * env;
+
+	chorusfx = Mix.fill(7, {
+
+		var maxdelaytime = rrand(0.005, 0.02);
+		DelayC.ar(
+			in: snd,
+			maxdelaytime: maxdelaytime,
+			delaytime: LFNoise1.kr(
+				freq: Rand(4.5, 10.5),
+				mul: 0.25 * maxdelaytime,
+				add: 0.75 * maxdelaytime)
+		)
+	});
+
+	snd = snd + (chorusfx * chorus);
+
+	Out.ar(out, Pan2.ar(snd, pan));
+
+}).add;
+
+
+
+
 
 // =========================================================
 //                                                                            SAMPLER

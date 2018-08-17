@@ -14,6 +14,8 @@ fork{
 	TempoClock.tempo = ~tempoFactor;
 
 	~scale = Scale.chromatic;
+
+	// similar to the scales in Figure
 	~degrees = [
 		[0],
 		[0, 7],
@@ -23,6 +25,8 @@ fork{
 		[0, 1, 3, 5, 7, 10],
 		[0, 1, 3, 5, 7, 8, 10]
 	];
+
+	// Similar to the rhythmic patterns in Figure (euclidian patterns?)
 	~claves  = [
 		[4, 4, 4, 4],
 		[3, 3, 3, 3, 4],
@@ -287,7 +291,55 @@ fork{
 
 	// PLANT 3 = LEADS
 
-	~p3_synthArray = [\lead1, \lead1, \lead1, \lead1];
+	~p3_volume = 0.6;
+	~p3_voicesCount = 10;
+	~p3_amps = Array.fill(~p3_voicesCount, {0});
+	~p3_timbres = Array.fill(~p3_voicesCount, {0});
+	~p3_degrees = Array.fill(4, {0}); // 4 sonars control the degrees for all parts
+	~p3_activeVoices = Array.fill(~p3_voicesCount, {0}); // monitor active voices, as an array of 1 or 0
+
+
+	// degree controlled by sonar 0, 1, 2, 3 alternatively
+	Pdef(\p3_0,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[0]})
+	));
+
+	Pdef(\p3_1,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[1]})
+	));
+
+	Pdef(\p3_2,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[2]})
+	));
+
+	Pdef(\p3_3,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[3]})
+	));
+
+	Pdef(\p3_4,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[4]})
+	));
+
+	Pdef(\p3_5,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[5]})
+	));
+
+	Pdef(\p3_6,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[6]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[6]})
+	));
+
+	Pdef(\p3_7,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[7]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[7]})
+	));
+
+	Pdef(\p3_8,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[8]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[8]})
+	));
+
+	Pdef(\p2_9,
+		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[9]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[9]})
+	));
+
 
 	~p3_flower_flexQuake = {|i=0, v=0, state=0|
 		// postf("~p3_flower_flexQuake i:% v:% \n", i, v);
@@ -305,14 +357,10 @@ fork{
 			2, {
 				// "----->ONSET FLEX".postln;
 				~arpSteps = rrand(0,12!~stepsCount);
-
 			},
 		);
-
 	};
 
-	// role: change notes to be played
-	~p3_sonarValues = Array.fill(4, {0});
 
 	~p3_stem_sonar = {|i=0, v=0, state=0|
 		// postf("~p3_stem_sonar i:% v:% s: %\n", i, v, state);
@@ -325,7 +373,7 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p3_sonarValues[i] = v;
+				~p3_degrees[i] = ~degrees[4][(v * 8).asInt];
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
@@ -335,29 +383,34 @@ fork{
 	};
 
 	~p3_stem_light = {|i=0, v=0, state=0|
-		// postf("~p3_stem_light i:% v:% \n", i, v);
+		// postf("~p3_stem_light i:% v:%, state: %\n", i, v, state);
 		switch(state,
 			-1, {
 				// "----->OFFSET LIGHT".postln;
+				~p3_activeVoices[i] = 0;
+				Pdef((\p3_++i).asSymbol).stop;
 			},
 			0, {
 				//"----->OFF LIGHT".postln;
+				~p3_activeVoices[i] = 0;
 			},
 			1, {
-				//"----->CHANGE VALUE".postln;
+				//"----->ON LIGHT".postln;
+
+				// normalize amp depending on the number of active voices for this plantoid
+				var amp;
+				~p3_activeVoices[i] = 1;
+				amp = min(1, v * (1 / sum(~p3_activeVoices)));
+				~p3_amps[i] = amp * ~p3_volume;
+
+				// timbre doesn't need to be normalized
+				~p3_timbres[i] = v;
+
 			},
 			2, {
-				// "----->ONSET LIGHT".postln;
-
-				// set the sonar index that controls the note for this light sensor
-				var sonarIndex = (i % 4);
-				var synth = ~p3_synthArray[sonarIndex];
-
-
-				var degree = (~p3_sonarValues[sonarIndex] * 12).asInt;
-
-				(instrument: synth, scale: ~scale, degree:degree, dur:1/4, amp:v, latency:Ref(0)).play;
-
+				"----->ONSET LIGHT".postln;
+				~p3_activeVoices[i] = 1;
+				Pdef((\p3_++i).asSymbol).play(quant:1);
 			},
 		);
 	};

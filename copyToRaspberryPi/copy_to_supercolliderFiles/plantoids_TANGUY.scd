@@ -303,7 +303,7 @@ fork{
 	// - pick another synth for sonar 1 on flex_1 onset
 
 	~p2_volume = 0.7;
-	~p2_voicesCount = 6;
+	~p2_voicesCount = 3;
 	~p2_amps = Array.fill(~p2_voicesCount, {0});
 	~p2_timbres = Array.fill(~p2_voicesCount, {0});
 	~p2_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts

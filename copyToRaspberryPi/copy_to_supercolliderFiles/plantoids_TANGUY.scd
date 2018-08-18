@@ -9,7 +9,7 @@ fork{
 	~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 	~postOSC  = false;
 	~root = 0;
-	~tempoFactor = 0.5;
+	~tempoFactor = 1;
 
 	TempoClock.tempo = ~tempoFactor;
 
@@ -309,7 +309,7 @@ fork{
 			2, {
 				"----->ONSET LIGHT".postln;
 				~p1_activeVoices[i] = 1;
-				Pdef((\p1_++i).asSymbol).play(quant:1);
+				Pdef((\p1_++i).asSymbol).play;
 			},
 		);
 	};
@@ -527,7 +527,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~p2_activeVoices[i] = 1;
-				Pdef((\p2_++i).asSymbol).play(quant:1);
+				Pdef((\p2_++i).asSymbol).play;
 			},
 		);
 	};
@@ -875,7 +875,7 @@ fork{
 			2, {
 				// "----->ONSET LIGHT".postln;
 				~p3_activeVoices[i] = 1;
-				Pdef((\p3_++i).asSymbol).play(quant:1);
+				Pdef((\p3_++i).asSymbol).play;
 			},
 		);
 	};

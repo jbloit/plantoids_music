@@ -77,7 +77,7 @@ fork{
 
 	// PERCS
 	~p1_volume = 0.6;
-	~p1_voicesCount = 4;
+	~p1_voicesCount = 6;
 	~p1_amps = Array.fill(~p1_voicesCount, {0});
 	~p1_timbres = Array.fill(~p1_voicesCount, {0});
 	~p1_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
@@ -201,7 +201,64 @@ fork{
 		)
 		));
 
+	Pdef(\p1_4,
+			Pbind(\instrument, \multi,
+	\dur, 14,
+	\midinote, Pshuf([    // Here the chords are randomly selected in a collection of values.
+		([62,65,69,72,79]-6),
+		([62,65,69,72,79]-4),
+		([62,65,69,72,79]-2),
+		([62,65,69,72,79])
+	],inf),
+	\detune, Pseg(Pseq([0,10,10],inf),Pseq([120,inf],inf),[\sin,inf],inf),   // The detune value can create nice pitch effects. (Wait 2 minutes to hear complete change).
+	\fi, 7,
+	\sus,Pfunc({~root}),
+	\fo, 3,
+	\cfmin, 50*2,
+	\cfmax, 50*50,
+	\rqmin, 0.01,
+	\rqmax, 0.5,
+	\cfhzmin, 0.001,
+	\cfhzmax, 0.03,
+	\mix, 1, // Mix and Room values control the reverb settings
+	\room, 1,
+	\pan, 0,
+	\out, 0,
+	\amp, 0.1,
+	\degree, Pfunc({~p1_degrees[0]},
+	\timbre, Pfunc ({~p1_timbres[4]}),
+		)
+			));
 
+
+	Pdef(\p1_5,
+			Pbind(\instrument, \multi,
+	\dur, 21,
+	\midinote, Pshuf([    // Here the chords are randomly selected in a collection of values.
+		([62,65,69,72,79]-6),
+		([62,65,69,72,79]-4),
+		([62,65,69,72,79]-2),
+		([62,65,69,72,79])
+	],inf),
+	\detune, Pseg(Pseq([0,10,10],inf),Pseq([120,inf],inf),[\sin,inf],inf),   // The detune value can create nice pitch effects. (Wait 2 minutes to hear complete change).
+	\fi, 7,
+	\sus,Pfunc({~root}),
+	\fo, 7,
+	\cfmin, 50*2,
+	\cfmax, 50*50,
+	\rqmin, 0.01,
+	\rqmax, 0.5,
+	\cfhzmin, 0.001,
+	\cfhzmax, 0.03,
+	\mix, 1, // Mix and Room values control the reverb settings
+	\room, 0.5,
+	\pan, 0,
+	\out, 0,
+	\amp, 0.1,
+	\degree, Pfunc({~p1_degrees[1]},
+	\timbre, Pfunc ({~p1_timbres[5]}),
+		)
+		));
 
 	// role: change sounds to be triggered
 	~p1_sonarValues = Array.fill(2, {0});
@@ -307,7 +364,7 @@ fork{
 	// - pick another synth for sonar 1 on flex_1 onset
 
 	~p2_volume = 0.7;
-	~p2_voicesCount = 3;
+	~p2_voicesCount = 6;
 	~p2_amps = Array.fill(~p2_voicesCount, {0});
 	~p2_timbres = Array.fill(~p2_voicesCount, {0});
 	~p2_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
@@ -359,7 +416,50 @@ fork{
 	\root, Pfunc ([~root]),
 	));
 
+	Pdef(\p2_3,
+	Pbind(\instrument, \ambiant,
+	\dur, Pwhite(1/2,4),
+	\freq, ([62,65,69,72]-2),
+	\fi, 1,
+	\sus, 2,
+	\fo, 1,
+	\pan, 0,
+	\amp, 0.8,
+	\degree, Pfunc({~p2_degrees[0]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p2_timbres[3]}),
+	\root, Pfunc ([~root]),
+	));
 
+	Pdef(\p2_4,
+		Pbind(\instrument, \ambiant,
+	\dur, Pwhite(2,8),
+	\freq, ([62,65,69,72]-2),
+	\fi, 2,
+	\sus, 4,
+	\fo, 2,
+	\pan, 0,
+	\amp, 0.8,
+	\degree, Pfunc({~p2_degrees[1]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p2_timbres[4]}),
+	\root, Pfunc ([~root]),
+	));
+
+	Pdef(\p2_5,
+		Pbind(\instrument, \ambiant,
+	\dur, Pwhite(1/4,1/2),
+	\freq, ([62,65,69,72]-2),
+	\fi, 2,
+	\sus, 4,
+	\fo, 2,
+	\pan, 0,
+	\amp, 0.8,
+	\degree, Pfunc({~p2_degrees[1]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p2_timbres[5]}),
+	\root, Pfunc ([~root]),
+	));
 	~p2_flower_flexQuake = {
 		|i=0, v=0, state=0|
 		// postf("~p2_flower_flexQuake i:% v:% \n", i, v);
@@ -445,7 +545,7 @@ fork{
 	// - pick another synth for sonar 2 and 3 on flex_1 onset
 
 	~p3_volume = 0.4;
-	~p3_voicesCount = 4;
+	~p3_voicesCount = 10;
 	~p3_amps = Array.fill(~p3_voicesCount, {0});
 	~p3_timbres = Array.fill(~p3_voicesCount, {0});
 	~p3_degrees = Array.fill(4, {0}); // 4 sonars control the degrees for all parts
@@ -552,6 +652,158 @@ fork{
 	\timbre, Pfunc({~p3_timbres[3]}),
 	\root, Pfunc ([~root]),
 	));
+
+	Pdef(\p3_4,
+	Pbind (\instrument, \multi,
+	\dur, Pseq( ~claves[1]/2, inf),
+	\freq, Pseq([1,2,4],inf),  // Freq value is here controlling the speed of the pitches playing (try to change them !)
+	\fi, Pwhite(3,8),
+	\sus, Pwhite(0.25,1),
+	\fo, 3,
+	\detune, Pseg(Pseq([0,2,2],inf),Pseq([120,inf],inf),[\sin,inf],inf),  // Detune value creates some chaos in rythm (wait for changes)
+	\cfmin, Prand((Scale.lydian.degrees+62).midicps,inf) * Prand([0.5,1,2,4,6],inf),  // This is a random collection of pitches taken from a lydian scale
+	\cfmax, Pkey(\cfmin) * Pwhite(1.005, 1.009, inf),
+	\rqmin, 0.005,
+	\rqmax, 0.008,
+	\cfhzmin, 0,
+	\cfhzmax, 0,
+	\mix, Pseg(Pseq([0.3,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf), // Changing mix and room values make the sound smoother and the attack of the notes played get less hearable (wait to hear changes)
+	\room, Pseg(Pseq([0,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf),
+	\pan, 0,
+	\out, 0,
+	\amp, 0.4,
+	\degree, Pfunc({~p3_degrees[0]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p3_timbres[4]}),
+	\root, Pfunc ([~root]),
+	));
+
+	Pdef(\p3_5,
+	Pbind (\instrument, \multi,
+	\dur, Pseq( ~claves[1]/2, inf),
+	\freq, Pseq([1,2,4],inf),  // Freq value is here controlling the speed of the pitches playing (try to change them !)
+	\fi, Pwhite(2,4),
+	\sus, Pwhite(0.25,1),
+	\fo, 3,
+	\detune, Pseg(Pseq([0,2,2],inf),Pseq([120,inf],inf),[\sin,inf],inf),  // Detune value creates some chaos in rythm (wait for changes)
+	\cfmin, Prand((Scale.lydian.degrees+62).midicps,inf) * Prand([0.5,1,2,4,6],inf),  // This is a random collection of pitches taken from a lydian scale
+	\cfmax, Pkey(\cfmin) * Pwhite(1.005, 1.009, inf),
+	\rqmin, 0.005,
+	\rqmax, 0.008,
+	\cfhzmin, 0,
+	\cfhzmax, 0,
+	\mix, Pseg(Pseq([0.3,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf), // Changing mix and room values make the sound smoother and the attack of the notes played get less hearable (wait to hear changes)
+	\room, Pseg(Pseq([0,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf),
+	\pan, 0,
+	\out, 0,
+	\amp, 0.4,
+	\degree, Pfunc({~p3_degrees[2]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p3_timbres[5]}),
+	\root, Pfunc ([~root]),
+	));
+
+	Pdef(\p3_6,
+	Pbind (\instrument, \multi,
+	\dur, Pseq( ~claves[1]/2, inf),
+	\freq, Pseq([1,2,4],inf),  // Freq value is here controlling the speed of the pitches playing (try to change them !)
+	\fi, Pwhite(2,4),
+	\sus, Pwhite(0.25,1),
+	\fo, 3,
+	\detune, Pseg(Pseq([0,2,2],inf),Pseq([120,inf],inf),[\sin,inf],inf),  // Detune value creates some chaos in rythm (wait for changes)
+	\cfmin, Prand((Scale.lydian.degrees+62).midicps,inf) * Prand([0.5,1,2,4,6],inf),  // This is a random collection of pitches taken from a lydian scale
+	\cfmax, Pkey(\cfmin) * Pwhite(1.005, 1.009, inf),
+	\rqmin, 0.005,
+	\rqmax, 0.008,
+	\cfhzmin, 0,
+	\cfhzmax, 0,
+	\mix, Pseg(Pseq([0.3,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf), // Changing mix and room values make the sound smoother and the attack of the notes played get less hearable (wait to hear changes)
+	\room, Pseg(Pseq([0,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf),
+	\pan, 0,
+	\out, 0,
+	\amp, 0.4,
+	\degree, Pfunc({~p3_degrees[1]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p3_timbres[6]}),
+	\root, Pfunc ([~root]),
+	));
+
+	Pdef(\p3_7,
+	Pbind (\instrument, \multi,
+	\dur, Pseq( ~claves[1]/2, inf),
+	\freq, Pseq([1,2,4],inf),  // Freq value is here controlling the speed of the pitches playing (try to change them !)
+	\fi, Pwhite(2,4),
+	\sus, Pwhite(0.25,1),
+	\fo, 3,
+	\detune, Pseg(Pseq([0,2,2],inf),Pseq([120,inf],inf),[\sin,inf],inf),  // Detune value creates some chaos in rythm (wait for changes)
+	\cfmin, Prand((Scale.lydian.degrees+62).midicps,inf) * Prand([0.5,1,2,4,6],inf),  // This is a random collection of pitches taken from a lydian scale
+	\cfmax, Pkey(\cfmin) * Pwhite(1.005, 1.009, inf),
+	\rqmin, 0.005,
+	\rqmax, 0.008,
+	\cfhzmin, 0,
+	\cfhzmax, 0,
+	\mix, Pseg(Pseq([0.3,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf), // Changing mix and room values make the sound smoother and the attack of the notes played get less hearable (wait to hear changes)
+	\room, Pseg(Pseq([0,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf),
+	\pan, 0,
+	\out, 0,
+	\amp, 0.4,
+	\degree, Pfunc({~p3_degrees[3]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p3_timbres[7]}),
+	\root, Pfunc ([~root]),
+	));
+
+	Pdef(\p3_8,
+	Pbind (\instrument, \multi,
+	\dur, Pseq( ~claves[1]/2, inf),
+	\freq, Pseq([1,2,4],inf),  // Freq value is here controlling the speed of the pitches playing (try to change them !)
+	\fi, Pwhite(2,4),
+	\sus, Pwhite(0.25,1),
+	\fo, 3,
+	\detune, Pseg(Pseq([0,2,2],inf),Pseq([120,inf],inf),[\sin,inf],inf),  // Detune value creates some chaos in rythm (wait for changes)
+	\cfmin, Prand((Scale.lydian.degrees+62).midicps,inf) * Prand([0.5,1,2,4,6],inf),  // This is a random collection of pitches taken from a lydian scale
+	\cfmax, Pkey(\cfmin) * Pwhite(1.005, 1.009, inf),
+	\rqmin, 0.005,
+	\rqmax, 0.008,
+	\cfhzmin, 0,
+	\cfhzmax, 0,
+	\mix, Pseg(Pseq([0.3,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf), // Changing mix and room values make the sound smoother and the attack of the notes played get less hearable (wait to hear changes)
+	\room, Pseg(Pseq([0,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf),
+	\pan, 0,
+	\out, 0,
+	\amp, 0.4,
+	\degree, Pfunc({~p3_degrees[1]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p3_timbres[8]}),
+	\root, Pfunc ([~root]),
+	));
+
+	Pdef(\p3_9,
+	Pbind (\instrument, \multi,
+	\dur, Pseq( ~claves[1]/2, inf),
+	\freq, Pseq([1,2,4],inf),  // Freq value is here controlling the speed of the pitches playing (try to change them !)
+	\fi, Pwhite(2,4),
+	\sus, Pwhite(0.25,1),
+	\fo, 3,
+	\detune, Pseg(Pseq([0,2,2],inf),Pseq([120,inf],inf),[\sin,inf],inf),  // Detune value creates some chaos in rythm (wait for changes)
+	\cfmin, Prand((Scale.lydian.degrees+62).midicps,inf) * Prand([0.5,1,2,4,6],inf),  // This is a random collection of pitches taken from a lydian scale
+	\cfmax, Pkey(\cfmin) * Pwhite(1.005, 1.009, inf),
+	\rqmin, 0.005,
+	\rqmax, 0.008,
+	\cfhzmin, 0,
+	\cfhzmax, 0,
+	\mix, Pseg(Pseq([0.3,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf), // Changing mix and room values make the sound smoother and the attack of the notes played get less hearable (wait to hear changes)
+	\room, Pseg(Pseq([0,1,1],inf),Pseq([120,inf],inf),[\sin,inf],inf),
+	\pan, 0,
+	\out, 0,
+	\amp, 0.4,
+	\degree, Pfunc({~p3_degrees[3]}),
+	\scale, ~scale,
+	\timbre, Pfunc({~p3_timbres[9]}),
+	\root, Pfunc ([~root]),
+	));
+
+
 
 
 	~p3_flower_flexQuake = {|i=0, v=0, state=0|

@@ -319,9 +319,9 @@ fork{
 	\fo, 1,
 	\pan, 0,
 	\amp, 0.8,
-	\degree, Pfunc({~p2_degrees[1]}),
+	\degree, Pfunc({~p2_degrees[0]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p2_timbres[1]}),
+	\timbre, Pfunc({~p2_timbres[0]}),
 	\root, Pfunc ([~root]),
 	)).play;
 
@@ -336,7 +336,7 @@ fork{
 	\amp, 0.8,
 	\degree, Pfunc({~p2_degrees[1]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p2_timbres[1]}),
+	\timbre, Pfunc({~p2_timbres[0]}),
 	\root, Pfunc ([~root]),
 	)).play;
 
@@ -351,7 +351,7 @@ fork{
 	\amp, 0.8,
 	\degree, Pfunc({~p2_degrees[1]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p2_timbres[1]}),
+	\timbre, Pfunc({~p2_timbres[0]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -468,9 +468,9 @@ fork{
 	\pan, 0,
 	\out, 0,
 	\amp, 0.4,
-	\degree, Pfunc({~p3_degrees[0,2]}),
+	\degree, Pfunc({~p3_degrees[0]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[1]}),
+	\timbre, Pfunc({~p3_timbres[0]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -493,9 +493,9 @@ fork{
 	\pan, 0,
 	\out, 0,
 	\amp, 0.4,
-	\degree, Pfunc({~p3_degrees[0,2]}),
+	\degree, Pfunc({~p3_degrees[2]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[1]}),
+	\timbre, Pfunc({~p3_timbres[0]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -518,9 +518,9 @@ fork{
 	\pan, 0,
 	\out, 0,
 	\amp, 0.4,
-	\degree, Pfunc({~p3_degrees[1,3]}),
+	\degree, Pfunc({~p3_degrees[1]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[1]}),
+	\timbre, Pfunc({~p3_timbres[0]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -543,9 +543,9 @@ fork{
 	\pan, 0,
 	\out, 0,
 	\amp, 0.4,
-	\degree, Pfunc({~p3_degrees[1,3]}),
+	\degree, Pfunc({~p3_degrees[3]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[1]}),
+	\timbre, Pfunc({~p3_timbres[0]}),
 	\root, Pfunc ([~root]),
 	));
 

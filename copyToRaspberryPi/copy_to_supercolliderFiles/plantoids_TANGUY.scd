@@ -103,12 +103,13 @@ fork{
 	\rqmax, 0.5,
 	\cfhzmin, 0.001,
 	\cfhzmax, 0.03,
-	\mix, Pfunc({~p1_timbres[1]}), // Mix and Room values control the reverb settings
+	\mix, 2, // Mix and Room values control the reverb settings
 	\room, 1,
 	\pan, 0,
 	\out, 0,
 	\amp, 0.1,
 	\degree, Pfunc({~p1_degrees[1]},
+	\timbre, Pfunc ({~p1_timbres[0]}),
 		)
 	));
 
@@ -131,12 +132,13 @@ fork{
 	\rqmax, 0.5,
 	\cfhzmin, 0.001,
 	\cfhzmax, 0.03,
-	\mix, Pfunc({~p1_timbres[1]}), // Mix and Room values control the reverb settings
+	\mix, 3, // Mix and Room values control the reverb settings
 	\room, 1,
 	\pan, 0,
 	\out, 0,
 	\amp, 0.1,
 	\degree, Pfunc({~p1_degrees[1]},
+	\timbre, Pfunc ({~p1_timbres[1]}),
 		)
 		));
 
@@ -159,12 +161,13 @@ fork{
 	\rqmax, 0.5,
 	\cfhzmin, 0.001,
 	\cfhzmax, 0.03,
-	\mix, Pfunc({~p1_timbres[1]}), // Mix and Room values control the reverb settings
+	\mix, 1, // Mix and Room values control the reverb settings
 	\room, 1,
 	\pan, 0,
 	\out, 0,
 	\amp, 0.1,
 	\degree, Pfunc({~p1_degrees[0]},
+	\timbre, Pfunc ({~p1_timbres[2]}),
 		)
 			));
 
@@ -188,12 +191,13 @@ fork{
 	\rqmax, 0.5,
 	\cfhzmin, 0.001,
 	\cfhzmax, 0.03,
-	\mix, Pfunc({~p1_timbres[1]}), // Mix and Room values control the reverb settings
+	\mix, 1, // Mix and Room values control the reverb settings
 	\room, 0.5,
 	\pan, 0,
 	\out, 0,
 	\amp, 0.1,
 	\degree, Pfunc({~p1_degrees[0]},
+	\timbre, Pfunc ({~p1_timbres[3]}),
 		)
 		));
 
@@ -323,7 +327,7 @@ fork{
 	\scale, ~scale,
 	\timbre, Pfunc({~p2_timbres[0]}),
 	\root, Pfunc ([~root]),
-	)).play;
+	));
 
 	Pdef(\p2_1,
 		Pbind(\instrument, \ambiant,
@@ -336,9 +340,9 @@ fork{
 	\amp, 0.8,
 	\degree, Pfunc({~p2_degrees[1]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p2_timbres[0]}),
+	\timbre, Pfunc({~p2_timbres[1]}),
 	\root, Pfunc ([~root]),
-	)).play;
+	));
 
 	Pdef(\p2_2,
 		Pbind(\instrument, \ambiant,
@@ -351,7 +355,7 @@ fork{
 	\amp, 0.8,
 	\degree, Pfunc({~p2_degrees[1]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p2_timbres[0]}),
+	\timbre, Pfunc({~p2_timbres[2]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -495,7 +499,7 @@ fork{
 	\amp, 0.4,
 	\degree, Pfunc({~p3_degrees[2]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[0]}),
+	\timbre, Pfunc({~p3_timbres[1]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -520,7 +524,7 @@ fork{
 	\amp, 0.4,
 	\degree, Pfunc({~p3_degrees[1]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[0]}),
+	\timbre, Pfunc({~p3_timbres[2]}),
 	\root, Pfunc ([~root]),
 	));
 
@@ -545,7 +549,7 @@ fork{
 	\amp, 0.4,
 	\degree, Pfunc({~p3_degrees[3]}),
 	\scale, ~scale,
-	\timbre, Pfunc({~p3_timbres[0]}),
+	\timbre, Pfunc({~p3_timbres[3]}),
 	\root, Pfunc ([~root]),
 	));
 

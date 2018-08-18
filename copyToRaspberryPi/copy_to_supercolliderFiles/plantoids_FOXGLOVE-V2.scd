@@ -88,13 +88,6 @@ fork{
 		\amp, 0.8
 	),
 		Pbind(
-		\instrument, "plant1kick",
-		\dur, 1/4,
-		\amp, 0.9,
-		\rel, 0.04,
-		\glissf, 0.99
-	),
-		Pbind(
 		\instrument, "plant1snare",
 		\dur, Prand([Rest(2), 1/8, 1/8], inf),
 		\amp, 0.1,
@@ -130,7 +123,7 @@ fork{
 			\root,Pfunc({~root}),
 			\octave, 4,
 			\isRest,Pseq(~arpSteps,inf).coin.not,
-			\degree,Prand(~degrees[3], inf),
+			\degree,Prand(~degrees[4], inf),
 			\dur, Pseq ([Rest (0),1],inf),
 			\scale,Pfunc({~scale})
 	)).play;
@@ -141,8 +134,8 @@ fork{
 	=======================================*/
 
 	// PERCS
-	~p1_volume = 0.8;
-	~p1_voicesCount = 2;
+	~p1_volume = 0.6;
+	~p1_voicesCount = 3;
 	~p1_amps = Array.fill(~p1_voicesCount, {0});
 	~p1_timbres = Array.fill(~p1_voicesCount, {0});
 	~p1_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
@@ -150,13 +143,16 @@ fork{
 
 
 	Pdef(\p1_0,
-		Pbind(\plant2hihat, \plant2hihat, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p1_timbres[0]}), \rel, 0.04,
+		Pbind(\instrument, \plant2hihat, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 7, \timbre, Pfunc({~p1_timbres[0]}), \rel, 8,
 	));
 
 	Pdef(\p1_1,
-		Pbind(\plant2snare, \plant2snare, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p1_timbres[1]}), \rel, 0.4,
+		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p1_timbres[1]}), \rel, 0.4,
 	));
 
+	Pdef(\p1_2,
+		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 8, \timbre, Pfunc({~p1_timbres[2]}), \rel, 0.2,
+	));
 
 	// role: change sounds to be triggered
 	~p1_sonarValues = Array.fill(2, {0});

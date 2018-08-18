@@ -4,6 +4,11 @@
 // muzak de soiree qui pete comme une giraffe pensive /
 
 
+// TO DO, bring up voice numbers (patterns etc) to p1-6, p2-6,  p3-10!
+
+
+
+
 fork{
 	// launch sound
 	(dur:1, strum: 0.1, degree: [0,4,7]).play;
@@ -134,8 +139,8 @@ fork{
 	=======================================*/
 
 	// PERCS
-	~p1_volume = 0.6;
-	~p1_voicesCount = 3;
+	~p1_volume = 0.4;
+	~p1_voicesCount = 6;// fix as 6! this must equal p2stemlight indexing
 	~p1_amps = Array.fill(~p1_voicesCount, {0});
 	~p1_timbres = Array.fill(~p1_voicesCount, {0});
 	~p1_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
@@ -147,12 +152,26 @@ fork{
 	));
 
 	Pdef(\p1_1,
-		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p1_timbres[1]}), \rel, 0.4,
+		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 9, \timbre, Pfunc({~p1_timbres[1]}), \rel, 0.4,
 	));
 
 	Pdef(\p1_2,
 		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 8, \timbre, Pfunc({~p1_timbres[2]}), \rel, 0.2,
 	));
+
+	Pdef(\p1_3,
+		Pbind(\instrument, \plant2hihat, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}),\root, Pfunc({~root}), \octave, 9, \timbre, Pfunc({~p1_timbres[3]}), \rel, 0.2,
+	));
+
+	Pdef(\p1_4,
+		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[4]}), \rel, 0.5,
+	)).play;
+
+	Pdef(\p1_5,
+		Pbind(\instrument, \plant2snare, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 2, \timbre, Pfunc({~p1_timbres[5]}), \rel, 0.08,
+	));
+
+
 
 	// role: change sounds to be triggered
 	~p1_sonarValues = Array.fill(2, {0});
@@ -258,7 +277,7 @@ fork{
 	// - pick another synth for sonar 1 on flex_1 onset
 
 	~p2_volume = 0.6;
-	~p2_voicesCount = 6;
+	~p2_voicesCount = 6;// fix as 6 !
 	~p2_amps = Array.fill(~p2_voicesCount, {0});
 	~p2_timbres = Array.fill(~p2_voicesCount, {0});
 	~p2_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
@@ -374,8 +393,8 @@ fork{
 	// - pick another synth for sonar 0  and 1 on flex_0 onset
 	// - pick another synth for sonar 2 and 3 on flex_1 onset
 
-	~p3_volume = 0.7;
-	~p3_voicesCount = 6;
+	~p3_volume = 0.8;
+	~p3_voicesCount = 10;// fix as 10!
 	~p3_amps = Array.fill(~p3_voicesCount, {0});
 	~p3_timbres = Array.fill(~p3_voicesCount, {0});
 	~p3_degrees = Array.fill(4, {0}); // 4 sonars control the degrees for all parts
@@ -407,7 +426,21 @@ fork{
 		Pbind(\instrument, \plant31, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[5]})
 	));
 
+	Pdef(\p3_6,
+		Pbind(\instrument, \plant31, \dur, Pseq( ~claves[6]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[6]})
+	));
 
+	Pdef(\p3_7,
+		Pbind(\instrument, \plant31, \dur, Pseq( ~claves[7]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 8, \timbre, Pfunc({~p3_timbres[7]})
+	));
+
+	Pdef(\p3_8,
+		Pbind(\instrument, \plant31, \dur, Pseq( ~claves[8]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[8]})
+	));
+
+	Pdef(\p3_9,
+		Pbind(\instrument, \plant31, \dur, Pseq( ~claves[9]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[9]})
+	));
 
 
 	~p3_flower_flexQuake = {|i=0, v=0, state=0|

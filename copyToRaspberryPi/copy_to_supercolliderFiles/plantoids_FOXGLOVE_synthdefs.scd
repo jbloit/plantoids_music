@@ -144,7 +144,7 @@ Pdef(\plant21,
 ////
 // plante 3
 
-SynthDef(\plant3,{ arg out=0, freq=440, amp=0.1, pan=0, gate=1;
+SynthDef(\plant3,{ arg out=0, freq=440, amp=0.01, pan=0, gate=0.3;
     var z;
     z = LPF.ar(
             Mix.new(VarSaw.ar(freq + [0, Rand(-0.4,0.0), Rand(0.0,0.4)], 0, 0.3)),
@@ -156,7 +156,7 @@ SynthDef(\plant3,{ arg out=0, freq=440, amp=0.1, pan=0, gate=1;
 
 
 SynthDef(\plant31,{
-arg freq = 666, tone = 5, art = 1, amp = 1.5, pan = 0;
+arg freq = 666, tone = 8, art = 1, amp = 1.5, pan = 0;
 var env, out, mod;
 
 env = Env.perc(0, art);

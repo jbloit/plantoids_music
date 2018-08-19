@@ -31,7 +31,7 @@ SynthDef(\lead2,{arg freq=432,amp=1,gate=1;
 
 
 SynthDef(\lead3,
-{arg gate=1,freq=36,amp=1,out=0;
+{arg gate=1,freq=36,amp=2,out=0;
 	var strike, env, noise, pitch, delayTime, detune,sig;
 		var env2 = EnvGen.ar(Env.adsr(0.1,0.4,0.5,0.5),gate,doneAction:2);
 		strike = SinOsc.ar(0.1);

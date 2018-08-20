@@ -77,7 +77,7 @@ Buffer.freeAll;
 
 // ~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 
-~samplesDir = "/home/jbloit/Dropbox/sounds/Battery 4 Factory Library/Samples/Drums"
+~samplesDir = "/home/jbloit/Dropbox/sounds/Battery 4 Factory Library/Samples/Drums";
 
 ~drumDirs = [
 PathName.new(~samplesDir +/+ "Kick"),
@@ -93,10 +93,12 @@ PathName.new(~samplesDir +/+ "Mallet Drum"),
 ];
 
 SynthDef(\sampler, {
-	|out=0, bufnum=0, amp=0.3, rate=1|
+	|out=0, bufnum=0, amp=0.3, rate=1, timbre=0.1, pan=0|
 	var sig;
 	sig = PlayBuf.ar(1, bufnum, rate * BufRateScale.kr(bufnum), doneAction:2);
-	Out.ar(out, Pan2.ar(sig*amp, 0));
+	sig = BPF.ar(sig, timbre.clip(0,1).linexp(0, 1, 100, 10000), 0.3);
+
+	Out.ar(out, Pan2.ar(sig*amp, pan.clip(0,1).linlin(0, 1, -1, 1)));
 }).add;
 
 Buffer.freeAll;
@@ -109,13 +111,7 @@ Buffer.freeAll;
 });
 
 //
-~percBuffers[2].bufnum
-Synth(\sampler,  [\bufnum, ~percBuffers[5].bufnum])
-(
-Pdef(\p3_0,
-	Pbind(\instrument, \sampler,
-		\dur, 1/4, \bufnum, Pfunc({rrand(0, 9)}))).play;
-)
+// Synth(\sampler,  [\bufnum, ~percBuffers[5].bufnum])
 
 
 

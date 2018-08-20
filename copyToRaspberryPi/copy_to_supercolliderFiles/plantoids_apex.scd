@@ -49,7 +49,9 @@ fork{
 
 
 	// background ongoing kick
-	Pdef(\kick,Pbind(\instrument,\kick,\dur,1/4,\amp,Pseq([0.3,0.1,0.05, 0.01],inf))).play(quant:4);
+	Pdef(\kick,Pbind(\instrument,\sampler, \bufnum, 0, \dur,1/4,\amp,Pseq([0.3,0.1,0.05, 0.01],inf))).play(quant:4);
+/*
+
 
 	// arpeggiator
 	~stepsCount = 33;
@@ -321,16 +323,13 @@ fork{
 	};
 
 
+*/
 
 	/* =======================================
 	SENSOR CALLBACKS : Plant 3 (BIG)
 	=======================================*/
 
-	// PLANT 3 = LEADS
-	// TODO:
-	// - have a different synth for sonar 0 , 1, 2, 3
-	// - pick another synth for sonar 0  and 1 on flex_0 onset
-	// - pick another synth for sonar 2 and 3 on flex_1 onset
+	// PLANT 3 = PERCS
 
 	~p3_volume = 0.4;
 	~p3_voicesCount = 10;
@@ -339,46 +338,75 @@ fork{
 	~p3_degrees = Array.fill(4, {0}); // 4 sonars control the degrees for all parts
 	~p3_activeVoices = Array.fill(~p3_voicesCount, {0}); // monitor active voices, as an array of 1 or 0
 
+	~p3_setRandomClaves = {
+		Pdefn(\dur_0, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_1, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_2, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_3, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_4, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_5, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_6, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_7, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_8, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+		Pdefn(\dur_9, Pseq( ~claves[rrand(0, (~claves.size - 1))]/16, inf));
+	};
+
+
+	// init claves
+	~p3_setRandomClaves.value();
+
 
 	// degree controlled by sonar 0, 1, 2, 3 alternatively
 	Pdef(\p3_0,
-		Pbind(\instrument, \avlead, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[0]})
-	));
+		Pbind(\instrument, \sampler, \bufnum, 0, \dur, Pdefn(\dur_0),  \timbre, Pfunc({~p3_timbres[0]}),
+			\pan, Pfunc({rrand(-1.0, 1.0)}),
+	) );
+
+	// Pdef(\p3_0).play;
 
 	Pdef(\p3_1,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[1]})
+		Pbind(\instrument, \sampler, \bufnum, 1, \dur, Pdefn(\dur_1),  \timbre, Pfunc({~p3_timbres[1]}), \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
-	Pdef(\p3_2,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[2]})
+		Pdef(\p3_2,
+		Pbind(\instrument, \sampler, \bufnum, 2, \dur, Pdefn(\dur_2),  \timbre, Pfunc({~p3_timbres[2]}), \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
 	Pdef(\p3_3,
-		Pbind(\instrument, \moogbass, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[3]})
+		Pbind(\instrument, \sampler, \bufnum, 3, \dur, Pdefn(\dur_3),  \timbre, Pfunc({~p3_timbres[3]}), \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
 	Pdef(\p3_4,
-		Pbind(\instrument, \avlead, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[4]})
+		Pbind(\instrument, \sampler, \bufnum, 4, \dur, Pdefn(\dur_4),  \timbre, Pfunc({~p3_timbres[0]})
+	, \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
 	Pdef(\p3_5,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[5]})
+		Pbind(\instrument, \sampler, \bufnum, 5, \dur, Pdefn(\dur_5),  \timbre, Pfunc({~p3_timbres[1]})
+	, \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
-	Pdef(\p3_6,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[6]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[2]}), \root, Pfunc({~root}), \octave, 6, \timbre, Pfunc({~p3_timbres[6]})
+		Pdef(\p3_6,
+		Pbind(\instrument, \sampler, \bufnum, 6, \dur, Pdefn(\dur_6),  \timbre, Pfunc({~p3_timbres[2]})
+	, \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
 	Pdef(\p3_7,
-		Pbind(\instrument, \moogbass, \dur, Pseq( ~claves[7]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[3]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[7]})
+		Pbind(\instrument, \sampler, \bufnum, 7, \dur, Pdefn(\dur_7),  \timbre, Pfunc({~p3_timbres[3]})
+	, \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
+
 
 	Pdef(\p3_8,
-		Pbind(\instrument, \avlead, \dur, Pseq( ~claves[8]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p3_timbres[8]})
+		Pbind(\instrument, \sampler, \bufnum, 8, \dur, Pdefn(\dur_8),  \timbre, Pfunc({~p3_timbres[0]})
+	, \pan, Pfunc({rrand(-1.0, 1.0)}),
 	));
 
+
 	Pdef(\p3_9,
-		Pbind(\instrument, \sawpulsimp, \dur, Pseq( ~claves[9]/16, inf), \scale, ~scale, \degree, Pfunc({~p3_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p3_timbres[9]})
+		Pbind(\instrument, \sampler, \bufnum, 9, \dur, Pdefn(\dur_9),  \timbre, Pfunc({~p3_timbres[1]})
+	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+
 	));
 
 
@@ -396,8 +424,10 @@ fork{
 
 			},
 			2, {
-				// "----->ONSET FLEX".postln;
-				~arpSteps = rrand(0,12!~stepsCount);
+				"----->ONSET FLEX".postln;
+				// pick random claves on Tilt onset
+				~p3_setRandomClaves.value();
+
 			},
 		);
 	};
@@ -414,7 +444,8 @@ fork{
 			},
 			1, {
 				//"----->CHANGE VALUE".postln;
-				~p3_degrees[i] = ~degrees[4][(v * 8).asInt];
+				~p3_timbres[i] = v;
+
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
@@ -436,7 +467,7 @@ fork{
 				~p3_activeVoices[i] = 0;
 			},
 			1, {
-				//"----->ON LIGHT".postln;
+				// "----->ON LIGHT".postln;
 
 				// normalize amp depending on the number of active voices for this plantoid
 				var amp;
@@ -444,8 +475,7 @@ fork{
 				amp = min(1, v * (1 / sum(~p3_activeVoices)));
 				~p3_amps[i] = amp * ~p3_volume;
 
-				// timbre doesn't need to be normalized
-				~p3_timbres[i] = v;
+
 
 			},
 			2, {

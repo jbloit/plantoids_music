@@ -73,11 +73,9 @@ SynthDef(\moogbass, {
 // =========================================================
 
 Buffer.freeAll;
-//~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
+~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 
-// ~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
-
-~samplesDir = "/home/jbloit/Dropbox/sounds/Battery 4 Factory Library/Samples/Drums";
+//~samplesDir = "/home/jbloit/Dropbox/sounds/Battery 4 Factory Library/Samples/Drums";
 
 ~drumDirs = [
 PathName.new(~samplesDir +/+ "Kick"),
@@ -106,9 +104,15 @@ Buffer.freeAll;
 ~percBuffers.clear;
 10.do({|i|
 	i.postln;
-	~percBuffers = ~percBuffers.add(Buffer.read(s, ~drumDirs[i].entries[rrand(0, 10)]
-.fullPath));
+	~percBuffers = ~percBuffers.add(Buffer.read(s, ~drumDirs[i].entries[rrand(0, 3)].fullPath));
 });
+
+// ~drumDirs[i];
+
+// print picked samples
+(~percBuffers.size).do{|i|
+	~percBuffers[i].path.postln;
+}
 
 //
 // Synth(\sampler,  [\bufnum, ~percBuffers[5].bufnum])

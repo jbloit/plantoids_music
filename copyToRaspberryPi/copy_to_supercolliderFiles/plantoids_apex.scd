@@ -331,7 +331,7 @@ fork{
 
 	// PLANT 3 = PERCS
 
-	~p3_volume = 0.4;
+	~p3_volume = 3;
 	~p3_voicesCount = 10;
 	~p3_amps = Array.fill(~p3_voicesCount, {0});
 	~p3_timbres = Array.fill(~p3_voicesCount, {0});
@@ -359,53 +359,53 @@ fork{
 	// degree controlled by sonar 0, 1, 2, 3 alternatively
 	Pdef(\p3_0,
 		Pbind(\instrument, \sampler, \bufnum, 0, \dur, Pdefn(\dur_0),  \timbre, Pfunc({~p3_timbres[0]}),
-			\pan, Pfunc({rrand(-1.0, 1.0)}),
+			\pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[0]}),
 	) );
 
 	// Pdef(\p3_0).play;
 
 	Pdef(\p3_1,
-		Pbind(\instrument, \sampler, \bufnum, 1, \dur, Pdefn(\dur_1),  \timbre, Pfunc({~p3_timbres[1]}), \pan, Pfunc({rrand(-1.0, 1.0)}),
+		Pbind(\instrument, \sampler, \bufnum, 1, \dur, Pdefn(\dur_1),  \timbre, Pfunc({~p3_timbres[1]}), \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[1]}),
 	));
 
 		Pdef(\p3_2,
-		Pbind(\instrument, \sampler, \bufnum, 2, \dur, Pdefn(\dur_2),  \timbre, Pfunc({~p3_timbres[2]}), \pan, Pfunc({rrand(-1.0, 1.0)}),
+		Pbind(\instrument, \sampler, \bufnum, 2, \dur, Pdefn(\dur_2),  \timbre, Pfunc({~p3_timbres[2]}), \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[2]}),
 	));
 
 	Pdef(\p3_3,
-		Pbind(\instrument, \sampler, \bufnum, 3, \dur, Pdefn(\dur_3),  \timbre, Pfunc({~p3_timbres[3]}), \pan, Pfunc({rrand(-1.0, 1.0)}),
+		Pbind(\instrument, \sampler, \bufnum, 3, \dur, Pdefn(\dur_3),  \timbre, Pfunc({~p3_timbres[3]}), \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[3]}),
 	));
 
 	Pdef(\p3_4,
 		Pbind(\instrument, \sampler, \bufnum, 4, \dur, Pdefn(\dur_4),  \timbre, Pfunc({~p3_timbres[0]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[4]}),
 	));
 
 	Pdef(\p3_5,
 		Pbind(\instrument, \sampler, \bufnum, 5, \dur, Pdefn(\dur_5),  \timbre, Pfunc({~p3_timbres[1]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[5]}),
 	));
 
 		Pdef(\p3_6,
 		Pbind(\instrument, \sampler, \bufnum, 6, \dur, Pdefn(\dur_6),  \timbre, Pfunc({~p3_timbres[2]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[6]}),
 	));
 
 	Pdef(\p3_7,
 		Pbind(\instrument, \sampler, \bufnum, 7, \dur, Pdefn(\dur_7),  \timbre, Pfunc({~p3_timbres[3]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[7]}),
 	));
 
 
 	Pdef(\p3_8,
 		Pbind(\instrument, \sampler, \bufnum, 8, \dur, Pdefn(\dur_8),  \timbre, Pfunc({~p3_timbres[0]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[8]}),
 	));
 
 
 	Pdef(\p3_9,
 		Pbind(\instrument, \sampler, \bufnum, 9, \dur, Pdefn(\dur_9),  \timbre, Pfunc({~p3_timbres[1]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}),
+	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[9]}),
 
 	));
 

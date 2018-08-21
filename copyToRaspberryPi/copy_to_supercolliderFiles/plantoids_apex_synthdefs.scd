@@ -22,9 +22,10 @@ SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
 }).add;
 
 SynthDef(\moogbass, {
-	arg out = 0, pan = 0, freq = 440, amp = 0.8, gate = 1, cutoff = 1000, gain = 2.0, lagamount = 0.01, att = 0.001, dec = 0.3, sus = 0.9, rel = 0.2, chorus = 0.7;
+	arg out = 0, pan = 0, freq = 440, amp = 0.8, gate = 1, timbre = 0.5, gain = 2.0, lagamount = 0.01, att = 0.001, dec = 0.3, sus = 0.9, rel = 0.2, chorus = 0.7;
 
-	var osc, filter, env, filterenv, snd, chorusfx;
+	var osc, filter, env, filterenv, snd, chorusfx, cutoff;
+	cutoff = timbre.clip(0,1).linlin(0, 1, 500, 5000);
 
 	osc = Mix(VarSaw.ar(
 		freq: freq.lag(lagamount) * [1.0, 1.001, 2.0],

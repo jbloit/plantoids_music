@@ -49,7 +49,7 @@ fork{
 
 
 	// background ongoing kick
-	Pdef(\kick,Pbind(\instrument,\sampler, \bufnum, 0, \pan, 0.5, \dur,1/4,\amp,Pseq([0.3,0.1,0.05, 0.01],inf))).play(quant:4);
+	Pdef(\kick,Pbind(\instrument,\sampler, \bufnum, 0, \pan, 0.5, \dur,1/4,\amp,Pseq([0.2,0.1,0.05, 0.01],inf))).play(quant:4);
 /*
 
 
@@ -372,7 +372,7 @@ fork{
 	// degree controlled by sonar 0, 1, 2, 3 alternatively
 	Pdef(\p3_0,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[0].bufnum, \dur, Pdefn(\p3_dur_0),  \timbre, Pfunc({~p3_timbres[0]}),
-			\pan, 0, \amp, Pfunc({~p3_amps[0]}),
+			\pan, 0.5, \amp, Pfunc({~p3_amps[0]}),
 	) );
 
 	Pdef(\p3_1,

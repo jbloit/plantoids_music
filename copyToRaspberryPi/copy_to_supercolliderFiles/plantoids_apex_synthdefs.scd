@@ -90,11 +90,11 @@ PathName.new(~samplesDir +/+ "Mallet Drum"),
 ];
 
 SynthDef(\sampler, {
-	|out=0, bufnum=0, amp=0.3, rate=1, timbre=0.1, pan=0.5|
-	var sig;
+	|out=0, bufnum=0, amp=0.3, rate=1, timbre=1, pan=0.5|
+	var sig, sigfilt;
 	sig = PlayBuf.ar(1, bufnum, rate * BufRateScale.kr(bufnum), doneAction:2);
-	// sig = BPF.ar(sig, timbre.clip(0,1).linexp(0, 1, 100, 10000), 0.3);
-
+	sigfilt = BPF.ar(sig, timbre.clip(0,1).linexp(0, 1, 100, 10000), 0.3);
+	sig = Mix.ar([sig*0.5, sigfilt*0.9]);
 	Out.ar(out, Pan2.ar(sig*amp, pan.linlin(0.0, 1.0, -1.0, 1.0)));
 }).add;
 

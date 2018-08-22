@@ -6,13 +6,13 @@ n=LFNoise1;Ndef(\x,{a=SinOsc.ar(65,Ndef(\x).ar*n.ar(0.1,3),n.ar(3,6)).tanh;9.do{
 
 // control a1 directly instead of through the NoiseLF1
 (
-n=LFNoise1;
 Ndef(\x,
 	{
 		| f1 = 65, a1=0.1, f2=3, amp = 1|
-		a=SinOsc.ar(f1, Ndef(\x).ar*a1,n.ar(f2,6)).tanh;
-		9.do{a=AllpassL.ar(a,0.3,{0.2.rand+0.1}!2,5)};
-		a.tanh * amp}
+		var aa;
+		aa=SinOsc.ar(f1, Ndef(\x).ar*a1,LFNoise1.ar(f2,6)).tanh;
+		9.do{aa=AllpassL.ar(aa,0.3,{0.2.rand+0.1}!2,5)};
+		aa.tanh * amp}
 ).play;
 )
 
@@ -27,6 +27,10 @@ Ndef(\x).map(\a1, 0);
 Ndef(\x).map(\a1, 1);
 Ndef(\x).map(\a1, 2);
 Ndef(\x).map(\a1, 3);
+
+Ndef(\x).map(\f1, ~droneFreq)
+Ndef(\x).map(\amp, 0.01)
+
 
 Ndef(\x).map(\f1, 1);
 Ndef(\x).map(\f1, 10);

@@ -42,6 +42,7 @@ fork{
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 	];
+	~clavesN = ~claves.size - 1;
 
 	/* =======================================
 	BACKGROUND MUSIC LAYERS (IDLE STATE)
@@ -73,6 +74,27 @@ fork{
 			\scale,Pfunc({~scale})
 	)).play.quant(1);
 
+*/
+
+	~droneFreq  = ~scale.degreeToFreq(0, 60.midicps, 0);
+	fork{
+	Ndef(\darkSeaHorn,
+		{
+			| freq = 261.63, a1=0.1, timbre=0.3, amp = 0.02|
+			var aa, f1, f2;
+			f1 = freq;
+			f2 = timbre.linlin(0,1, 1, 100);
+			aa=SinOsc.ar(f1, Ndef(\x).ar*a1,LFNoise1.ar(f2,6)).tanh;
+			9.do{aa=AllpassL.ar(aa,0.3,{0.2.rand+0.1}!2,5)};
+			aa.tanh * amp}
+	).play;
+	};
+
+
+	Ndef(\darkSeaHorn).map(\freq, ~droneFreq);
+	Ndef(\darkSeaHorn).map(\amp, 0.02);
+	Ndef(\lfo, { SinOsc.kr(0.1, 0, 0.5, 0.5) });
+	Ndef(\darkSeaHorn).map(\timbre, Ndef(\lfo));
 
 
 	/* =======================================
@@ -80,7 +102,7 @@ fork{
 	=======================================*/
 
 	// PERCS
-	~p1_volume = 0.6;
+	~p1_volume = 0.4;
 	~p1_voicesCount = 6;
 	~p1_amps = Array.fill(~p1_voicesCount, {0});
 	~p1_timbres = Array.fill(~p1_voicesCount, {0});
@@ -89,28 +111,27 @@ fork{
 
 
 	Pdef(\p1_0,
-		Pbind(\instrument, \kickhi, \dur, Pseq( ~claves[0]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[0]})
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[0]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[0]}), \out, ~reverbBus,
 	));
 
-	Pdef(\p1_1,
-		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[1]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[1]})
+		Pdef(\p1_1,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[1]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[1]}), \out, ~reverbBus,
 	));
 
-	Pdef(\p1_2,
-		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[2]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p1_timbres[2]})
+		Pdef(\p1_2,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[2]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[2]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[2]}), \out, ~reverbBus,
 	));
 
-
-	Pdef(\p1_3,
-		Pbind(\instrument, \kickhi, \dur, Pseq( ~claves[3]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 3, \timbre, Pfunc({~p1_timbres[3]})
+		Pdef(\p1_3,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[3]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[3]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[3]}), \out, ~reverbBus,
 	));
 
-	Pdef(\p1_4,
-		Pbind(\instrument, \snare808, \dur, Pseq( ~claves[4]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[4]})
+		Pdef(\p1_4,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[4]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[4]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[4]}), \out, ~reverbBus,
 	));
 
-	Pdef(\p1_5,
-		Pbind(\instrument, \hat909, \dur, Pseq( ~claves[5]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 5, \timbre, Pfunc({~p1_timbres[5]})
+		Pdef(\p1_5,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[5]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[5]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[5]}), \out, ~reverbBus,
 	));
 
 
@@ -128,6 +149,7 @@ fork{
 			1, {
 				// "----->CHANGE VALUE".postln;
 				~p1_sonarValues[i] = v;
+
 			},
 			2, {
 				// "----->ONSET SONAR".postln;
@@ -205,7 +227,7 @@ fork{
 
 	};
 
-*/
+
 	/* =======================================
 	SENSOR CALLBACKS : Plant 2 (MEDIUM)
 	=======================================*/
@@ -279,6 +301,9 @@ fork{
 				Synth(\sampler, [\amp, 0.2, \bufnum, ~fxBuffers[0].bufnum, \timbre, 0.9, \pan, 0.5, \rate, v.linlin(0, 1, 0.8, 0.9)]);
 
 				~root = v.linlin(0, 1, -3, 3);
+				~droneFreq  = ~scale.degreeToFreq(~root, 60.midicps, 0);
+				Ndef(\darkSeaHorn).map(\freq, ~droneFreq);
+
 			},
 		);
 	};
@@ -370,6 +395,8 @@ fork{
 
 
 	// degree controlled by sonar 0, 1, 2, 3 alternatively
+
+	// keep kick panned in center
 	Pdef(\p3_0,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[0].bufnum, \dur, Pdefn(\p3_dur_0),  \timbre, Pfunc({~p3_timbres[0]}),
 			\pan, 0.5, \amp, Pfunc({~p3_amps[0]}),

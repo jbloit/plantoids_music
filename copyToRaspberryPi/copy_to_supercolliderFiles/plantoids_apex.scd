@@ -240,7 +240,7 @@ fork{
 	));
 
 	Pdef(\p2_1,
-		Pbind(\instrument, \moogbass, \dur, Pdefn(\p2_dur_1), \scale, ~scale, \degree, 3, \root, Pfunc({~root}), \octave, Prand([2,3], inf), \timbre, Pfunc({~p2_timbres[1]})
+		Pbind(\instrument, \sawpulsimp, \dur, Pdefn(\p2_dur_1), \scale, ~scale, \degree, 0, \root, Pfunc({~root}), \octave, Prand([2,3], inf), \timbre, Pfunc({~p2_timbres[1]})
 	));
 
 	Pdef(\p2_2,
@@ -248,7 +248,7 @@ fork{
 	));
 
 	Pdef(\p2_3,
-		Pbind(\instrument, \moogbass, \dur, Pdefn(\p2_dur_2), \scale, ~scale, \degree, 7, \root, Pfunc({~root}), \octave, Prand([2,3], inf), \timbre, Pfunc({~p2_timbres[0]})
+		Pbind(\instrument, \sawpulsimp, \dur, Pdefn(\p2_dur_2), \scale, ~scale, \degree, 5, \root, Pfunc({~root}), \octave, Prand([2,3], inf), \timbre, Pfunc({~p2_timbres[0]})
 	));
 
 	Pdef(\p2_4,
@@ -256,7 +256,7 @@ fork{
 	));
 
 	Pdef(\p2_5,
-		Pbind(\instrument, \moogbass, \dur, Pdefn(\p2_dur_4), \scale, ~scale, \degree, 10, \root, Pfunc({~root}), \octave, Prand([2,3], inf), \timbre, Pfunc({~p2_timbres[1]})
+		Pbind(\instrument, \sawpulsimp, \dur, Pdefn(\p2_dur_4), \scale, ~scale, \degree, 8, \root, Pfunc({~root}), \octave, Prand([2,3], inf), \timbre, Pfunc({~p2_timbres[1]})
 	));
 
 
@@ -276,7 +276,11 @@ fork{
 			2, {
 				// "----->ONSET FLEX".postln;
 				~p2_setRandomClaves.value();
-				// ~root = rrand(-2, 2);
+
+				// tic
+				Synth(\sampler, [\amp, 0.2, \bufnum, ~fxBuffers[0].bufnum, \timbre, 0.9, \pan, 0.5, \rate, v.linlin(0, 1, 0.8, 0.9)]);
+
+				~root = v.linlin(0, 1, -3, 3);
 			},
 		);
 	};
@@ -435,7 +439,11 @@ fork{
 			2, {
 				"----->ONSET FLEX".postln;
 				// pick random claves on Tilt onset
+
 				~p3_setRandomClaves.value();
+
+				// tic
+				Synth(\sampler, [\amp, 0.2, \bufnum, ~fxBuffers[0].bufnum, \timbre, 0.9, \pan, 0.5]);
 
 			},
 		);
@@ -483,8 +491,6 @@ fork{
 				~p3_activeVoices[i] = 1;
 				amp = min(1, (1 / sum(~p3_activeVoices)));
 				~p3_amps[i] = amp * ~p3_volume;
-
-
 
 			},
 			2, {

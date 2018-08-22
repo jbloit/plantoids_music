@@ -76,8 +76,6 @@ SynthDef(\moogbass, {
 Buffer.freeAll;
 ~samplesDir = thisProcess.nowExecutingPath.dirname +/+ "../soundfiles";
 
-//~samplesDir = "/home/jbloit/Dropbox/sounds/Battery 4 Factory Library/Samples/Drums";
-
 ~drumDirs = [
 PathName.new(~samplesDir +/+ "Kick"),
 PathName.new(~samplesDir +/+ "Clap"),
@@ -100,6 +98,8 @@ SynthDef(\sampler, {
 	Out.ar(out, Pan2.ar(sig*amp, pan.clip(0,1).linlin(0, 1, -1, 1)));
 }).add;
 
+
+// PICK RANDOM DRUM SAMPLES
 Buffer.freeAll;
 ~percBuffers= Array.new;
 ~percBuffers.clear;
@@ -108,15 +108,16 @@ Buffer.freeAll;
 	~percBuffers = ~percBuffers.add(Buffer.read(s, ~drumDirs[i].entries[rrand(0, 3)].fullPath));
 });
 
-// ~drumDirs[i];
 
 // print picked samples
 (~percBuffers.size).do{|i|
 	~percBuffers[i].path.postln;
-}
+};
 
-//
-// Synth(\sampler,  [\bufnum, ~percBuffers[5].bufnum])
+
+// FX SAMPLES
+~fxBuffers = Array.new;
+~fxBuffers = ~fxBuffers.add(Buffer.read(s, ~samplesDir +/+ "tic.wav"));
 
 
 

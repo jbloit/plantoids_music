@@ -342,7 +342,7 @@ fork{
 
 	// PLANT 3 = PERCS
 
-	~p3_volume = 5;
+	~p3_volume = 2;
 	~p3_voicesCount = 10;
 	~p3_amps = Array.fill(~p3_voicesCount, {0});
 	~p3_timbres = Array.fill(~p3_voicesCount, {0});
@@ -370,10 +370,8 @@ fork{
 	// degree controlled by sonar 0, 1, 2, 3 alternatively
 	Pdef(\p3_0,
 		Pbind(\instrument, \sampler, \bufnum, 0, \dur, Pdefn(\p3_dur_0),  \timbre, Pfunc({~p3_timbres[0]}),
-			\pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[0]}),
+			\pan, 0, \amp, Pfunc({~p3_amps[0]}),
 	) );
-
-	// Pdef(\p3_0).play;
 
 	Pdef(\p3_1,
 		Pbind(\instrument, \sampler, \bufnum, 1, \dur, Pdefn(\p3_dur_1),  \timbre, Pfunc({~p3_timbres[1]}), \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[1]}),
@@ -483,7 +481,7 @@ fork{
 				// normalize amp depending on the number of active voices for this plantoid
 				var amp;
 				~p3_activeVoices[i] = 1;
-				amp = min(1, v * (1 / sum(~p3_activeVoices)));
+				amp = min(1, (1 / sum(~p3_activeVoices)));
 				~p3_amps[i] = amp * ~p3_volume;
 
 

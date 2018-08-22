@@ -14,15 +14,14 @@ SynthDef(\reverb, {
 	|in=0, out = 0|
 	var sig;
 	sig = In.ar(in, 1);
-	sig = FreeVerb.ar(sig)!2;
+	sig = FreeVerb.ar(sig!2, room:0.8);
 	Out.ar(out, sig);
 }).add;
 
 Synth.new(\reverb, [\in, ~reverbBus]);
 
 
-
-SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
+SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0.5, timbre=0|
 	var sig, plfo, fcurve ;
 	var plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05;
 	ffreq = timbre.linexp(0, 1, 200, 8000);
@@ -35,7 +34,7 @@ SynthDef(\sawpulsimp, { |out, freq = 99, gate = 0.5,  amp = 1, pan=0, timbre=0|
 	sig = RLPF.ar(sig, fcurve, rq)
 	* EnvGen.kr(Env.adsr(0.04, 0.2, 0.6, 0.1), gate, doneAction:2)
 	* amp;
-	Out.ar(out, sig ! 2)
+	Out.ar(out, Pan2.ar(sig, pan.linlin(0,1,-1,1)));
 }).add;
 
 SynthDef(\moogbass, {

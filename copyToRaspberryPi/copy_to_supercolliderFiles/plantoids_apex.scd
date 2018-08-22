@@ -51,7 +51,7 @@ fork{
 
 	// background ongoing kick
 	Pdef(\kick,Pbind(\instrument,\sampler, \bufnum, 0, \pan, 0.5, \dur,1/4,\amp,Pseq([0.2,0.1,0.05, 0.01],inf))).play(quant:4);
-/*
+	/*
 
 
 	// arpeggiator
@@ -59,40 +59,40 @@ fork{
 	~arpSteps = rrand(0,12!~stepsCount);
 
 	~setStep = {|i, val|
-		if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
+	if (~arpSteps[i] > 0) {~arpSteps[i]=0} {~arpSteps[i]=val};
 	};
 
 
 	Pdef(\arp1,
-		Pbind(\instrument,\lead1,
-			\amp,Pseq([1],inf),
-			\root,Pfunc({~root}),
-			\octave, 3,
-			\isRest,Pseq(~arpSteps,inf).coin.not,
-			\degree,Prand(~degrees[3], inf),
-			\dur,1/8,
-			\scale,Pfunc({~scale})
+	Pbind(\instrument,\lead1,
+	\amp,Pseq([1],inf),
+	\root,Pfunc({~root}),
+	\octave, 3,
+	\isRest,Pseq(~arpSteps,inf).coin.not,
+	\degree,Prand(~degrees[3], inf),
+	\dur,1/8,
+	\scale,Pfunc({~scale})
 	)).play.quant(1);
 
-*/
+	*/
 
 	~droneFreq  = ~scale.degreeToFreq(0, 60.midicps, 0);
 	fork{
-	Ndef(\darkSeaHorn,
-		{
-			| freq = 261.63, a1=0.1, timbre=0.3, amp = 0.02|
-			var aa, f1, f2;
-			f1 = freq;
-			f2 = timbre.linlin(0,1, 1, 100);
-			aa=SinOsc.ar(f1, Ndef(\x).ar*a1,LFNoise1.ar(f2,6)).tanh;
-			9.do{aa=AllpassL.ar(aa,0.3,{0.2.rand+0.1}!2,5)};
-			aa.tanh * amp}
-	).play;
+		Ndef(\darkSeaHorn,
+			{
+				| freq = 261.63, a1=0.1, timbre=0.3, amp = 0.02|
+				var aa, f1, f2;
+				f1 = freq;
+				f2 = timbre.linlin(0,1, 1, 100);
+				aa=SinOsc.ar(f1, Ndef(\x).ar*a1,LFNoise1.ar(f2,6)).tanh;
+				9.do{aa=AllpassL.ar(aa,0.3,{0.2.rand+0.1}!2,5)};
+				aa.tanh * amp}
+		).play;
 	};
 
 
 	Ndef(\darkSeaHorn).map(\freq, ~droneFreq);
-	Ndef(\darkSeaHorn).map(\amp, 0.02);
+	Ndef(\darkSeaHorn).map(\amp, 0.025);
 	Ndef(\lfo, { SinOsc.kr(0.1, 0, 0.5, 0.5) });
 	Ndef(\darkSeaHorn).map(\timbre, Ndef(\lfo));
 
@@ -102,7 +102,7 @@ fork{
 	=======================================*/
 
 	// PERCS
-	~p1_volume = 0.4;
+	~p1_volume = 0.3;
 	~p1_voicesCount = 6;
 	~p1_amps = Array.fill(~p1_voicesCount, {0});
 	~p1_timbres = Array.fill(~p1_voicesCount, {0});
@@ -114,24 +114,24 @@ fork{
 		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[0]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[0]}), \out, ~reverbBus,
 	));
 
-		Pdef(\p1_1,
+	Pdef(\p1_1,
 		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[1]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[1]}), \out, ~reverbBus,
 	));
 
-		Pdef(\p1_2,
-		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[2]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[2]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[2]}), \out, ~reverbBus,
+	Pdef(\p1_2,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[2]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[2]}), \out, ~reverbBus,
 	));
 
-		Pdef(\p1_3,
-		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[3]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[3]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[3]}), \out, ~reverbBus,
+	Pdef(\p1_3,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[3]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[3]}), \out, ~reverbBus,
 	));
 
-		Pdef(\p1_4,
-		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[4]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[4]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[4]}), \out, ~reverbBus,
+	Pdef(\p1_4,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[4]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[0]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[4]}), \out, ~reverbBus,
 	));
 
-		Pdef(\p1_5,
-		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[5]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[5]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[5]}), \out, ~reverbBus,
+	Pdef(\p1_5,
+		Pbind(\instrument, \sawpulsimp, \amp, Pfunc({~p1_amps[5]}), \dur, Pseq( ~claves[~clavesN]/16, inf), \scale, ~scale, \degree, Pfunc({~p1_degrees[1]}), \root, Pfunc({~root}), \octave, 4, \timbre, Pfunc({~p1_timbres[5]}), \out, ~reverbBus,
 	));
 
 
@@ -149,6 +149,7 @@ fork{
 			1, {
 				// "----->CHANGE VALUE".postln;
 				~p1_sonarValues[i] = v;
+				~p1_degrees[i] = ~degrees[5][(v * 5).asInt];
 
 			},
 			2, {
@@ -406,7 +407,7 @@ fork{
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[1].bufnum, \dur, Pdefn(\p3_dur_1),  \timbre, Pfunc({~p3_timbres[1]}), \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[1]}),
 	));
 
-		Pdef(\p3_2,
+	Pdef(\p3_2,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[2].bufnum, \dur, Pdefn(\p3_dur_2),  \timbre, Pfunc({~p3_timbres[2]}), \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[2]}),
 	));
 
@@ -416,34 +417,34 @@ fork{
 
 	Pdef(\p3_4,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[4].bufnum, \dur, Pdefn(\p3_dur_4),  \timbre, Pfunc({~p3_timbres[0]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[4]}),
+			, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[4]}),
 	));
 
 	Pdef(\p3_5,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[5].bufnum, \dur, Pdefn(\p3_dur_5),  \timbre, Pfunc({~p3_timbres[1]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[5]}),
+			, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[5]}),
 	));
 
-		Pdef(\p3_6,
+	Pdef(\p3_6,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[6].bufnum, \dur, Pdefn(\p3_dur_6),  \timbre, Pfunc({~p3_timbres[2]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[6]}),
+			, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[6]}),
 	));
 
 	Pdef(\p3_7,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[7].bufnum, \dur, Pdefn(\p3_dur_7),  \timbre, Pfunc({~p3_timbres[3]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[7]}),
+			, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[7]}),
 	));
 
 
 	Pdef(\p3_8,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[8].bufnum, \dur, Pdefn(\p3_dur_8),  \timbre, Pfunc({~p3_timbres[0]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[8]}),
+			, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[8]}),
 	));
 
 
 	Pdef(\p3_9,
 		Pbind(\instrument, \sampler, \bufnum, ~percBuffers[9].bufnum, \dur, Pdefn(\p3_dur_9),  \timbre, Pfunc({~p3_timbres[1]})
-	, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[9]}),
+			, \pan, Pfunc({rrand(-1.0, 1.0)}), \amp, Pfunc({~p3_amps[9]}),
 
 	));
 

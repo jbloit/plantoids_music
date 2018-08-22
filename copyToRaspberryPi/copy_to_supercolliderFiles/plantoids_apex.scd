@@ -49,7 +49,7 @@ fork{
 
 
 	// background ongoing kick
-	Pdef(\kick,Pbind(\instrument,\sampler, \bufnum, 0, \dur,1/4,\amp,Pseq([0.3,0.1,0.05, 0.01],inf))).play(quant:4);
+	Pdef(\kick,Pbind(\instrument,\sampler, \bufnum, 0, \pan, 0.5, \dur,1/4,\amp,Pseq([0.3,0.1,0.05, 0.01],inf))).play(quant:4);
 /*
 
 
@@ -205,19 +205,17 @@ fork{
 
 	};
 
-
 */
-
 	/* =======================================
 	SENSOR CALLBACKS : Plant 2 (MEDIUM)
 	=======================================*/
 
 	// Octavers on bass
 
-	~p2_volume = 0.7;
+	~p2_volume = 0.5;
 	~p2_voicesCount = 6;
 	~p2_amps = Array.fill(~p2_voicesCount, {0});
-	~p2_timbres = Array.fill(~p2_voicesCount, {0});
+	~p2_timbres = Array.fill(~p2_voicesCount, {1});
 	~p2_degrees = Array.fill(2, {0}); // 2 sonars control the degrees for all parts
 	~p2_activeVoices = Array.fill(~p2_voicesCount, {0}); // monitor active voices, as an array of 1 or 0
 
